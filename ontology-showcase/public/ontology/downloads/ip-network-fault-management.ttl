@@ -1,0 +1,172 @@
+@prefix an: <https://open-an.example/ontology/ip-network-fault-management#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://open-an.example/ontology/ip-network-fault-management> a owl:Ontology ;
+  rdfs:label "IP网五层故障管理本体"@zh , "IP network five-layer fault-management ontology"@en ;
+  rdfs:comment "完整导出业务运营、全局治理与主权、跨系统解决方案、逻辑资源、物理资源五层本体，以及 I-AADE 自治闭环和诊断关系；可离线导入 Agent。每条关系保留独立名称与单一 source/target，与演示页面 index.html 的 NODES/LINKS 一一对应。"@zh ; owl:versionInfo "1.0.0" .
+
+an:OntologyConcept a owl:Class .
+an:BusinessOperationConcept a owl:Class ; rdfs:subClassOf an:OntologyConcept ; rdfs:label "业务运营层概念"@zh .
+an:GovernanceConcept a owl:Class ; rdfs:subClassOf an:OntologyConcept ; rdfs:label "全局治理与主权层概念"@zh .
+an:CrossSystemConcept a owl:Class ; rdfs:subClassOf an:OntologyConcept ; rdfs:label "跨系统解决方案层概念"@zh .
+an:LogicalResourceConcept a owl:Class ; rdfs:subClassOf an:OntologyConcept ; rdfs:label "逻辑资源层概念"@zh .
+an:PhysicalResourceConcept a owl:Class ; rdfs:subClassOf an:OntologyConcept ; rdfs:label "物理资源层概念"@zh .
+an:OntologyRelation a owl:Class .
+an:StructuralRelation a owl:Class ; rdfs:subClassOf an:OntologyRelation .
+an:ReasoningRelation a owl:Class ; rdfs:subClassOf an:OntologyRelation .
+an:EvidenceRelation a owl:Class ; rdfs:subClassOf an:OntologyRelation .
+an:DiagnosisRelation a owl:Class ; rdfs:subClassOf an:OntologyRelation .
+an:inLayer a owl:ObjectProperty . an:hasSource a owl:ObjectProperty . an:hasTarget a owl:ObjectProperty .
+
+an:BusinessOperationLayer rdfs:label "业务运营层"@zh .
+an:GovernanceLayer rdfs:label "全局治理与主权层"@zh .
+an:CrossSystemLayer rdfs:label "跨系统解决方案层"@zh .
+an:LogicalResourceLayer rdfs:label "逻辑资源层"@zh .
+an:PhysicalResourceLayer rdfs:label "物理资源层"@zh .
+
+# Layer 1: business operation
+an:ODABusiness a an:BusinessOperationConcept ; an:inLayer an:BusinessOperationLayer ; rdfs:label "ODA商业面"@zh .
+an:MarketProduct a an:BusinessOperationConcept ; an:inLayer an:BusinessOperationLayer ; rdfs:label "市场/产品/客户流"@zh .
+an:SLAContract a an:BusinessOperationConcept ; an:inLayer an:BusinessOperationLayer ; rdfs:label "SLA标准与契约"@zh .
+an:BaseStationSvc a an:BusinessOperationConcept ; an:inLayer an:BusinessOperationLayer ; rdfs:label "基站业务保障"@zh .
+an:DedicatedLineSvc a an:BusinessOperationConcept ; an:inLayer an:BusinessOperationLayer ; rdfs:label "专线业务保障"@zh .
+
+# Layer 2: governance and sovereignty
+an:ODAGovernance a an:GovernanceConcept ; an:inLayer an:GovernanceLayer ; rdfs:label "ODA治理面"@zh .
+an:SecurityRedLine a an:GovernanceConcept ; an:inLayer an:GovernanceLayer ; rdfs:label "安全红线"@zh .
+an:ResourceAllocation a an:GovernanceConcept ; an:inLayer an:GovernanceLayer ; rdfs:label "资源分配与冲突控制"@zh .
+an:ETOMFramework a an:GovernanceConcept ; an:inLayer an:GovernanceLayer ; rdfs:label "运营商eTOM"@zh .
+an:CrossLayerMapping a an:GovernanceConcept ; an:inLayer an:GovernanceLayer ; rdfs:label "上下层本体交叉"@zh .
+
+# Layer 3: IP-network solution and I-AADE autonomous loop
+an:DomainIPNetwork a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "IP网"@zh .
+an:ServiceFaultManagement a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "故障管理"@zh .
+an:ServiceQualityOptimization a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "质量优化"@zh .
+an:TaskPolicyIntent a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "故障管理策略生成(Intent)"@zh .
+an:TaskFaultAwareness a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "故障识别(Awareness)"@zh .
+an:TaskRiskAnalysis a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "隐患预测(Analysis)"@zh .
+an:TaskProblemAnalysis a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "问题定界定位（含影响性分析）(Analysis)"@zh .
+an:TaskSolutionDecision a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "方案生成并决策(Decision)"@zh .
+an:TaskRepairExecution a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "问题修复并验证(Execution)"@zh .
+an:CatDevice a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "设备类故障"@zh .
+an:CatConnection a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "连接类故障"@zh .
+an:CatService a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "业务类故障"@zh .
+an:CatClock a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "时钟类故障"@zh .
+an:CatEnvironment a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "环境类故障"@zh .
+an:CatProtocol a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "协议类故障"@zh .
+an:CatCrossDomain a an:CrossSystemConcept ; an:inLayer an:CrossSystemLayer ; rdfs:label "跨专业故障"@zh .
+
+# Layer 4: logical resources
+an:DeviceOffline a an:LogicalResourceConcept ; an:inLayer an:LogicalResourceLayer ; rdfs:label "设备离线"@zh .
+an:LinkFault a an:LogicalResourceConcept ; an:inLayer an:LogicalResourceLayer ; rdfs:label "链路/连接故障"@zh .
+an:ClockFault a an:LogicalResourceConcept ; an:inLayer an:LogicalResourceLayer ; rdfs:label "时钟异常"@zh .
+an:ProtocolFault a an:LogicalResourceConcept ; an:inLayer an:LogicalResourceLayer ; rdfs:label "协议类故障"@zh .
+an:TunnelFault a an:LogicalResourceConcept ; an:inLayer an:LogicalResourceLayer ; rdfs:label "隧道故障"@zh .
+an:FiveGNRM a an:LogicalResourceConcept ; an:inLayer an:LogicalResourceLayer ; rdfs:label "5G NRM"@zh .
+an:ResourceAnomaly a an:LogicalResourceConcept ; an:inLayer an:LogicalResourceLayer ; rdfs:label "资源消耗异常"@zh .
+an:SoftwareFault a an:LogicalResourceConcept ; an:inLayer an:LogicalResourceLayer ; rdfs:label "软件/配置故障"@zh .
+
+# Layer 5: physical resources
+an:FiberFault a an:PhysicalResourceConcept ; an:inLayer an:PhysicalResourceLayer ; rdfs:label "光纤/尾纤故障"@zh .
+an:PowerFault a an:PhysicalResourceConcept ; an:inLayer an:PhysicalResourceLayer ; rdfs:label "供电/掉电故障"@zh .
+an:BoardFault a an:PhysicalResourceConcept ; an:inLayer an:PhysicalResourceLayer ; rdfs:label "单板/主控板故障"@zh .
+an:OpticalModule a an:PhysicalResourceConcept ; an:inLayer an:PhysicalResourceLayer ; rdfs:label "光模块故障"@zh .
+an:FanEnvFault a an:PhysicalResourceConcept ; an:inLayer an:PhysicalResourceLayer ; rdfs:label "风扇/环境故障"@zh .
+an:PortFault a an:PhysicalResourceConcept ; an:inLayer an:PhysicalResourceLayer ; rdfs:label "端口物理故障"@zh .
+an:CableInfra a an:PhysicalResourceConcept ; an:inLayer an:PhysicalResourceLayer ; rdfs:label "机架/线缆基础设施"@zh .
+an:SitePowerCool a an:PhysicalResourceConcept ; an:inLayer an:PhysicalResourceLayer ; rdfs:label "站点动环"@zh .
+
+# 结构关系（43）
+an:r01 a an:StructuralRelation ; rdfs:label "IP网包含故障管理"@zh ; an:hasSource an:DomainIPNetwork ; an:hasTarget an:ServiceFaultManagement .
+an:r02 a an:StructuralRelation ; rdfs:label "IP网包含质量优化"@zh ; an:hasSource an:DomainIPNetwork ; an:hasTarget an:ServiceQualityOptimization .
+an:r03 a an:StructuralRelation ; rdfs:label "故障管理包含策略生成"@zh ; an:hasSource an:ServiceFaultManagement ; an:hasTarget an:TaskPolicyIntent .
+an:r04 a an:StructuralRelation ; rdfs:label "故障管理包含故障识别"@zh ; an:hasSource an:ServiceFaultManagement ; an:hasTarget an:TaskFaultAwareness .
+an:r05 a an:StructuralRelation ; rdfs:label "故障管理包含隐患预测"@zh ; an:hasSource an:ServiceFaultManagement ; an:hasTarget an:TaskRiskAnalysis .
+an:r06 a an:StructuralRelation ; rdfs:label "故障管理包含定界定位"@zh ; an:hasSource an:ServiceFaultManagement ; an:hasTarget an:TaskProblemAnalysis .
+an:r07 a an:StructuralRelation ; rdfs:label "故障管理包含方案决策"@zh ; an:hasSource an:ServiceFaultManagement ; an:hasTarget an:TaskSolutionDecision .
+an:r08 a an:StructuralRelation ; rdfs:label "故障管理包含修复验证"@zh ; an:hasSource an:ServiceFaultManagement ; an:hasTarget an:TaskRepairExecution .
+an:r09 a an:StructuralRelation ; rdfs:label "定界定位包含设备类"@zh ; an:hasSource an:TaskProblemAnalysis ; an:hasTarget an:CatDevice .
+an:r10 a an:StructuralRelation ; rdfs:label "定界定位包含连接类"@zh ; an:hasSource an:TaskProblemAnalysis ; an:hasTarget an:CatConnection .
+an:r11 a an:StructuralRelation ; rdfs:label "定界定位包含业务类"@zh ; an:hasSource an:TaskProblemAnalysis ; an:hasTarget an:CatService .
+an:r12 a an:StructuralRelation ; rdfs:label "定界定位包含时钟类"@zh ; an:hasSource an:TaskProblemAnalysis ; an:hasTarget an:CatClock .
+an:r13 a an:StructuralRelation ; rdfs:label "定界定位包含环境类"@zh ; an:hasSource an:TaskProblemAnalysis ; an:hasTarget an:CatEnvironment .
+an:r14 a an:StructuralRelation ; rdfs:label "定界定位包含协议类"@zh ; an:hasSource an:TaskProblemAnalysis ; an:hasTarget an:CatProtocol .
+an:r15 a an:StructuralRelation ; rdfs:label "定界定位包含跨专业类"@zh ; an:hasSource an:TaskProblemAnalysis ; an:hasTarget an:CatCrossDomain .
+an:r16 a an:StructuralRelation ; rdfs:label "治理→设备方案"@zh ; an:hasSource an:ODAGovernance ; an:hasTarget an:CatDevice .
+an:r17 a an:StructuralRelation ; rdfs:label "治理→连接方案"@zh ; an:hasSource an:ODAGovernance ; an:hasTarget an:CatConnection .
+an:r18 a an:StructuralRelation ; rdfs:label "治理→业务方案"@zh ; an:hasSource an:ODAGovernance ; an:hasTarget an:CatService .
+an:r19 a an:StructuralRelation ; rdfs:label "治理→时钟方案"@zh ; an:hasSource an:ODAGovernance ; an:hasTarget an:CatClock .
+an:r20 a an:StructuralRelation ; rdfs:label "治理→环境方案"@zh ; an:hasSource an:ODAGovernance ; an:hasTarget an:CatEnvironment .
+an:r21 a an:StructuralRelation ; rdfs:label "治理→协议方案"@zh ; an:hasSource an:ODAGovernance ; an:hasTarget an:CatProtocol .
+an:r22 a an:StructuralRelation ; rdfs:label "治理→跨专业方案"@zh ; an:hasSource an:ODAGovernance ; an:hasTarget an:CatCrossDomain .
+an:r23 a an:StructuralRelation ; rdfs:label "安全→跨专业约束"@zh ; an:hasSource an:SecurityRedLine ; an:hasTarget an:CatCrossDomain .
+an:r24 a an:StructuralRelation ; rdfs:label "安全→设备约束"@zh ; an:hasSource an:SecurityRedLine ; an:hasTarget an:CatDevice .
+an:r25 a an:StructuralRelation ; rdfs:label "资源→业务调度"@zh ; an:hasSource an:ResourceAllocation ; an:hasTarget an:CatService .
+an:r26 a an:StructuralRelation ; rdfs:label "资源→跨专业调度"@zh ; an:hasSource an:ResourceAllocation ; an:hasTarget an:CatCrossDomain .
+an:r27 a an:StructuralRelation ; rdfs:label "eTOM→业务映射"@zh ; an:hasSource an:ETOMFramework ; an:hasTarget an:CatService .
+an:r28 a an:StructuralRelation ; rdfs:label "eTOM→跨专业映射"@zh ; an:hasSource an:ETOMFramework ; an:hasTarget an:CatCrossDomain .
+an:r29 a an:StructuralRelation ; rdfs:label "eTOM→环境映射"@zh ; an:hasSource an:ETOMFramework ; an:hasTarget an:CatEnvironment .
+an:r30 a an:StructuralRelation ; rdfs:label "交叉→设备层映射"@zh ; an:hasSource an:CrossLayerMapping ; an:hasTarget an:CatDevice .
+an:r31 a an:StructuralRelation ; rdfs:label "交叉→连接层映射"@zh ; an:hasSource an:CrossLayerMapping ; an:hasTarget an:CatConnection .
+an:r32 a an:StructuralRelation ; rdfs:label "交叉→时钟层映射"@zh ; an:hasSource an:CrossLayerMapping ; an:hasTarget an:CatClock .
+an:r33 a an:StructuralRelation ; rdfs:label "交叉→协议层映射"@zh ; an:hasSource an:CrossLayerMapping ; an:hasTarget an:CatProtocol .
+an:r34 a an:StructuralRelation ; rdfs:label "商业→治理依赖"@zh ; an:hasSource an:ODABusiness ; an:hasTarget an:ODAGovernance .
+an:r35 a an:StructuralRelation ; rdfs:label "商业→eTOM依赖"@zh ; an:hasSource an:ODABusiness ; an:hasTarget an:ETOMFramework .
+an:r36 a an:StructuralRelation ; rdfs:label "市场→eTOM流程"@zh ; an:hasSource an:MarketProduct ; an:hasTarget an:ETOMFramework .
+an:r37 a an:StructuralRelation ; rdfs:label "市场→层间映射"@zh ; an:hasSource an:MarketProduct ; an:hasTarget an:CrossLayerMapping .
+an:r38 a an:StructuralRelation ; rdfs:label "SLA→资源策略"@zh ; an:hasSource an:SLAContract ; an:hasTarget an:ResourceAllocation .
+an:r39 a an:StructuralRelation ; rdfs:label "SLA→安全策略"@zh ; an:hasSource an:SLAContract ; an:hasTarget an:SecurityRedLine .
+an:r40 a an:StructuralRelation ; rdfs:label "基站→治理依赖"@zh ; an:hasSource an:BaseStationSvc ; an:hasTarget an:ODAGovernance .
+an:r41 a an:StructuralRelation ; rdfs:label "基站→安全依赖"@zh ; an:hasSource an:BaseStationSvc ; an:hasTarget an:SecurityRedLine .
+an:r42 a an:StructuralRelation ; rdfs:label "专线→资源依赖"@zh ; an:hasSource an:DedicatedLineSvc ; an:hasTarget an:ResourceAllocation .
+an:r43 a an:StructuralRelation ; rdfs:label "专线→治理依赖"@zh ; an:hasSource an:DedicatedLineSvc ; an:hasTarget an:ODAGovernance .
+
+# 推理关系（14）
+an:r44 a an:ReasoningRelation ; rdfs:label "策略驱动故障识别"@zh ; an:hasSource an:TaskPolicyIntent ; an:hasTarget an:TaskFaultAwareness .
+an:r45 a an:ReasoningRelation ; rdfs:label "故障流进入定界定位"@zh ; an:hasSource an:TaskFaultAwareness ; an:hasTarget an:TaskProblemAnalysis .
+an:r46 a an:ReasoningRelation ; rdfs:label "隐患流进入定界定位"@zh ; an:hasSource an:TaskRiskAnalysis ; an:hasTarget an:TaskProblemAnalysis .
+an:r47 a an:ReasoningRelation ; rdfs:label "定界定位支撑方案决策"@zh ; an:hasSource an:TaskProblemAnalysis ; an:hasTarget an:TaskSolutionDecision .
+an:r48 a an:ReasoningRelation ; rdfs:label "方案决策驱动修复验证"@zh ; an:hasSource an:TaskSolutionDecision ; an:hasTarget an:TaskRepairExecution .
+an:r49 a an:ReasoningRelation ; rdfs:label "修复验证反馈策略"@zh ; an:hasSource an:TaskRepairExecution ; an:hasTarget an:TaskPolicyIntent .
+an:r50 a an:ReasoningRelation ; rdfs:label "环境变化影响设备运行"@zh ; an:hasSource an:CatEnvironment ; an:hasTarget an:CatDevice .
+an:r51 a an:ReasoningRelation ; rdfs:label "设备状态影响连接"@zh ; an:hasSource an:CatDevice ; an:hasTarget an:CatConnection .
+an:r52 a an:ReasoningRelation ; rdfs:label "协议状态影响连接"@zh ; an:hasSource an:CatProtocol ; an:hasTarget an:CatConnection .
+an:r53 a an:ReasoningRelation ; rdfs:label "时钟状态影响业务"@zh ; an:hasSource an:CatClock ; an:hasTarget an:CatService .
+an:r54 a an:ReasoningRelation ; rdfs:label "连接质量影响业务"@zh ; an:hasSource an:CatConnection ; an:hasTarget an:CatService .
+an:r55 a an:ReasoningRelation ; rdfs:label "外部条件影响运行环境"@zh ; an:hasSource an:CatCrossDomain ; an:hasTarget an:CatEnvironment .
+an:r56 a an:ReasoningRelation ; rdfs:label "跨专业状态影响连接"@zh ; an:hasSource an:CatCrossDomain ; an:hasTarget an:CatConnection .
+an:r57 a an:ReasoningRelation ; rdfs:label "跨专业信息关联业务"@zh ; an:hasSource an:CatCrossDomain ; an:hasTarget an:CatService .
+
+# 证据关系（13）
+an:r58 a an:EvidenceRelation ; rdfs:label "设备类→设备离线"@zh ; an:hasSource an:CatDevice ; an:hasTarget an:DeviceOffline .
+an:r59 a an:EvidenceRelation ; rdfs:label "设备类→资源异常"@zh ; an:hasSource an:CatDevice ; an:hasTarget an:ResourceAnomaly .
+an:r60 a an:EvidenceRelation ; rdfs:label "设备类→软件故障"@zh ; an:hasSource an:CatDevice ; an:hasTarget an:SoftwareFault .
+an:r61 a an:EvidenceRelation ; rdfs:label "连接类→链路故障"@zh ; an:hasSource an:CatConnection ; an:hasTarget an:LinkFault .
+an:r62 a an:EvidenceRelation ; rdfs:label "连接类→端口故障"@zh ; an:hasSource an:CatConnection ; an:hasTarget an:PortFault .
+an:r63 a an:EvidenceRelation ; rdfs:label "业务类→隧道故障"@zh ; an:hasSource an:CatService ; an:hasTarget an:TunnelFault .
+an:r64 a an:EvidenceRelation ; rdfs:label "业务类→5G NRM"@zh ; an:hasSource an:CatService ; an:hasTarget an:FiveGNRM .
+an:r65 a an:EvidenceRelation ; rdfs:label "时钟类→时钟异常"@zh ; an:hasSource an:CatClock ; an:hasTarget an:ClockFault .
+an:r66 a an:EvidenceRelation ; rdfs:label "环境类→设备离线"@zh ; an:hasSource an:CatEnvironment ; an:hasTarget an:DeviceOffline .
+an:r67 a an:EvidenceRelation ; rdfs:label "协议类→协议故障"@zh ; an:hasSource an:CatProtocol ; an:hasTarget an:ProtocolFault .
+an:r68 a an:EvidenceRelation ; rdfs:label "跨专业→链路故障"@zh ; an:hasSource an:CatCrossDomain ; an:hasTarget an:LinkFault .
+an:r69 a an:EvidenceRelation ; rdfs:label "跨专业→隧道故障"@zh ; an:hasSource an:CatCrossDomain ; an:hasTarget an:TunnelFault .
+an:r70 a an:EvidenceRelation ; rdfs:label "跨专业→5G承载"@zh ; an:hasSource an:CatCrossDomain ; an:hasTarget an:FiveGNRM .
+
+# 诊断关系（16）
+an:r71 a an:DiagnosisRelation ; rdfs:label "离线→供电根因"@zh ; an:hasSource an:DeviceOffline ; an:hasTarget an:PowerFault .
+an:r72 a an:DiagnosisRelation ; rdfs:label "离线→单板根因"@zh ; an:hasSource an:DeviceOffline ; an:hasTarget an:BoardFault .
+an:r73 a an:DiagnosisRelation ; rdfs:label "链路→光纤根因"@zh ; an:hasSource an:LinkFault ; an:hasTarget an:FiberFault .
+an:r74 a an:DiagnosisRelation ; rdfs:label "链路→光模块根因"@zh ; an:hasSource an:LinkFault ; an:hasTarget an:OpticalModule .
+an:r75 a an:DiagnosisRelation ; rdfs:label "时钟→光纤根因"@zh ; an:hasSource an:ClockFault ; an:hasTarget an:FiberFault .
+an:r76 a an:DiagnosisRelation ; rdfs:label "时钟→单板根因"@zh ; an:hasSource an:ClockFault ; an:hasTarget an:BoardFault .
+an:r77 a an:DiagnosisRelation ; rdfs:label "协议→光模块根因"@zh ; an:hasSource an:ProtocolFault ; an:hasTarget an:OpticalModule .
+an:r78 a an:DiagnosisRelation ; rdfs:label "协议→光纤根因"@zh ; an:hasSource an:ProtocolFault ; an:hasTarget an:FiberFault .
+an:r79 a an:DiagnosisRelation ; rdfs:label "隧道→光纤根因"@zh ; an:hasSource an:TunnelFault ; an:hasTarget an:FiberFault .
+an:r80 a an:DiagnosisRelation ; rdfs:label "隧道→单板根因"@zh ; an:hasSource an:TunnelFault ; an:hasTarget an:BoardFault .
+an:r81 a an:DiagnosisRelation ; rdfs:label "隧道→光模块根因"@zh ; an:hasSource an:TunnelFault ; an:hasTarget an:OpticalModule .
+an:r82 a an:DiagnosisRelation ; rdfs:label "5G→端口根因"@zh ; an:hasSource an:FiveGNRM ; an:hasTarget an:PortFault .
+an:r83 a an:DiagnosisRelation ; rdfs:label "5G→光模块根因"@zh ; an:hasSource an:FiveGNRM ; an:hasTarget an:OpticalModule .
+an:r84 a an:DiagnosisRelation ; rdfs:label "资源→单板根因"@zh ; an:hasSource an:ResourceAnomaly ; an:hasTarget an:BoardFault .
+an:r85 a an:DiagnosisRelation ; rdfs:label "资源→供电根因"@zh ; an:hasSource an:ResourceAnomaly ; an:hasTarget an:PowerFault .
+an:r86 a an:DiagnosisRelation ; rdfs:label "软件→单板根因"@zh ; an:hasSource an:SoftwareFault ; an:hasTarget an:BoardFault .

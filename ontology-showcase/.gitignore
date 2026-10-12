@@ -1,0 +1,49 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local dependency lock files (keep locally, do not commit)
+*.lock
+
+
+# Local documentation and design assets
+doc/
+
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Local build artifacts
+build/
+
+# Temporary generation artifacts
+_tmp_*
+
+# Media assets (kept locally, not tracked)
+ontology-demo-*.mp3
+ontology-demo-*.mp4
+ontology-demo-*.wav
+ontology-demo-*.srt

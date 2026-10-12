@@ -1,0 +1,2270 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AN Ontology样机 · T-Box 3D 全景</title>
+<script>
+const ontologyQuery = new URLSearchParams(location.search)
+if (ontologyQuery.get('theme') === 'light') document.documentElement.classList.add('light-theme')
+if (ontologyQuery.get('language') === 'EN') document.documentElement.lang = 'en'
+</script>
+<style>
+:root {
+  --bg: #060e12;
+  --panel: rgba(8, 20, 28, 0.88);
+  --line: rgba(120, 200, 220, 0.08);
+  --text: #e0eef3;
+  --muted: #7baabb;
+  --phys: #5da0f5;
+  --logic: #2dd4a0;
+  --cross: #f5c842;
+
+  --gov: #ef4460;
+  --biz: #b08cf8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.55 "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  user-select: none;
+}
+
+/* ---------- 星空背景 ---------- */
+#starfield {
+  position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse 900px 600px at 75% 10%, rgba(45,180,150,0.035) 0%, transparent 60%),
+    radial-gradient(ellipse 500px 400px at 15% 80%, rgba(140,120,220,0.03) 0%, transparent 55%),
+    radial-gradient(ellipse 700px 500px at 55% 45%, rgba(60,180,200,0.02) 0%, transparent 50%),
+    var(--bg);
+}
+#starfield .s1, #starfield .s2, #starfield .s3, #starfield .s4 {
+  position: absolute; border-radius: 50%;
+}
+/* 小星 — 1px, 非常多, 最暗 */
+#starfield .s1 {
+  width: 1px; height: 1px; background: transparent;
+  box-shadow:
+    127vw 18vh 0 0 rgba(200,220,240,0.25), 3vw 82vh 0 0 rgba(180,210,230,0.2),
+    91vw 34vh 0 0 rgba(210,230,255,0.22), 56vw 7vh 0 0 rgba(190,215,235,0.18),
+    12vw 63vh 0 0 rgba(200,220,240,0.2), 78vw 91vh 0 0 rgba(180,210,225,0.22),
+    35vw 45vh 0 0 rgba(210,225,245,0.15), 99vw 58vh 0 0 rgba(195,215,235,0.2),
+    47vw 29vh 0 0 rgba(200,220,240,0.18), 68vw 76vh 0 0 rgba(180,210,230,0.22),
+    23vw 93vh 0 0 rgba(210,230,255,0.2), 84vw 12vh 0 0 rgba(190,215,235,0.25),
+    6vw 51vh 0 0 rgba(200,225,245,0.18), 72vw 39vh 0 0 rgba(195,215,240,0.2),
+    41vw 87vh 0 0 rgba(180,210,230,0.22), 95vw 66vh 0 0 rgba(200,220,240,0.15),
+    18vw 4vh 0 0 rgba(210,225,245,0.2), 60vw 73vh 0 0 rgba(190,215,235,0.18),
+    33vw 21vh 0 0 rgba(200,220,240,0.22), 87vw 48vh 0 0 rgba(180,210,225,0.2),
+    52vw 95vh 0 0 rgba(195,220,240,0.18), 15vw 36vh 0 0 rgba(210,230,255,0.2),
+    76vw 84vh 0 0 rgba(200,215,235,0.15), 43vw 57vh 0 0 rgba(190,210,230,0.22),
+    29vw 69vh 0 0 rgba(200,225,245,0.18), 64vw 15vh 0 0 rgba(180,210,230,0.2),
+    8vw 44vh 0 0 rgba(210,220,240,0.22), 93vw 27vh 0 0 rgba(195,215,235,0.18),
+    50vw 82vh 0 0 rgba(200,220,240,0.2), 21vw 55vh 0 0 rgba(190,215,240,0.15),
+    82vw 97vh 0 0 rgba(180,210,230,0.22), 37vw 8vh 0 0 rgba(210,225,245,0.18),
+    70vw 62vh 0 0 rgba(200,220,240,0.2), 4vw 75vh 0 0 rgba(195,215,235,0.22),
+    96vw 41vh 0 0 rgba(190,210,230,0.15), 26vw 31vh 0 0 rgba(200,225,245,0.2),
+    58vw 88vh 0 0 rgba(180,210,225,0.18), 14vw 99vh 0 0 rgba(210,230,255,0.22),
+    79vw 6vh 0 0 rgba(200,220,240,0.18), 45vw 52vh 0 0 rgba(195,215,240,0.2),
+    31vw 78vh 0 0 rgba(190,215,235,0.22), 67vw 23vh 0 0 rgba(200,225,245,0.15),
+    2vw 16vh 0 0 rgba(210,220,240,0.2), 88vw 59vh 0 0 rgba(180,210,230,0.18);
+  animation: twinkle1 8s ease-in-out infinite alternate;
+}
+/* 中星 — 1.5px, 数量适中 */
+#starfield .s2 {
+  width: 1.5px; height: 1.5px; background: transparent;
+  box-shadow:
+    85vw 22vh 0 0 rgba(210,230,250,0.3), 19vw 67vh 0 0 rgba(200,220,240,0.28),
+    53vw 11vh 0 0 rgba(220,235,255,0.25), 38vw 89vh 0 0 rgba(195,215,240,0.3),
+    74vw 42vh 0 0 rgba(205,225,245,0.28), 7vw 34vh 0 0 rgba(210,230,250,0.25),
+    62vw 79vh 0 0 rgba(200,220,240,0.3), 28vw 53vh 0 0 rgba(195,220,245,0.28),
+    91vw 95vh 0 0 rgba(220,235,255,0.25), 45vw 18vh 0 0 rgba(205,225,245,0.3),
+    16vw 84vh 0 0 rgba(210,230,250,0.28), 69vw 36vh 0 0 rgba(200,225,245,0.25),
+    33vw 72vh 0 0 rgba(195,215,240,0.3), 82vw 9vh 0 0 rgba(220,235,255,0.28),
+    51vw 61vh 0 0 rgba(205,225,245,0.25), 4vw 47vh 0 0 rgba(210,220,240,0.3),
+    77vw 88vh 0 0 rgba(200,220,240,0.28), 23vw 26vh 0 0 rgba(195,220,245,0.25),
+    59vw 97vh 0 0 rgba(220,235,255,0.3), 95vw 54vh 0 0 rgba(205,225,245,0.28),
+    41vw 5vh 0 0 rgba(210,230,250,0.25), 11vw 76vh 0 0 rgba(200,220,240,0.3);
+  animation: twinkle2 11s ease-in-out infinite alternate;
+}
+/* 亮星 — 2px, 少量 */
+#starfield .s3 {
+  width: 2px; height: 2px; background: transparent;
+  box-shadow:
+    73vw 15vh 0 0 rgba(230,240,255,0.35), 32vw 82vh 0 0 rgba(220,235,250,0.32),
+    56vw 44vh 0 0 rgba(235,245,255,0.3), 88vw 71vh 0 0 rgba(225,238,252,0.35),
+    14vw 38vh 0 0 rgba(230,240,255,0.3), 67vw 93vh 0 0 rgba(220,235,250,0.32),
+    42vw 7vh 0 0 rgba(235,245,255,0.35), 95vw 58vh 0 0 rgba(225,240,255,0.3),
+    25vw 65vh 0 0 rgba(220,235,250,0.32), 80vw 24vh 0 0 rgba(230,240,255,0.35);
+  animation: twinkle3 14s ease-in-out infinite alternate;
+}
+/* 十字衍射亮星 — 极少量, 带微弱光芒 */
+#starfield .s4 {
+  width: 2px; height: 2px; background: rgba(220,235,250,0.3);
+  box-shadow: 0 0 4px 1px rgba(200,225,245,0.12), 0 0 10px 3px rgba(180,210,240,0.04);
+}
+#starfield .s4::before, #starfield .s4::after {
+  content: ''; position: absolute; background: rgba(210,230,250,0.06);
+}
+#starfield .s4::before { width: 20px; height: 1px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+#starfield .s4::after  { width: 1px; height: 20px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+@keyframes twinkle1 { 0% { opacity: .65; } 100% { opacity: 1; } }
+@keyframes twinkle2 { 0% { opacity: .55; } 100% { opacity: .9; } }
+@keyframes twinkle3 { 0% { opacity: .45; } 100% { opacity: .8; } }
+#stage { position: fixed; inset: 0; cursor: grab; }
+#stage.dragging { cursor: grabbing; }
+#labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+
+/* ---------- node / link / layer labels ---------- */
+.node-label {
+  position: absolute; transform: translate(-50%, -100%);
+  pointer-events: auto; cursor: pointer; text-align: center;
+  padding: 3px 9px 4px; border-radius: 9px;
+  background: rgba(6, 14, 18, 0.72); border: 1px solid var(--line);
+  backdrop-filter: blur(3px); white-space: nowrap;
+  transition: opacity .25s;
+}
+.node-label b { font-size: 12.5px; letter-spacing: .2px; }
+.node-label i { display: block; font-style: normal; font-size: 10.5px; color: var(--muted); }
+.node-label .cnt { color: #fff; opacity: .75; font-weight: 400; font-size: 10.5px; margin-left: 4px; }
+.node-label.dim { opacity: .42; pointer-events: none; }
+.node-label.sel { border-color: rgba(255,255,255,.55); box-shadow: 0 0 18px rgba(80,180,200,.35); }
+
+.link-label {
+  position: absolute; transform: translate(-50%, -50%);
+  font-size: 9.5px; color: #b9c4dd; white-space: nowrap;
+  padding: 1px 6px; border-radius: 7px;
+  background: rgba(6, 14, 18, 0.62); border: 1px solid rgba(255,255,255,.06);
+  transition: opacity .25s;
+}
+.link-label.dim { opacity: .28; }
+.link-label.hot { color: #fff; border-color: rgba(255,255,255,.3); font-size: 10.5px; z-index: 3; }
+
+.layer-label {
+  position: absolute; transform: translate(0, -50%);
+  padding: 6px 12px; border-radius: 10px;
+  background: rgba(6, 14, 18, 0.55); border-left: 3px solid #fff;
+  transition: opacity .25s;
+}
+.layer-label b { font-size: 13.5px; }
+.layer-label span { display: block; font-size: 10.5px; color: var(--muted); }
+.layer-label .phase-tag { display: inline-block; font-size: 8.5px; font-weight: 600; padding: 1px 6px; border-radius: 4px; margin-left: 6px; letter-spacing: .3px; vertical-align: middle; }
+.layer-label .phase-tag.done { background: rgba(45,212,160,.18); color: #2dd4a0; border: 1px solid rgba(45,212,160,.35); }
+.layer-label .phase-tag.todo { background: rgba(255,180,70,.12); color: #ffb547; border: 1px solid rgba(255,180,70,.3); }
+
+.sublayer-label {
+  position: absolute; transform: translate(-100%, -50%);
+  z-index: 2;
+  min-width: 92px; padding: 5px 9px; border-radius: 8px;
+  background: rgba(13, 18, 24, 0.78); border: 1px solid rgba(245, 200, 66, 0.2);
+  box-shadow: inset 2px 0 0 rgba(245, 200, 66, 0.58);
+  color: #f7d96d; pointer-events: none; transition: opacity .25s;
+}
+.sublayer-label b { display: block; font-size: 10.5px; letter-spacing: .4px; }
+.sublayer-label span { display: block; margin-top: 1px; color: var(--muted); font-size: 8.5px; }
+
+.chip-label {
+  position: absolute; transform: translate(-50%, -50%);
+  font-size: 10px; color: #dde8f0; white-space: nowrap;
+  padding: 2px 8px; border-radius: 8px;
+  background: rgba(18, 28, 42, 0.85); border: 1px solid rgba(176, 140, 248, 0.45);
+}
+.chip-label em { font-style: normal; opacity: .65; margin-left: 4px; font-size: 9px; }
+
+/* ---------- top bar ---------- */
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, rgba(7,11,22,.92), rgba(7,11,22,0));
+  pointer-events: none;
+}
+#topbar > * { pointer-events: auto; }
+.brand b { font-size: 17px; letter-spacing: .4px; }
+.brand span { display: block; font-size: 11px; color: var(--muted); }
+.stats { display: flex; gap: 8px; flex-wrap: wrap; }
+.stat {
+  padding: 4px 11px; border-radius: 9px; font-size: 11.5px;
+  background: rgba(255,255,255,.05); border: 1px solid var(--line); color: #c8d3ea;
+}
+.stat b { color: #fff; margin-right: 3px; }
+.spacer { flex: 1; }
+.btn {
+  padding: 7px 14px; border-radius: 10px; border: 1px solid var(--line);
+  background: rgba(255,255,255,.06); color: var(--text);
+  font-size: 12.5px; cursor: pointer; transition: all .15s;
+}
+.btn:hover { background: rgba(255,255,255,.13); }
+.btn.primary { background: linear-gradient(135deg, #1a8a6a, #3080b0); border-color: transparent; font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.15); }
+.btn.off { opacity: .5; }
+
+/* ---------- detail panel ---------- */
+#panel {
+  position: fixed; top: 64px; right: 16px; bottom: 16px; z-index: 9; width: 360px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+  backdrop-filter: blur(10px); overflow-y: auto; padding: 18px;
+  transform: translateX(395px); transition: transform .3s cubic-bezier(.2,.8,.25,1);
+}
+#panel.open { transform: none; }
+#panel::-webkit-scrollbar { width: 6px; }
+#panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,.14); border-radius: 3px; }
+#panel .close { position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--muted); font-size: 17px; cursor: pointer; }
+#panel .kicker { font-size: 10.5px; letter-spacing: 1.2px; color: var(--muted); text-transform: uppercase; }
+#panel h2 { font-size: 20px; margin: 2px 0 0; }
+#panel h2 small { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 8px; }
+#panel .desc { color: #b9c4dd; font-size: 12.5px; margin: 8px 0 4px; }
+#panel section { margin-top: 15px; }
+#panel h3 {
+  font-size: 11px; color: var(--muted); letter-spacing: .8px; font-weight: 600;
+  margin-bottom: 7px; display: flex; align-items: center; gap: 6px;
+}
+#panel h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.tagrow { display: flex; flex-wrap: wrap; gap: 5px; }
+.tg {
+  font-size: 11px; padding: 2.5px 8px; border-radius: 7px;
+  background: rgba(255,255,255,.06); border: 1px solid var(--line); color: #d4ddf0;
+}
+.tg.pk { background: rgba(61,169,252,.16); border-color: rgba(61,169,252,.4); }
+.grp { margin-bottom: 9px; }
+.grp .gname { font-size: 11px; color: #9fb3e0; margin-bottom: 4px; }
+.lkrow, .acrow {
+  display: flex; align-items: center; gap: 8px; padding: 6px 9px; margin: 4px 0;
+  border-radius: 9px; background: rgba(255,255,255,.04); border: 1px solid transparent;
+  font-size: 11.5px; cursor: pointer; transition: all .15s;
+}
+.lkrow:hover { border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.08); }
+.lkrow .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.lkrow code { font-size: 11px; color: #e3eaff; }
+.lkrow .dir { color: var(--muted); font-size: 10.5px; margin-left: auto; white-space: nowrap; }
+.acrow { cursor: default; align-items: flex-start; }
+.acrow .mode {
+  flex: none; font-size: 9.5px; padding: 2px 7px; border-radius: 6px; font-weight: 600;
+  margin-top: 1px; letter-spacing: .3px;
+}
+.acrow .nm { color: #e3eaff; font-family: Consolas, monospace; font-size: 11px; }
+.acrow .ds { color: var(--muted); font-size: 10.5px; }
+
+/* ---------- case selector ---------- */
+.case-wrap {
+  position: relative;
+}
+.case-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 340px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  padding: 6px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+  z-index: 20;
+}
+.case-dropdown.open {
+  display: block;
+}
+.case-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .15s;
+  border: 1px solid transparent;
+}
+.case-item:hover {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.12);
+}
+.case-item.active {
+  background: rgba(45,212,160,.1);
+  border-color: rgba(45,212,160,.3);
+}
+.case-item .case-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.case-item.active .case-title::before {
+  content: "●";
+  color: #2dd4a0;
+  font-size: 9px;
+}
+.case-item .case-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.45;
+  padding-left: 0;
+}
+
+/* ---------- command output ---------- */
+.cmd-tag {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: .4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-right: 6px;
+}
+.cmd-tag.phase1 { background: linear-gradient(135deg, #e67e22, #d35400); }
+.cmd-tag.phase2 { background: linear-gradient(135deg, #27ae60, #1e8449); }
+.cmd-tag.user   { background: linear-gradient(135deg, #3498db, #2980b9); }
+.cmd-tag.ok     { background: #27ae60; font-size: 10px; }
+.cmd-line {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  color: #b8d4e8;
+  background: rgba(0,0,0,.32);
+  padding: 2px 8px;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 3px 0;
+  border-left: 3px solid #e67e22;
+}
+.cmd-line.config { border-left-color: #ef4460; }
+.cmd-line.restore { border-left-color: #2dd4a0; }
+.cmd-output {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #a8c4da;
+  background: rgba(0,0,0,.42);
+  border: 1px solid rgba(120,200,220,.12);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 6px 0;
+  white-space: pre;
+  overflow-x: auto;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.cmd-output::-webkit-scrollbar { width: 5px; height: 5px; }
+.cmd-output::-webkit-scrollbar-thumb { background: rgba(255,255,255,.14); border-radius: 3px; }
+
+/* ---------- story ---------- */
+#story {
+  position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 160%);
+  z-index: 11; width: min(860px, 94vw);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+  backdrop-filter: blur(12px); padding: 16px 20px;
+  transition: transform .35s cubic-bezier(.2,.8,.25,1);
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+}
+#story.open { transform: translate(-50%, 0); }
+#story .s-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+#story .s-step {
+  font-size: 10.5px; font-weight: 700; color: #fff; letter-spacing: .5px;
+  background: linear-gradient(135deg, #1a8a6a, #3080b0);
+  padding: 3px 10px; border-radius: 8px;
+}
+#story .s-title { font-size: 15.5px; font-weight: 700; }
+#story .s-action { margin-left: auto; font-size: 10.5px; color: var(--cross); font-family: Consolas, monospace; }
+#story .s-text { font-size: 12.5px; color: #c8d3ea; }
+#story .s-text code { color: #f0d77a; font-size: 11.5px; background: rgba(245, 200, 66, .08); padding: 0 4px; border-radius: 4px; }
+#story .s-text b { color: #fff; }
+#story .s-foot { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+#story .dots { display: flex; gap: 5px; margin-right: auto; }
+#story .dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.18); transition: all .2s; }
+#story .dots i.on { background: #3ab09a; transform: scale(1.25); }
+
+#tooltip {
+  position: fixed; z-index: 12; pointer-events: none; display: none;
+  padding: 5px 10px; border-radius: 8px; font-size: 11.5px;
+  background: rgba(6, 14, 20, .92); border: 1px solid rgba(100,180,200,.2); color: #dfe7f7;
+}
+@media (max-width: 900px) { #panel { width: 86vw; } }
+</style>
+<style id="poc-shell-overrides">
+/* 保留 3D 组件的操作栏和关系标签，作为模型探索入口。 */
+#topbar .brand, #topbar .stats { display: none !important; }
+/* 嵌入式画布的辅助操作保持低视觉权重。 */
+#topbar .btn { padding: 5px 10px; border-radius: 8px; font-size: 11px; }
+/* 节点名称优先保证可读性；保留紧凑边距和温和缩放，防止多层节点标签互相遮挡。 */
+.node-label { padding: 2px 7px 3px !important; border-radius: 8px !important; transform: translate(-50%, -100%) scale(.92) !important; transform-origin: bottom center !important; }
+.node-label b { font-size: 12.5px !important; font-weight: 700 !important; letter-spacing: .1px !important; }
+.node-label i { font-size: 10px !important; font-weight: 400 !important; line-height: 1.25 !important; }
+.node-label .cnt { font-size: 9px !important; }
+.layer-label { padding: 5px 10px !important; }
+.layer-label b { font-size: 12px !important; }
+#panel { top: 66px !important; right: 18px !important; bottom: 18px !important; width: 330px !important; }
+#stage { cursor: grab; }
+@media (max-width: 1100px) { #panel { width: 300px !important; } }
+</style><style id="light-theme-overrides">
+html.light-theme {
+  --bg: #cbdce5;
+  --panel: rgba(255, 255, 255, .9);
+  --line: rgba(38, 72, 98, .24);
+  --text: #172c3a;
+  --muted: #466579;
+}
+html.light-theme #starfield { background: radial-gradient(ellipse 900px 600px at 75% 10%, rgba(45,160,150,.13), transparent 60%), radial-gradient(ellipse 500px 400px at 15% 80%, rgba(110,110,190,.1), transparent 55%), var(--bg); }
+html.light-theme #starfield .s1, html.light-theme #starfield .s2, html.light-theme #starfield .s3, html.light-theme #starfield .s4 { display: none; }
+html.light-theme .node-label, html.light-theme .link-label, html.light-theme .layer-label, html.light-theme #tooltip { background: rgba(255,255,255,.94); color: #102b3b; border-color: rgba(35, 72, 98, .38); box-shadow: 0 2px 8px rgba(35,70,95,.13); }
+html.light-theme .node-label i, html.light-theme .layer-label span, html.light-theme .link-label { color: #3c5e72; }
+html.light-theme .sublayer-label { background: rgba(255,255,255,.95); color: #704f00; border-color: rgba(137,98,0,.42); box-shadow: inset 2px 0 0 rgba(137,98,0,.72), 0 2px 8px rgba(35,70,95,.12); }
+html.light-theme .node-label .cnt, html.light-theme .link-label.hot, html.light-theme #panel h2, html.light-theme .stat b, html.light-theme #story .s-text b { color: #172c3a; }
+html.light-theme .chip-label { color: #213b4a; background: rgba(245,250,253,.9); }
+html.light-theme #topbar { background: linear-gradient(180deg, rgba(203,220,229,.97), rgba(203,220,229,0)); }
+html.embedded-diagnosis #topbar { display: none !important; }
+html.embedded-diagnosis #stage { cursor: grab; }
+html.embedded-diagnosis #panel { top: 16px; }
+html.embedded-diagnosis .node-label { max-width: 118px; white-space: normal; line-height: 1.12; transform: translate(-50%, -100%) scale(.76) !important; }
+html.embedded-diagnosis .node-label i, html.embedded-diagnosis .node-label b span { display: none !important; }
+/* A-Box 诊断视图保留层级标签，帮助把当前节点放回五层本体和第三层内部子层的语义位置。 */
+html.embedded-diagnosis .layer-label,
+html.embedded-diagnosis .sublayer-label { display: block; pointer-events: none; }
+html.embedded-diagnosis .link-label { display: none !important; }
+html.embedded-diagnosis .layer-label {
+  padding: 3px 6px !important;
+  border-radius: 6px !important;
+  margin-left: 55px;
+  transform: translate(0, -50%) scale(.72) !important;
+  transform-origin: left center !important;
+  white-space: nowrap;
+}
+html.embedded-diagnosis .layer-label b { font-size: 10px !important; }
+html.embedded-diagnosis .layer-label span,
+html.embedded-diagnosis .sublayer-label span { display: none !important; }
+html.embedded-diagnosis .layer-label .phase-tag { font-size: 7px; padding: 1px 4px; }
+html.embedded-diagnosis .sublayer-label {
+  min-width: 72px;
+  padding: 3px 5px;
+  border-radius: 6px;
+  margin-left: -54px;
+  transform: translate(0, -50%) scale(.72) !important;
+  transform-origin: left center !important;
+  white-space: nowrap;
+}
+html.embedded-diagnosis .sublayer-label b { font-size: 9px; letter-spacing: .1px; }
+html.light-theme .stat, html.light-theme .btn, html.light-theme .tg, html.light-theme .lkrow, html.light-theme .acrow { background: rgba(255,255,255,.62); color: #213b4a; }
+html.light-theme .btn:hover, html.light-theme .lkrow:hover, html.light-theme .case-item:hover { background: rgba(221,235,243,.86); }
+html.light-theme .lg-row, html.light-theme #panel .desc, html.light-theme .lkrow code, html.light-theme .acrow .nm, html.light-theme #story .s-text { color: #294657; }
+html.light-theme .cmd-line, html.light-theme .cmd-output { color: #294657; background: rgba(232,240,246,.9); }
+</style></head>
+<body>
+
+<div id="starfield">
+  <div class="s1"></div>
+  <div class="s2"></div>
+  <div class="s3"></div>
+  <div class="s4" style="top:22vh;left:73vw"></div>
+  <div class="s4" style="top:68vh;left:18vw"></div>
+  <div class="s4" style="top:8vh;left:42vw"></div>
+</div>
+
+<div id="stage"></div>
+<div id="labels"></div>
+
+<header id="topbar">
+  <div class="brand">
+    <b>AN Ontology样机 · T-Box 3D 全景</b>
+    <span>Autonomic Network Ontology T-Box · 概念、属性与关系模型</span>
+  </div>
+  <div class="stats">
+    <span class="stat"><b id="st-obj">0</b>Object Types</span>
+    <span class="stat"><b id="st-lnk">0</b>Link Types</span>
+    <span class="stat"><b id="st-act">0</b>Actions</span>
+    <span class="stat" style="background:rgba(45,212,160,.12);border-color:rgba(45,212,160,.3);color:#2dd4a0"><b style="color:#2dd4a0">3/5</b>层已设计</span>
+  </div>
+  <div class="spacer"></div>
+  <div class="case-wrap">
+    <button class="btn primary" id="btn-story">▶ <span data-i18n="story">案例演示</span></button>
+    <div class="case-dropdown" id="case-dropdown"></div>
+  </div>
+  <button class="btn off" id="btn-labels"><span data-i18n="linkLabels">连线标签</span>：<span data-i18n="off">关</span></button>
+  <button class="btn off" id="btn-links">显示全部关系</button>
+  <button class="btn" id="btn-planes">层板：开</button>
+  <button class="btn" id="btn-rotate" data-i18n="autoRotate">自动旋转</button>
+  <button class="btn" id="btn-reset" data-i18n="resetView">重置视角</button>
+</header>
+
+<aside id="panel">
+  <button class="close" id="panel-close">✕</button>
+  <div id="panel-body"></div>
+</aside>
+
+<div id="story">
+  <div class="s-head">
+    <span class="s-step" id="s-step">STEP 1/6</span>
+    <span class="s-title" id="s-title"></span>
+    <span class="s-action" id="s-action"></span>
+  </div>
+  <div class="s-text" id="s-text"></div>
+  <div class="s-foot">
+    <div class="dots" id="s-dots"></div>
+    <button class="btn" id="s-prev">‹ 上一步</button>
+    <button class="btn primary" id="s-next">下一步 ›</button>
+    <button class="btn" id="s-exit">退出演示</button>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+
+/* ================= 数据：6层网络故障诊断 Ontology ================= */
+
+// ═══════════════════════════════════════════════════════════════
+// Autonomous Network Ontology — Data Section
+// ═══════════════════════════════════════════════════════════════
+
+let ontologyLanguage = new URLSearchParams(location.search).get('language') === 'EN' ? 'EN' : '中';
+const EN = {
+  '物理资源层': 'Physical Resource Layer', '逻辑资源层': 'Logical Resource Layer', '跨系统解决方案层': 'Cross-System Solution Layer', '全局策略与主权层': 'Global Governance & Sovereignty Layer', '业务运营层': 'Business Operations Layer',
+  '光纤/尾纤故障': 'Fiber-jumper fault', '供电/掉电故障': 'Power failure', '单板/主控板故障': 'Board/controller fault', '光模块故障': 'Optical-module fault', '风扇/环境故障': 'Fan/environment fault', '端口物理故障': 'Physical port fault', '机架/线缆基础设施': 'Rack/cable infrastructure', '站点动环': 'Site power & environment',
+  '设备离线': 'Device offline', '链路/连接故障': 'Link/connection fault', '时钟异常': 'Clock anomaly', '协议类故障': 'Protocol fault', '隧道故障': 'Tunnel fault', '资源消耗异常': 'Resource-consumption anomaly', '软件/配置故障': 'Software/configuration fault',
+  '设备类故障': 'Device fault', '连接类故障': 'Connection fault', '业务类故障': 'Service fault', '时钟类故障': 'Clock fault', '环境类故障': 'Environment fault', '跨专业故障': 'Cross-domain fault',
+  'IP网': 'IP network', '无线网': 'Wireless network', '故障管理': 'Fault management', '质量优化': 'Quality optimization',
+  '领域': 'Domain', '业务': 'Operation business', '任务': 'I-AADE operation tasks', '方案': 'Diagnostic solutions',
+  '故障策略生成': 'Fault policy generation (Intent)', '故障识别': 'Fault identification (Awareness)', '隐患预测': 'Risk prediction (Analysis)', '问题定界定位': 'Problem demarcation & localization (Analysis)', '方案生成与决策': 'Solution generation & decision (Decision)', '问题修复与验证': 'Problem remediation & validation (Execution)',
+  'ODA治理面': 'ODA governance', '安全红线': 'Security baseline', '资源分配与冲突控制': 'Resource allocation & conflict control', '运营商eTOM': 'Operator eTOM', '上下层本体交叉': 'Cross-layer ontology mapping', 'ODA商业面': 'ODA business', '市场/产品/客户流': 'Market/product/customer flow', 'SLA标准与契约': 'SLA standards & contracts', '基站业务保障': 'Base-station service assurance', '专线业务保障': 'Dedicated-line service assurance',
+  '环境变化影响设备运行': 'Environment changes affect device operation', '设备状态影响连接': 'Device state affects connections', '协议状态影响连接': 'Protocol state affects connections', '时钟状态影响业务': 'Clock state affects services', '连接质量影响业务': 'Connection quality affects services', '外部条件影响运行环境': 'External conditions affect environment', '跨专业状态影响连接': 'Cross-domain state affects connections', '跨专业信息关联业务': 'Cross-domain information relates to services',
+  '设备类→设备离线': 'Device fault → device offline', '业务类→隧道故障': 'Service → tunnel fault', '离线→单板根因': 'Offline → board root cause', '离线→供电根因': 'Offline → power root cause', '隧道→光纤根因': 'Tunnel → fiber root cause', '隧道→光模块根因': 'Tunnel → optical-module root cause',
+  'IP网包含故障管理': 'IP network includes fault management', 'IP网包含质量优化': 'IP network includes quality optimization', '故障管理包含策略生成': 'Fault management includes policy generation', '故障管理包含故障识别': 'Fault management includes fault identification', '故障管理包含隐患预测': 'Fault management includes risk prediction', '故障管理包含定界定位': 'Fault management includes problem localization', '故障管理包含方案决策': 'Fault management includes solution decision', '故障管理包含修复验证': 'Fault management includes remediation validation', '策略驱动故障识别': 'Policy drives fault identification', '故障流进入定界定位': 'Fault flow enters problem localization', '隐患流进入定界定位': 'Risk flow enters problem localization', '定界定位支撑方案决策': 'Problem localization supports decision', '方案决策驱动修复验证': 'Decision drives remediation', '修复验证反馈策略': 'Validation feeds back to policy', '定界定位包含设备类': 'Problem localization includes device faults', '定界定位包含连接类': 'Problem localization includes connection faults', '定界定位包含业务类': 'Problem localization includes service faults', '定界定位包含时钟类': 'Problem localization includes clock faults', '定界定位包含环境类': 'Problem localization includes environment faults', '定界定位包含协议类': 'Problem localization includes protocol faults', '定界定位包含跨专业类': 'Problem localization includes cross-domain faults',
+  '已设计': 'Designed', '待打通': 'Pending integration',
+};
+function t(value) { return ontologyLanguage === 'EN' ? (EN[value] || value) : value; }
+function phaseTag(isDone) { return `<span class="phase-tag ${isDone ? 'done' : 'todo'}">${t(isDone ? '已设计' : '待打通')}</span>`; }
+function todoTag(isTodo) { return isTodo ? ` <span style="color:#ffb547;font-size:9px;opacity:.7">(${t('待打通')})</span>` : ''; }
+function nodeDisplayText(node) {
+  if (!diagnosisMode) return ontologyLanguage === 'EN' ? t(node.zh) : node.zh;
+  if (ontologyLanguage === 'EN') return node.compactEn || t(node.compactZh || node.zh);
+  return node.compactZh || node.zh;
+}
+
+function nodeLabelHtml(node, isTodo = false) {
+  const pendingTag = diagnosisMode ? '' : todoTag(isTodo);
+  const idTag = ontologyLanguage === 'EN' ? `<i>${node.id}</i>` : '';
+  return `<b>${nodeDisplayText(node)}${pendingTag}</b>${idTag}`;
+}
+
+function refreshLanguage() {
+  document.documentElement.lang = ontologyLanguage === 'EN' ? 'en' : 'zh-CN';
+  for (const L of Object.values(LAYERS)) if (L._label) L._label.innerHTML = `<b>${t(L.name)}${phaseTag(L._isDone)}</b><span>${L.en}</span>`;
+  for (const sublayer of SOLUTION_SUBLAYERS) if (sublayer._label) sublayer._label.innerHTML = `<b>${sublayer.index} · ${t(sublayer.name)}</b><span>${sublayer.en}</span>`;
+  for (const n of DISPLAY_NODES) if (n._label) n._label.innerHTML = nodeLabelHtml(n, n._isTodo);
+  for (const lk of LINKS) if (lk._label) lk._label.textContent = t(lk.name) + ' · ' + lk.card;
+  if (typeof updateLabelsButton === 'function') updateLabelsButton();
+  if (typeof updateLinksButton === 'function') updateLinksButton();
+  if (typeof updatePlanesButton === 'function') updatePlanesButton();
+}
+
+const LAYERS = {
+  physical:     { name: "物理资源层", en: "Physical Resource Layer", y: -15, color: 0x5da0f5,
+                  desc: "物理基础设施：物理单板、机架、光纤、站点动环基础设施" },
+  logical:      { name: "逻辑资源层", en: "Logical Resource Layer", y: -6, color: 0x2dd4a0,
+                  desc: "逻辑网络资源：5G NRM、OSPF/BGP路由、时钟协议栈" },
+  cross_system: { name: "跨系统解决方案层", en: "Cross-System Solution Layer", y: 4, color: 0xf5c842,
+                  desc: "跨域解决方案：跨域故障、节能、保障等，运营商eTOM，上下层本体交叉" },
+  governance:   { name: "全局策略与主权层", en: "Global Governance & Sovereignty Layer", y: 16, color: 0xef4460,
+                  desc: "ODA治理面、承载运营商安全红线、全网资源分配与冲突控制" },
+  business:     { name: "业务运营层", en: "Business Operations Layer", y: 26, color: 0xb08cf8,
+                  desc: "ODA商业面、市场/产品/客户流、SLA标准与契约" },
+};
+
+/* 第三层内部的展示分区：仍属于 cross_system，不增加新的五层本体层级。
+ * 每个子层位于独立的层高；默认隐藏子层板，仅保留节点、标签与导轨，
+ * 子层内部的节点沿 X 轴排成一横排，统一放在同一 Z 深度。 */
+const SOLUTION_SUBLAYERS = [
+  { key: "domain", index: "3.1", name: "领域", en: "Domain", layerY: 13, rowZ: 0, width: 52, depth: 18, color: 0x6ea8ff,
+    nodeIds: ["DomainIPNetwork", "DomainWirelessNetwork"] },
+  { key: "business", index: "3.2", name: "业务", en: "Operation business", layerY: 8, rowZ: 0, width: 52, depth: 18, color: 0x63d7b0,
+    nodeIds: ["ServiceFaultManagement", "ServiceQualityOptimization"] },
+  { key: "tasks", index: "3.3", name: "任务", en: "I-AADE operation tasks", layerY: 3, rowZ: 0, width: 52, depth: 18, color: 0xf2c65c,
+    nodeIds: ["TaskPolicyIntent", "TaskFaultAwareness", "TaskRiskAnalysis", "TaskProblemAnalysis", "TaskSolutionDecision", "TaskRepairExecution"] },
+  { key: "solutions", index: "3.4", name: "方案", en: "Diagnostic solutions", layerY: -2, rowZ: 0, width: 52, depth: 18, color: 0xc29af7,
+    nodeIds: ["CatDevice", "CatConnection", "CatService", "CatClock", "CatEnvironment", "CatProtocol", "CatCrossDomain"] },
+];
+const SOLUTION_SUBLAYER_BY_NODE = new Map(
+  SOLUTION_SUBLAYERS.flatMap((sublayer) => sublayer.nodeIds.map((nodeId) => [nodeId, sublayer]))
+);
+
+const GROUP_ZH = {
+  identity: "身份标识", static_spec: "静态规格", runtime_state: "运行状态",
+  metrics: "实时指标", derived: "派生字段", evidence: "证据引用",
+  suggestion: "处置建议", protocol_state: "协议状态", interface_config: "接口配置",
+};
+
+const MODE_STYLE = {
+  query:                      { zh: "查询",     c: "#4a7cff" },
+  query_external_observation: { zh: "外部观测", c: "#2cb67d" },
+  diagnose:                   { zh: "诊断",     c: "#ff5470" },
+  simulation:                 { zh: "仿真",     c: "#ffb547" },
+  semantic_resolution:        { zh: "语义解析", c: "#b08cf8" },
+  semantic_scope:             { zh: "语义圈选", c: "#47d4a0" },
+};
+
+const ACTIONS = {
+  resolve_entity:              { mode: "semantic_resolution", desc: "语义解析：将自然语言描述解析为本体实体引用" },
+  get_ontology_catalog:        { mode: "query", desc: "获取本体目录：返回全部语义层与节点类型目录" },
+  get_twin_object:             { mode: "query", desc: "获取数字孪生对象：按实体ID查询孪生模型详情" },
+  query_device_hardware:       { mode: "query", desc: "查询设备硬件：获取设备CPU/内存/温度/电源/风扇/单板状态" },
+  query_port_statistics:       { mode: "query", desc: "查询端口统计：获取端口流量、错包、光功率等实时指标" },
+  query_arp_table:             { mode: "query", desc: "查询ARP表：获取ARP表项学习状态、冲突记录与老化信息" },
+  diagnose_l2_connectivity:    { mode: "diagnose", desc: "二层连通性诊断：检测VLAN内MAC可达性与交换机转发状态" },
+  diagnose_ospf_neighbor:      { mode: "diagnose", desc: "OSPF邻居诊断：检查OSPF邻接建立失败、邻居状态异常" },
+  diagnose_ospf_lsa:           { mode: "diagnose", desc: "OSPF LSA诊断：分析LSDB异常、LSA洪泛与路由计算错误" },
+  diagnose_bgp_session:        { mode: "diagnose", desc: "BGP会话诊断：排查BGP邻居建立失败、会话震荡" },
+  diagnose_bgp_route:          { mode: "diagnose", desc: "BGP路由诊断：分析路由发布/接收异常、策略过滤错误" },
+  trace_forwarding_path:       { mode: "diagnose", desc: "转发路径追踪：逐跳追踪IP单播转发路径并定位中断点" },
+  trace_mpls_lsp:              { mode: "diagnose", desc: "MPLS LSP追踪：沿标签交换路径逐跳检测LSP连通性" },
+  query_alarm_events:          { mode: "query_external_observation", desc: "查询告警事件：检索指定时间范围内的告警记录" },
+  query_metric_window:         { mode: "query_external_observation", desc: "查询指标窗口：获取指定指标的时序数据窗口" },
+  predict_blast_radius:        { mode: "simulation", desc: "爆炸半径预测：仿真推演故障影响范围与业务受损面" },
+  simulate_reroute:            { mode: "simulation", desc: "重路由仿真：模拟路由切换后的流量路径与负载变化" },
+  get_object_set:              { mode: "semantic_scope", desc: "语义圈选：按本体规则圈选相关实体集合" },
+  get_network_snapshot:        { mode: "semantic_scope", desc: "网络快照：获取指定范围网络的当前状态快照" },
+  query_log_entries:           { mode: "query_external_observation", desc: "查询日志条目：按关键字检索设备运行日志与诊断日志" },
+  diagnose_isis_neighbor:      { mode: "diagnose", desc: "IS-IS邻居诊断：检查IS-IS邻居建立状态、接口使能配置、LSP数据库同步" },
+  check_isis_interface:        { mode: "query", desc: "检查IS-IS接口状态：查看使能了IS-IS的接口物理和协议状态" },
+  check_isis_config:           { mode: "query", desc: "检查IS-IS配置：比对两端接口配置、认证方式和进程绑定" },
+  check_isis_peer_change:      { mode: "query", desc: "检查IS-IS邻居变化：查看邻居最近一次状态变化原因和时间" },
+  check_isis_hello_error:      { mode: "query", desc: "检查IS-IS Hello报文错误：统计错误Hello报文并分析丢弃原因" },
+  check_isis_auth:             { mode: "query", desc: "检查IS-IS认证匹配：对比两端接口认证类型和密码" },
+  check_unicast_connect:       { mode: "query", desc: "检查单播连通性：通过ping确认链路三层可达性" },
+  check_multicast_connect:     { mode: "query", desc: "检查组播连通性：查看接口组播报文统计确认Hello报文收发" },
+  // ── 新增诊断与策略动作 ──
+  diagnose_cross_domain:       { mode: "diagnose", desc: "跨域故障诊断：跨专业协同故障定位与根因分析" },
+  diagnose_clock_fault:        { mode: "diagnose", desc: "时钟故障诊断：检查时钟源、PTP/SyncE协议状态与偏差" },
+  diagnose_protocol_fault:     { mode: "diagnose", desc: "协议故障诊断：OSPF/BGP/DCN协议邻居与路由异常分析" },
+  diagnose_tunnel_fault:       { mode: "diagnose", desc: "隧道故障诊断：SR-TP/MPLS-TP隧道连通性与保护组分析" },
+  diagnose_device_offline:     { mode: "diagnose", desc: "设备离线诊断：DCN通信、网关配置、设备可达性检查" },
+  diagnose_5g_nrm:             { mode: "diagnose", desc: "5G NRM诊断：网络切片、FlexE、5G承载配置一致性检查" },
+  diagnose_port_fault:         { mode: "diagnose", desc: "端口故障诊断：物理端口状态、FEC模式、光模块匹配检查" },
+  diagnose_link_fault:         { mode: "diagnose", desc: "链路故障诊断：光功率、误码率、SLA越限分析" },
+  enforce_policy:              { mode: "simulation", desc: "策略执行仿真：模拟治理策略下发与冲突检测" },
+  check_compliance:            { mode: "query_external_observation", desc: "合规检查：审计安全红线与治理策略执行状态" },
+  check_configuration:         { mode: "query", desc: "配置检查：端口配置一致性、DCN配置、环回配置检查" },
+};
+
+const NODES = [
+  // ── 物理资源层 (8 nodes) ──
+  { id: "FiberFault", zh: "光纤/尾纤故障", layer: "physical", x: -16, z: 0, count: 32, pk: "fiber_id",
+    aliases: ["光纤中断","尾纤故障","光纤接头脏污"],
+    desc: "光纤中断、尾纤故障、光纤接头脏污等物理链路故障，是所有网络故障中最基础的物理根因",
+    groups: { identity: ["fiber_id","link_id","a_end","z_end"],
+              static_spec: ["fiber_type","length","connector_type"],
+              runtime_state: ["fiber_status","optical_power_rx","optical_power_tx","loss_db"] },
+    actions: ["query_port_statistics","diagnose_link_fault"] },
+
+  { id: "PowerFault", zh: "供电/掉电故障", layer: "physical", x: -6, z: -6, count: 16, pk: "power_id",
+    aliases: ["网元掉电","供电问题"],
+    desc: "网元掉电、电源模块故障等供电异常，导致设备无法正常运行",
+    groups: { identity: ["power_id","device_id","power_slot"],
+              runtime_state: ["power_status","input_voltage","output_power"] },
+    actions: ["query_device_hardware"] },
+
+  { id: "BoardFault", zh: "单板/主控板故障", layer: "physical", x: -6, z: 6, count: 64, pk: "board_id",
+    aliases: ["主控板故障","业务板故障","单板在位未注册"],
+    desc: "主控板故障、业务板故障、单板在位未注册、单板软件异常等硬件模块故障",
+    groups: { identity: ["board_id","slot_id","device_id"],
+              runtime_state: ["register_status","run_status","reset_count"] },
+    actions: ["query_device_hardware"] },
+
+  { id: "OpticalModule", zh: "光模块故障", layer: "physical", x: 6, z: -6, count: 48, pk: "module_id",
+    aliases: ["光模块故障","光模块不在位","激光器老化"],
+    desc: "光模块故障、不在位、不匹配、激光器老化等光器件异常",
+    groups: { identity: ["module_id","port_id","device_id"],
+              static_spec: ["module_type","wavelength","supported_speed"],
+              runtime_state: ["module_status","tx_power","rx_power","temperature"] },
+    actions: ["query_port_statistics"] },
+
+  { id: "FanEnvFault", zh: "风扇/环境故障", layer: "physical", x: 6, z: 6, count: 16, pk: "env_id",
+    aliases: ["风扇板故障","环境温度异常"],
+    desc: "风扇板异常、环境温度异常等机房环境配套故障",
+    groups: { identity: ["env_id","device_id","fan_slot"],
+              runtime_state: ["fan_status","fan_speed","ambient_temperature"] },
+    actions: ["query_device_hardware"] },
+
+  { id: "PortFault", zh: "端口物理故障", layer: "physical", x: 16, z: 0, count: 128, pk: "port_id",
+    aliases: ["端口故障","对端设备故障"],
+    desc: "端口故障、对端设备掉电、端口FEC模式不一致等物理端口层面故障",
+    groups: { identity: ["port_id","port_name","device_id"],
+              runtime_state: ["admin_status","oper_status","current_speed","fec_mode"] },
+    actions: ["query_port_statistics","diagnose_port_fault"] },
+
+  { id: "CableInfra", zh: "机架/线缆基础设施", layer: "physical", x: -16, z: -10, count: 8, pk: "rack_id",
+    aliases: ["机架","ODF","配线架"],
+    desc: "机架、ODF配线架、尾纤跳纤等站点线缆基础设施",
+    groups: { identity: ["rack_id","site_id","room_id"],
+              static_spec: ["rack_type","capacity","location"] },
+    actions: ["query_device_hardware"] },
+
+  { id: "SitePowerCool", zh: "站点动环", layer: "physical", x: -16, z: 10, count: 8, pk: "site_id",
+    aliases: ["动环监控","温湿度"],
+    desc: "站点动环基础设施：温湿度监控、门禁、空调、UPS等配套环境保障系统",
+    groups: { identity: ["site_id","site_name","region"],
+              runtime_state: ["temperature","humidity","ups_status","door_status"] },
+    actions: ["query_device_hardware"] },
+
+  // ── 逻辑资源层 (8 nodes) ──
+  { id: "DeviceOffline", zh: "设备离线", layer: "logical", x: -16, z: 0, count: 64, pk: "device_id",
+    aliases: ["设备离线故障","网元通信中断"],
+    desc: "设备离线故障、DCN通信异常、网关漏配、DCN域过大导致网元无法管理",
+    groups: { identity: ["device_id","ne_ip","dcn_gateway"],
+              runtime_state: ["online_status","dcn_status","last_heartbeat"] },
+    actions: ["diagnose_device_offline"] },
+
+  { id: "LinkFault", zh: "链路/连接故障", layer: "logical", x: -6, z: -6, count: 256, pk: "link_id",
+    aliases: ["光功率异常","误码类故障","链路SLA越限"],
+    desc: "链路层面故障：光功率异常、误码、链路SLA越限等",
+    groups: { identity: ["link_id","a_ne","z_ne","a_port","z_port"],
+              runtime_state: ["link_status","optical_power","ber","latency","bandwidth_usage"] },
+    actions: ["diagnose_link_fault","query_metric_window"] },
+
+  { id: "ClockFault", zh: "时钟异常", layer: "logical", x: -6, z: 6, count: 32, pk: "clock_id",
+    aliases: ["时钟偏差大","时钟异常","跟踪路径故障"],
+    desc: "时钟同步异常：时钟偏差大、跟踪路径上时钟故障、PTP/SyncE协议栈异常",
+    groups: { identity: ["clock_id","device_id","clock_source"],
+              runtime_state: ["clock_status","offset_ns","sync_state","trace_path"] },
+    actions: ["diagnose_clock_fault"] },
+
+  { id: "ProtocolFault", zh: "协议类故障", layer: "logical", x: 6, z: -6, count: 64, pk: "protocol_id",
+    aliases: ["OSPF故障","BGP故障","DCN网络故障"],
+    desc: "路由协议故障：OSPF/BGP邻居异常、DCN网络规模过大、IP配置不一致等",
+    groups: { identity: ["protocol_id","device_id","protocol_type","peer_ip"],
+              runtime_state: ["neighbor_state","session_status","route_count"] },
+    actions: ["diagnose_protocol_fault"] },
+
+  { id: "TunnelFault", zh: "隧道故障", layer: "logical", x: 6, z: 6, count: 128, pk: "tunnel_id",
+    aliases: ["SR-TP隧道","MPLS-TP隧道","隧道保护组"],
+    desc: "隧道层故障：SR-TP隧道故障、MPLS-TP隧道故障、隧道保护组异常",
+    groups: { identity: ["tunnel_id","tunnel_name","src_ne","dst_ne"],
+              static_spec: ["tunnel_type","protection_mode","bandwidth"],
+              runtime_state: ["tunnel_status","crc_error","active_path"] },
+    actions: ["trace_mpls_lsp","diagnose_tunnel_fault"] },
+
+  { id: "FiveGNRM", zh: "5G NRM", layer: "logical", x: 16, z: 0, count: 512, pk: "nrm_id",
+    aliases: ["5G网络资源模型","NRM管理"],
+    desc: "5G网络资源模型(NRM)：网络切片、FlexE子接口、5G L3VPN承载配置管理",
+    groups: { identity: ["nrm_id","slice_id","ne_id"],
+              static_spec: ["slice_type","qos_policy","bandwidth_profile"],
+              runtime_state: ["slice_status","flexe_status","vpn_status"] },
+    actions: ["get_ontology_catalog","diagnose_5g_nrm"] },
+
+  { id: "ResourceAnomaly", zh: "资源消耗异常", layer: "logical", x: -16, z: -10, count: 32, pk: "resource_id",
+    aliases: ["CPU超限","内存超限","License失效"],
+    desc: "设备资源消耗异常：CPU使用率超限、内存不足、License失效、CF卡存储空间不足",
+    groups: { identity: ["resource_id","device_id"],
+              runtime_state: ["cpu_usage","memory_usage","cf_usage","license_status"] },
+    actions: ["query_device_hardware"] },
+
+  { id: "SoftwareFault", zh: "软件/配置故障", layer: "logical", x: -16, z: 10, count: 32, pk: "sw_id",
+    aliases: ["软件异常","配置不一致","DCN漏配"],
+    desc: "软件及配置故障：单板软件异常、端口配置不一致、DCN网关漏配等",
+    groups: { identity: ["sw_id","device_id","config_item"],
+              runtime_state: ["config_status","version","mismatch_detail"] },
+    actions: ["check_configuration"] },
+
+  // ── 跨系统解决方案层：IP网业务 + I-AADE 自治闭环 ──
+  { id: "DomainIPNetwork", zh: "IP网", compactZh: "IP网", compactEn: "IP network", layer: "cross_system", x: -14, z: -15.5, count: 2, pk: "domain_id",
+    aliases: ["IP网络","IP承载网"], desc: "IP网自治网络运维领域，当前包含故障管理与质量优化两个业务。",
+    groups: { identity: ["domain_id","domain_name"], static_spec: ["operation_business"] }, actions: ["get_ontology_catalog"] },
+  { id: "DomainWirelessNetwork", zh: "无线网", compactZh: "无线网", compactEn: "Wireless network", layer: "cross_system", x: 14, z: -15.5, count: 0, pk: "domain_id", todo: true,
+    aliases: ["无线接入网","RAN"], desc: "无线网领域占位节点，待后续补充对应业务与 Operation Task。", groups: {}, actions: [] },
+  { id: "ServiceFaultManagement", zh: "故障管理", compactZh: "故障管理", compactEn: "Fault management", layer: "cross_system", x: -14, z: -10.5, count: 6, pk: "business_id",
+    aliases: ["故障处理"], desc: "参考 TM Forum IG1252、3GPP TS 28.100 与 ETSI ENI 035，按照 I-AADE 自治闭环融合故障流和隐患流。",
+    groups: { identity: ["business_id","domain_id"], static_spec: ["iaade_phase","operation_task"] }, actions: ["get_ontology_catalog"] },
+  { id: "ServiceQualityOptimization", zh: "质量优化", compactZh: "质量优化", compactEn: "Quality optimization", layer: "cross_system", x: 14, z: -10.5, count: 0, pk: "business_id", todo: true,
+    aliases: ["网络质量优化","网优"], desc: "IP网质量优化业务占位，待后续补充 Operation Task。", groups: {}, actions: [] },
+  { id: "TaskPolicyIntent", zh: "故障策略生成", compactZh: "故障策略生成", compactEn: "Fault Policy Intent", layer: "cross_system", x: -21, z: -5, count: 0, pk: "task_id", todo: true,
+    aliases: ["策略生成","Intent"], desc: "根据日常监控、场景化监控和重保等意图，生成监控区域、对象、故障类型与级别、上报及恢复规则策略。", groups: {}, actions: [] },
+  { id: "TaskFaultAwareness", zh: "故障识别", compactZh: "故障识别", compactEn: "Fault Awareness", layer: "cross_system", x: -13, z: 3, count: 3, pk: "task_id",
+    aliases: ["故障发现","Awareness"], desc: "监测分析网络运行、动力环境及外部时空数据，识别已经发生的计划外服务中断或质量下降。", groups: { identity: ["task_id","business_id"], runtime_state: ["fault_event","service_impact","detected_at"] }, actions: ["identify_fault_event"] },
+  { id: "TaskRiskAnalysis", zh: "隐患预测", compactZh: "隐患预测", compactEn: "Risk Analysis", layer: "cross_system", x: -5, z: 3, count: 0, pk: "task_id", todo: true,
+    aliases: ["隐患识别","隐患分析"], desc: "结合网络软硬件状态发展趋势，发现可能导致网络异常的潜在隐患。", groups: {}, actions: [] },
+  { id: "TaskProblemAnalysis", zh: "问题定界定位", compactZh: "问题定界定位", compactEn: "Localization Analysis", layer: "cross_system", x: 3, z: 2, count: 7, pk: "task_id",
+    aliases: ["问题定界","问题定位","根因定位","影响性分析"], desc: "当前样机所属 Operation Task：定界到网络域或网元，定位软硬件原因，并分析受影响业务与用户。",
+    groups: { identity: ["task_id","business_id"], static_spec: ["demarcation_flow","localization_flow","impact_analysis","ontology_slice"] }, actions: ["diagnose_cross_domain","predict_blast_radius"] },
+  { id: "TaskSolutionDecision", zh: "方案生成与决策", compactZh: "方案生成与决策", compactEn: "Solution generation & decision", layer: "cross_system", x: 13, z: 3, count: 3, pk: "task_id",
+    aliases: ["方案生成","方案决策","Decision"], desc: "根据定界定位结果生成抢通或修复方案，并综合评估解决效果、实施代价及额外网络影响。", groups: { identity: ["task_id","diagnosis_id"], static_spec: ["repair_plan","impact_assessment","decision_result"] }, actions: ["generate_repair_plan","evaluate_solution"] },
+  { id: "TaskRepairExecution", zh: "问题修复与验证", compactZh: "问题修复与验证", compactEn: "Problem remediation & validation", layer: "cross_system", x: 21, z: 3, count: 0, pk: "task_id", todo: true,
+    aliases: ["问题修复","结果验证","Execution"], desc: "执行远程配置下发或人工上站等修复动作，并验证业务、质量、告警和 KPI 异常是否恢复。", groups: {}, actions: [] },
+
+  { id: "CatDevice", zh: "设备类故障", layer: "cross_system", x: -21, z: 9, count: 22, pk: "case_id",
+    aliases: ["设备类"],
+    desc: "设备类故障跨域解决方案：设备离线、单板故障、电源/风扇故障等跨域协同诊断",
+    groups: { identity: ["case_id","fault_category","scope"],
+              static_spec: ["diagnosis_flow","escalation_rule"] },
+    actions: ["diagnose_cross_domain","predict_blast_radius"] },
+
+  { id: "CatConnection", zh: "连接类故障", layer: "cross_system", x: -14, z: 9, count: 40, pk: "case_id",
+    aliases: ["连接类"],
+    desc: "连接类故障跨域解决方案：端口故障、光模块异常、误码、链路SLA等跨域定位",
+    groups: { identity: ["case_id","fault_category","scope"],
+              static_spec: ["diagnosis_flow","escalation_rule"] },
+    actions: ["diagnose_cross_domain","trace_forwarding_path"] },
+
+  { id: "CatService", zh: "业务类故障", layer: "cross_system", x: -7, z: 9, count: 56, pk: "case_id",
+    aliases: ["业务类"],
+    desc: "业务类故障跨域解决方案：L2VPN/L3VPN/MPLS-TP/SR-TP隧道等业务中断诊断",
+    groups: { identity: ["case_id","fault_category","scope"],
+              static_spec: ["diagnosis_flow","escalation_rule"] },
+    actions: ["diagnose_cross_domain","simulate_reroute"] },
+
+  { id: "CatClock", zh: "时钟类故障", layer: "cross_system", x: 0, z: 9, count: 12, pk: "case_id",
+    aliases: ["时钟类"],
+    desc: "时钟类故障跨域解决方案：时钟偏差、时钟源跟踪异常等跨系统时钟同步诊断",
+    groups: { identity: ["case_id","fault_category","scope"],
+              static_spec: ["diagnosis_flow","escalation_rule"] },
+    actions: ["diagnose_cross_domain","diagnose_clock_fault"] },
+
+  { id: "CatEnvironment", zh: "环境类故障", layer: "cross_system", x: 7, z: 9, count: 2, pk: "case_id",
+    aliases: ["环境类"],
+    desc: "环境类故障跨域解决方案：温度异常、风扇板异常等机房环境跨站点联动处置",
+    groups: { identity: ["case_id","fault_category","scope"],
+              static_spec: ["diagnosis_flow","escalation_rule"] },
+    actions: ["diagnose_cross_domain"] },
+
+  { id: "CatProtocol", zh: "协议类故障", layer: "cross_system", x: 14, z: 9, count: 9, pk: "case_id",
+    aliases: ["协议类"],
+    desc: "协议类故障跨域解决方案：OSPF/BGP/DCN协议故障跨设备协同诊断",
+    groups: { identity: ["case_id","fault_category","scope"],
+              static_spec: ["diagnosis_flow","escalation_rule"] },
+    actions: ["diagnose_cross_domain","diagnose_protocol_fault"] },
+
+  { id: "CatCrossDomain", zh: "跨专业故障", layer: "cross_system", x: 21, z: 9, count: 41, pk: "case_id",
+    aliases: ["跨专业类"],
+    desc: "跨专业故障解决方案：基站群障、专线业务中断/质差等跨专业域协同诊断",
+    groups: { identity: ["case_id","fault_category","scope"],
+              static_spec: ["diagnosis_flow","escalation_rule"] },
+    actions: ["diagnose_cross_domain","predict_blast_radius"] },
+
+  // ── 全局策略与主权层 (5 nodes) ──
+  { id: "ODAGovernance", zh: "ODA治理面", layer: "governance", x: -14, z: 0, count: 8, pk: "policy_id",
+    aliases: ["ODA Governance","治理框架"],
+    desc: "ODA治理面：定义和管理自治网络中的治理规则、策略执行框架、审计与合规检查",
+    groups: { identity: ["policy_id","governance_domain"],
+              static_spec: ["policy_type","compliance_standard","audit_frequency"] },
+    actions: ["get_ontology_catalog","enforce_policy"] },
+
+  { id: "SecurityRedLine", zh: "安全红线", layer: "governance", x: -4, z: -6, count: 16, pk: "security_id",
+    aliases: ["安全策略","红线管控"],
+    desc: "承载运营商安全红线：网络安全策略、访问控制、加密要求、安全审计与合规",
+    groups: { identity: ["security_id","security_domain"],
+              static_spec: ["security_level","encryption_standard","access_control_policy"] },
+    actions: ["enforce_policy","check_compliance"] },
+
+  { id: "ResourceAllocation", zh: "资源分配与冲突控制", layer: "governance", x: -4, z: 6, count: 32, pk: "alloc_id",
+    aliases: ["资源调度","冲突控制"],
+    desc: "全网资源分配与冲突控制：频谱资源、带宽资源、切片资源的统一分配与冲突检测",
+    groups: { identity: ["alloc_id","resource_type","domain"],
+              static_spec: ["capacity","allocation_policy","conflict_rule"] },
+    actions: ["simulate_reroute","predict_blast_radius"] },
+
+  { id: "ETOMFramework", zh: "运营商eTOM", layer: "governance", x: 6, z: -6, count: 8, pk: "etom_id",
+    aliases: ["eTOM框架","运营框架"],
+    desc: "运营商eTOM框架：战略/运营/管理三层架构映射，保障运营流程标准化",
+    groups: { identity: ["etom_id","process_domain"],
+              static_spec: ["process_type","sla_mapping","kpi_definition"] },
+    actions: ["get_ontology_catalog"] },
+
+  { id: "CrossLayerMapping", zh: "上下层本体交叉", layer: "governance", x: 14, z: 0, count: 16, pk: "mapping_id",
+    aliases: ["本体交叉","层间映射"],
+    desc: "上下层本体的交叉映射规则：物理-逻辑-解决方案层之间的语义关联与约束传递",
+    groups: { identity: ["mapping_id","upper_concept","lower_concept"],
+              static_spec: ["mapping_type","constraint_rule","propagation_direction"] },
+    actions: ["resolve_entity","get_object_set"] },
+
+  // ── 业务运营层 (5 nodes) ──
+  { id: "ODABusiness", zh: "ODA商业面", layer: "business", x: -14, z: 0, count: 8, pk: "biz_id",
+    aliases: ["ODA Business"],
+    desc: "ODA商业面：面向市场/客户的产品目录、定价策略、商业模型管理",
+    groups: { identity: ["biz_id","business_domain"],
+              static_spec: ["product_catalog","pricing_model","revenue_type"] },
+    actions: ["get_ontology_catalog"] },
+
+  { id: "MarketProduct", zh: "市场/产品/客户流", layer: "business", x: -4, z: -6, count: 16, pk: "mp_id",
+    aliases: ["市场流","产品流"],
+    desc: "市场/产品/客户流：市场洞察→产品设计→客户交付→客户留存的端到端业务流程",
+    groups: { identity: ["mp_id","flow_type","segment"],
+              static_spec: ["market_segment","product_type","customer_journey"] },
+    actions: ["resolve_entity"] },
+
+  { id: "SLAContract", zh: "SLA标准与契约", layer: "business", x: -4, z: 6, count: 64, pk: "sla_id",
+    aliases: ["SLA","契约"],
+    desc: "SLA标准与契约：端到端SLA指标定义、契约模板、违约检测与补偿机制",
+    groups: { identity: ["sla_id","service_id","contract_id"],
+              static_spec: ["sla_template","latency_threshold","availability_target"],
+              runtime_state: ["current_latency","current_availability","sla_breach_status"] },
+    actions: ["query_metric_window","predict_blast_radius"] },
+
+  { id: "BaseStationSvc", zh: "基站业务保障", layer: "business", x: 6, z: -6, count: 128, pk: "bs_id",
+    aliases: ["基站业务","基站群障"],
+    desc: "基站业务保障：基站接入连通性、群障处置、业务质差分析与保障",
+    groups: { identity: ["bs_id","station_id","coverage_area"],
+              static_spec: ["access_type","service_vlan","qos_policy"],
+              runtime_state: ["service_status","traffic_rate","packet_loss_rate"] },
+    actions: ["diagnose_cross_domain","query_metric_window"] },
+
+  { id: "DedicatedLineSvc", zh: "专线业务保障", layer: "business", x: 14, z: 0, count: 64, pk: "dl_id",
+    aliases: ["专线业务","专线保障"],
+    desc: "专线业务保障：专线端到端连通性、带宽保障、业务隔离与质量监控",
+    groups: { identity: ["dl_id","line_id","customer_id"],
+              static_spec: ["line_type","bandwidth","sla_level"],
+              runtime_state: ["line_status","bandwidth_usage","latency","availability"] },
+    actions: ["diagnose_cross_domain","query_metric_window"] },
+];
+
+const LINKS = [
+  // ── IP网故障管理 I-AADE 自治闭环 ──
+  { name: "IP网包含故障管理", from: "DomainIPNetwork", to: "ServiceFaultManagement", card: "1→N", cat: "structural" },
+  { name: "IP网包含质量优化", from: "DomainIPNetwork", to: "ServiceQualityOptimization", card: "1→N", cat: "structural" },
+  { name: "故障管理包含策略生成", from: "ServiceFaultManagement", to: "TaskPolicyIntent", card: "1→N", cat: "structural" },
+  { name: "故障管理包含故障识别", from: "ServiceFaultManagement", to: "TaskFaultAwareness", card: "1→N", cat: "structural" },
+  { name: "故障管理包含隐患预测", from: "ServiceFaultManagement", to: "TaskRiskAnalysis", card: "1→N", cat: "structural" },
+  { name: "故障管理包含定界定位", from: "ServiceFaultManagement", to: "TaskProblemAnalysis", card: "1→N", cat: "structural" },
+  { name: "故障管理包含方案决策", from: "ServiceFaultManagement", to: "TaskSolutionDecision", card: "1→N", cat: "structural" },
+  { name: "故障管理包含修复验证", from: "ServiceFaultManagement", to: "TaskRepairExecution", card: "1→N", cat: "structural" },
+  { name: "策略驱动故障识别", from: "TaskPolicyIntent", to: "TaskFaultAwareness", card: "1→N", cat: "reasoning" },
+  { name: "故障流进入定界定位", from: "TaskFaultAwareness", to: "TaskProblemAnalysis", card: "N→N", cat: "reasoning" },
+  { name: "隐患流进入定界定位", from: "TaskRiskAnalysis", to: "TaskProblemAnalysis", card: "N→N", cat: "reasoning" },
+  { name: "定界定位支撑方案决策", from: "TaskProblemAnalysis", to: "TaskSolutionDecision", card: "1→N", cat: "reasoning" },
+  { name: "方案决策驱动修复验证", from: "TaskSolutionDecision", to: "TaskRepairExecution", card: "1→N", cat: "reasoning" },
+  { name: "修复验证反馈策略", from: "TaskRepairExecution", to: "TaskPolicyIntent", card: "N→N", cat: "reasoning" },
+  { name: "定界定位包含设备类", from: "TaskProblemAnalysis", to: "CatDevice", card: "1→N", cat: "structural" },
+  { name: "定界定位包含连接类", from: "TaskProblemAnalysis", to: "CatConnection", card: "1→N", cat: "structural" },
+  { name: "定界定位包含业务类", from: "TaskProblemAnalysis", to: "CatService", card: "1→N", cat: "structural" },
+  { name: "定界定位包含时钟类", from: "TaskProblemAnalysis", to: "CatClock", card: "1→N", cat: "structural" },
+  { name: "定界定位包含环境类", from: "TaskProblemAnalysis", to: "CatEnvironment", card: "1→N", cat: "structural" },
+  { name: "定界定位包含协议类", from: "TaskProblemAnalysis", to: "CatProtocol", card: "1→N", cat: "structural" },
+  { name: "定界定位包含跨专业类", from: "TaskProblemAnalysis", to: "CatCrossDomain", card: "1→N", cat: "structural" },
+  // ── cross_system 层内推理关系 ──
+  { name: "环境变化影响设备运行", from: "CatEnvironment", to: "CatDevice", card: "N→N", cat: "reasoning" },
+  { name: "设备状态影响连接", from: "CatDevice", to: "CatConnection", card: "N→N", cat: "reasoning" },
+  { name: "协议状态影响连接", from: "CatProtocol", to: "CatConnection", card: "N→N", cat: "reasoning" },
+  { name: "时钟状态影响业务", from: "CatClock", to: "CatService", card: "N→N", cat: "reasoning" },
+  { name: "连接质量影响业务", from: "CatConnection", to: "CatService", card: "N→N", cat: "reasoning" },
+  { name: "外部条件影响运行环境", from: "CatCrossDomain", to: "CatEnvironment", card: "N→N", cat: "reasoning" },
+  { name: "跨专业状态影响连接", from: "CatCrossDomain", to: "CatConnection", card: "N→N", cat: "reasoning" },
+  { name: "跨专业信息关联业务", from: "CatCrossDomain", to: "CatService", card: "N→N", cat: "reasoning" },
+  // ── cross_system → logical (evidence) ──
+  { name: "设备类→设备离线",       from: "CatDevice",       to: "DeviceOffline",     card: "1→N",  cat: "evidence" },
+  { name: "设备类→资源异常",       from: "CatDevice",       to: "ResourceAnomaly",   card: "1→N",  cat: "evidence" },
+  { name: "设备类→软件故障",       from: "CatDevice",       to: "SoftwareFault",     card: "1→N",  cat: "evidence" },
+  { name: "连接类→链路故障",       from: "CatConnection",   to: "LinkFault",         card: "1→N",  cat: "evidence" },
+  { name: "连接类→端口故障",       from: "CatConnection",   to: "PortFault",         card: "1→N",  cat: "evidence" },
+  { name: "业务类→隧道故障",       from: "CatService",      to: "TunnelFault",       card: "1→N",  cat: "evidence" },
+  { name: "业务类→5G NRM",         from: "CatService",      to: "FiveGNRM",          card: "1→N",  cat: "evidence" },
+  { name: "时钟类→时钟异常",       from: "CatClock",        to: "ClockFault",        card: "1→1",  cat: "evidence" },
+  { name: "环境类→设备离线",       from: "CatEnvironment",  to: "DeviceOffline",     card: "1→1",  cat: "evidence" },
+  { name: "协议类→协议故障",       from: "CatProtocol",     to: "ProtocolFault",     card: "1→1",  cat: "evidence" },
+  { name: "跨专业→链路故障",       from: "CatCrossDomain",  to: "LinkFault",         card: "1→N",  cat: "evidence" },
+  { name: "跨专业→隧道故障",       from: "CatCrossDomain",  to: "TunnelFault",       card: "1→N",  cat: "evidence" },
+  { name: "跨专业→5G承载",         from: "CatCrossDomain",  to: "FiveGNRM",          card: "1→N",  cat: "evidence" },
+
+  // ── logical → physical (diagnosis) ──
+  { name: "离线→供电根因",         from: "DeviceOffline",   to: "PowerFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "离线→单板根因",         from: "DeviceOffline",   to: "BoardFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "链路→光纤根因",         from: "LinkFault",       to: "FiberFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "链路→光模块根因",       from: "LinkFault",       to: "OpticalModule",     card: "1→N",  cat: "diagnosis" },
+  { name: "时钟→光纤根因",         from: "ClockFault",      to: "FiberFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "时钟→单板根因",         from: "ClockFault",      to: "BoardFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "协议→光模块根因",       from: "ProtocolFault",   to: "OpticalModule",     card: "1→N",  cat: "diagnosis" },
+  { name: "协议→光纤根因",         from: "ProtocolFault",   to: "FiberFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "隧道→光纤根因",         from: "TunnelFault",     to: "FiberFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "隧道→单板根因",         from: "TunnelFault",     to: "BoardFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "隧道→光模块根因",       from: "TunnelFault",     to: "OpticalModule",     card: "1→N",  cat: "diagnosis" },
+  { name: "5G→端口根因",           from: "FiveGNRM",        to: "PortFault",         card: "1→N",  cat: "diagnosis" },
+  { name: "5G→光模块根因",         from: "FiveGNRM",        to: "OpticalModule",     card: "1→N",  cat: "diagnosis" },
+  { name: "资源→单板根因",         from: "ResourceAnomaly", to: "BoardFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "资源→供电根因",         from: "ResourceAnomaly", to: "PowerFault",        card: "1→N",  cat: "diagnosis" },
+  { name: "软件→单板根因",         from: "SoftwareFault",   to: "BoardFault",        card: "1→1",  cat: "diagnosis" },
+
+  // ── governance → cross_system (structural) ──
+  { name: "治理→设备方案",         from: "ODAGovernance",     to: "CatDevice",       card: "1→N",  cat: "structural" },
+  { name: "治理→连接方案",         from: "ODAGovernance",     to: "CatConnection",   card: "1→N",  cat: "structural" },
+  { name: "治理→业务方案",         from: "ODAGovernance",     to: "CatService",      card: "1→N",  cat: "structural" },
+  { name: "治理→时钟方案",         from: "ODAGovernance",     to: "CatClock",        card: "1→N",  cat: "structural" },
+  { name: "治理→环境方案",         from: "ODAGovernance",     to: "CatEnvironment",  card: "1→N",  cat: "structural" },
+  { name: "治理→协议方案",         from: "ODAGovernance",     to: "CatProtocol",     card: "1→N",  cat: "structural" },
+  { name: "治理→跨专业方案",       from: "ODAGovernance",     to: "CatCrossDomain",  card: "1→N",  cat: "structural" },
+  { name: "安全→跨专业约束",       from: "SecurityRedLine",   to: "CatCrossDomain",  card: "1→N",  cat: "structural" },
+  { name: "安全→设备约束",         from: "SecurityRedLine",   to: "CatDevice",       card: "1→N",  cat: "structural" },
+  { name: "资源→业务调度",         from: "ResourceAllocation",to: "CatService",      card: "1→N",  cat: "structural" },
+  { name: "资源→跨专业调度",       from: "ResourceAllocation",to: "CatCrossDomain",  card: "1→N",  cat: "structural" },
+  { name: "eTOM→业务映射",         from: "ETOMFramework",     to: "CatService",      card: "1→N",  cat: "structural" },
+  { name: "eTOM→跨专业映射",       from: "ETOMFramework",     to: "CatCrossDomain",  card: "1→N",  cat: "structural" },
+  { name: "eTOM→环境映射",         from: "ETOMFramework",     to: "CatEnvironment",  card: "1→N",  cat: "structural" },
+  { name: "交叉→设备层映射",       from: "CrossLayerMapping", to: "CatDevice",       card: "1→N",  cat: "structural" },
+  { name: "交叉→连接层映射",       from: "CrossLayerMapping", to: "CatConnection",   card: "1→N",  cat: "structural" },
+  { name: "交叉→时钟层映射",       from: "CrossLayerMapping", to: "CatClock",        card: "1→N",  cat: "structural" },
+  { name: "交叉→协议层映射",       from: "CrossLayerMapping", to: "CatProtocol",     card: "1→N",  cat: "structural" },
+
+  // ── business → governance (structural) ──
+  { name: "商业→治理依赖",         from: "ODABusiness",       to: "ODAGovernance",     card: "1→N",  cat: "structural" },
+  { name: "商业→eTOM依赖",         from: "ODABusiness",       to: "ETOMFramework",     card: "1→N",  cat: "structural" },
+  { name: "市场→eTOM流程",         from: "MarketProduct",     to: "ETOMFramework",     card: "1→N",  cat: "structural" },
+  { name: "市场→层间映射",         from: "MarketProduct",     to: "CrossLayerMapping", card: "1→N",  cat: "structural" },
+  { name: "SLA→资源策略",          from: "SLAContract",       to: "ResourceAllocation",card: "1→N",  cat: "structural" },
+  { name: "SLA→安全策略",          from: "SLAContract",       to: "SecurityRedLine",   card: "1→N",  cat: "structural" },
+  { name: "基站→治理依赖",         from: "BaseStationSvc",    to: "ODAGovernance",     card: "1→N",  cat: "structural" },
+  { name: "基站→安全依赖",         from: "BaseStationSvc",    to: "SecurityRedLine",   card: "1→N",  cat: "structural" },
+  { name: "专线→资源依赖",         from: "DedicatedLineSvc",  to: "ResourceAllocation",card: "1→N",  cat: "structural" },
+  { name: "专线→治理依赖",         from: "DedicatedLineSvc",  to: "ODAGovernance",     card: "1→N",  cat: "structural" },
+];
+
+const CAT_COLOR = { structural: 0x6f86c9, reasoning: 0x6f86c9, evidence: 0xffb547, diagnosis: 0xff5470 };
+
+/* ================= 故障诊断演示 ================= */
+
+const CASES = [
+  {
+    id: "fiber_cascade",
+    title: "业务受损→尾纤故障定位",
+    desc: "从SQI劣化或用户投诉出发，沿业务承载关系定位尾纤故障",
+    steps: [
+      { title: "业务受损感知", action: "query_metric_window",
+        nodes: ["SLAContract","BaseStationSvc","DedicatedLineSvc"],
+        links: ["基站→治理依赖","专线→治理依赖"],
+        text: '<b>业务运营层</b>由SQI探针或用户投诉感知业务体验劣化<br><span class="cmd-tag phase1">PHASE1</span> 识别受损业务及SLA异常，启动故障诊断' },
+      { title: "业务与承载关联", action: "diagnose_cross_domain",
+        nodes: ["BaseStationSvc","DedicatedLineSvc","ODAGovernance","CatService"],
+        links: ["基站→治理依赖","专线→治理依赖","治理→业务方案"],
+        text: '<b>运营商业务视图</b>关联受损业务对象及其三层承载关系<br><span class="cmd-tag phase1">PHASE1</span> 确认故障定界范围并进入三层拓扑推理' },
+      { title: "三层拓扑推理", action: "trace_forwarding_path",
+        nodes: ["CatService","TunnelFault","CatConnection","LinkFault"],
+        links: ["业务类→隧道故障","连接类→链路故障"],
+        text: '<b>三层拓扑</b>沿A→B→C→D推理业务路径<br><span class="cmd-tag phase2">PHASE2</span> D对象状态缺失，当前推理链暂停' },
+      { title: "A2A-T状态补全", action: "request_vendor_diagnosis",
+        nodes: ["LinkFault"],
+        links: [],
+        text: '<b>跨智能体协同</b>携带D对象的A-Box上下文请求华为更新状态<br><span class="cmd-tag phase2">A2A-T</span> 厂商内部完成专业推理，仅返回必要状态与结论' },
+      { title: "尾纤故障定位", action: "update_abox_state",
+        nodes: ["CatService","TunnelFault","LinkFault","FiberFault"],
+        links: ["业务类→隧道故障","链路→光纤根因","隧道→光纤根因"],
+        text: '<b>诊断结果</b>D状态更新后继续沿D→E→F完成推理<br><span class="cmd-tag ok">RESULT</span> 最终定位为尾纤故障。' }
+    ]
+  },
+  {
+    id: "board_fault_5g",
+    title: "5G业务受损→单板故障定位",
+    desc: "从5G业务质量异常出发，经三层拓扑推理定位单板故障",
+    steps: [
+      { title: "5G业务受损感知", action: "query_metric_window",
+        nodes: ["BaseStationSvc","SLAContract","ODABusiness"],
+        links: ["商业→治理依赖","基站→治理依赖"],
+        text: '<b>业务运营层</b>SQI探针发现5G业务质量下降或收到用户投诉<br><span class="cmd-tag phase1">PHASE1</span> 识别受损基站业务及SLA异常' },
+      { title: "业务与承载关联", action: "diagnose_cross_domain",
+        nodes: ["BaseStationSvc","ODAGovernance","CatService"],
+        links: ["基站→治理依赖","治理→业务方案"],
+        text: '<b>运营商业务视图</b>关联受损业务对象及其三层承载关系<br><span class="cmd-tag phase1">PHASE1</span> 完成故障定界并进入拓扑推理' },
+      { title: "三层拓扑推理", action: "trace_forwarding_path",
+        nodes: ["CatService","FiveGNRM","TunnelFault"],
+        links: ["业务类→5G NRM","业务类→隧道故障"],
+        text: '<b>三层拓扑</b>沿业务路径逐段检查对象状态<br><span class="cmd-tag phase2">PHASE2</span> 责任域边界对象状态缺失，推理链暂停' },
+      { title: "A2A-T状态补全", action: "request_vendor_diagnosis",
+        nodes: ["DeviceOffline"],
+        links: [],
+        text: '<b>跨智能体协同</b>携带边界对象的A-Box上下文请求华为更新状态<br><span class="cmd-tag phase2">A2A-T</span> 厂商内部完成专业推理，仅返回必要状态与结论' },
+      { title: "单板故障定位", action: "update_abox_state",
+        nodes: ["CatService","TunnelFault","DeviceOffline","BoardFault"],
+        links: ["业务类→隧道故障","隧道→单板根因","离线→单板根因"],
+        text: '<b>诊断结果</b>对象状态更新后恢复三层推理并完成根因定位<br><span class="cmd-tag ok">RESULT</span> 最终定位为单板故障。' }
+    ]
+  }
+];
+
+/* 第 4、5 层仍保留层级占位，但不展开尚未评审的具体本体节点。 */
+const DISPLAY_NODES = [
+  ...NODES.filter((n) => n.layer !== "governance" && n.layer !== "business"),
+  {
+    id: "策略层预留", zh: "预留", layer: "governance", x: 0, z: 0, pk: "—",
+    aliases: [], desc: "全局策略与主权层：当前保留层级占位，待后续评审后补充具体本体概念、属性与关系。",
+    groups: {}, actions: [],
+  },
+  {
+    id: "业务层预留", zh: "预留", layer: "business", x: 0, z: 0, pk: "—",
+    aliases: [], desc: "业务运营层：当前保留层级占位，待后续评审后补充具体本体概念、属性与关系。",
+    groups: {}, actions: [],
+  },
+];
+/* ================= three.js 场景 ================= */
+
+/* 标签创建发生在故障诊断状态初始化之前，提前声明以便首次渲染复用统一标签模板。 */
+let diagnosisMode = false;
+
+const stage = document.getElementById("stage");
+const labelRoot = document.getElementById("labels");
+const tooltip = document.getElementById("tooltip");
+
+const initialIsLight = document.documentElement.classList.contains("light-theme");
+const LIGHT_SCENE_COLOR = 0xcbdce5;
+const SOLUTION_PANEL_FILL = 0x6f8998;
+const SHOW_SOLUTION_SUBLAYER_PANELS = false;
+const SHOW_SOLUTION_SUBLAYER_GUIDES = true;
+const HIDDEN_SOLUTION_SUBLAYER_GUIDES = new Set(["domain"]);
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(initialIsLight ? LIGHT_SCENE_COLOR : 0x060e12, 0.0062);
+
+const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 500);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setClearColor(initialIsLight ? LIGHT_SCENE_COLOR : 0x060e12, 1);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+stage.appendChild(renderer.domElement);
+
+scene.add(new THREE.AmbientLight(0xb0d8e8, 0.72));
+const dir1 = new THREE.DirectionalLight(0xfff8f0, 0.82); dir1.position.set(28, 42, 22); scene.add(dir1);
+const dir2 = new THREE.DirectionalLight(0x4080a0, 0.38); dir2.position.set(-30, -16, -24); scene.add(dir2);
+scene.add(new THREE.PointLight(0x60b8d0, 0.45, 130));
+
+/* 星点背景 — 3D深度层, 极微弱, 不遮挡主场景 */
+(function stars() {
+  const n = 600, pos = new Float32Array(n * 3);
+  let seed = 42;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < n; i++) {
+    pos[i * 3] = (rnd() - 0.5) * 400;
+    pos[i * 3 + 1] = (rnd() - 0.5) * 280;
+    pos[i * 3 + 2] = (rnd() - 0.5) * 400;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0x8ab8c8, size: 0.35, transparent: true, opacity: 0.18, sizeAttenuation: true })));
+})();
+
+/* ---------- 自定义轨道控制 ---------- */
+const DEFAULT_VIEW = { theta: 0.62, phi: 1.24, radius: 66, target: new THREE.Vector3(0, 5.5, 0) }; // 统一稍微拉远镜头，让五层和第三层内部间距更清楚。
+const orbit = { theta: DEFAULT_VIEW.theta, phi: DEFAULT_VIEW.phi, radius: DEFAULT_VIEW.radius, target: DEFAULT_VIEW.target.clone(), auto: true };
+
+function applyOrbit() {
+  const sp = Math.sin(orbit.phi), cp = Math.cos(orbit.phi);
+  camera.position.set(
+    orbit.target.x + orbit.radius * sp * Math.sin(orbit.theta),
+    orbit.target.y + orbit.radius * cp,
+    orbit.target.z + orbit.radius * sp * Math.cos(orbit.theta)
+  );
+  camera.lookAt(orbit.target);
+}
+
+let camTween = null;
+function tweenView(to, dur) {
+  dur = dur || 1100;
+  camTween = {
+    t0: performance.now(), dur,
+    from: { theta: orbit.theta, phi: orbit.phi, radius: orbit.radius, target: orbit.target.clone() },
+    to: { theta: to.theta !== undefined ? to.theta : orbit.theta, phi: to.phi !== undefined ? to.phi : orbit.phi, radius: to.radius !== undefined ? to.radius : orbit.radius, target: (to.target || orbit.target).clone() },
+  };
+}
+function stepTween(now) {
+  if (!camTween) return;
+  let k = (now - camTween.t0) / camTween.dur;
+  if (k >= 1) k = 1;
+  const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+  orbit.theta = camTween.from.theta + (camTween.to.theta - camTween.from.theta) * e;
+  orbit.phi = camTween.from.phi + (camTween.to.phi - camTween.from.phi) * e;
+  orbit.radius = camTween.from.radius + (camTween.to.radius - camTween.from.radius) * e;
+  orbit.target.lerpVectors(camTween.from.target, camTween.to.target, e);
+  if (k === 1) camTween = null;
+}
+
+const drag = { on: false, btn: 0, x: 0, y: 0, moved: 0 };
+stage.addEventListener("pointerdown", (ev) => {
+  drag.on = true; drag.btn = ev.button; drag.x = ev.clientX; drag.y = ev.clientY; drag.moved = 0;
+  orbit.auto = false; updateRotateBtn(); camTween = null;
+  stage.classList.add("dragging");
+});
+addEventListener("pointermove", (ev) => {
+  if (!drag.on) { hoverPick(ev); return; }
+  const dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
+  drag.x = ev.clientX; drag.y = ev.clientY; drag.moved += Math.abs(dx) + Math.abs(dy);
+  if (drag.btn === 2 || ev.shiftKey) {
+    const k = orbit.radius / 900;
+    const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
+    const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
+    orbit.target.addScaledVector(right, -dx * k).addScaledVector(up, dy * k);
+  } else {
+    orbit.theta -= dx * 0.0052;
+    orbit.phi = THREE.MathUtils.clamp(orbit.phi - dy * 0.0042, 0.18, Math.PI - 0.25);
+  }
+});
+addEventListener("pointerup", () => { drag.on = false; stage.classList.remove("dragging"); });
+stage.addEventListener("wheel", (ev) => {
+  ev.preventDefault();
+  orbit.radius = THREE.MathUtils.clamp(orbit.radius * (1 + ev.deltaY * 0.0011), 25, 160);
+}, { passive: false });
+stage.addEventListener("contextmenu", (ev) => ev.preventDefault());
+
+/* ---------- 标签系统 ---------- */
+const labelItems = [];
+const V = new THREE.Vector3();
+function addLabel(el, getPos, offsetY) {
+  labelRoot.appendChild(el);
+  const item = { el, getPos, offsetY: offsetY || 0 };
+  labelItems.push(item);
+  return item;
+}
+function updateLabels() {
+  const w = innerWidth, h = innerHeight;
+  for (const it of labelItems) {
+    if (it.el.dataset.layerHidden === "true" || it.el.dataset.nodeHidden === "true" || it.el.dataset.linkHidden === "true") { it.el.style.display = "none"; continue; }
+    V.copy(it.getPos()); V.y += it.offsetY;
+    V.project(camera);
+    if (V.z > 1 || V.z < -1) { it.el.style.display = "none"; continue; }
+    it.el.style.display = "";
+    it.el.style.left = ((V.x * 0.5 + 0.5) * w) + "px";
+    it.el.style.top = ((-V.y * 0.5 + 0.5) * h) + "px";
+  }
+}
+
+/* ---------- 语义层平面 ---------- */
+const PLANE_W = 52, PLANE_D = 36;
+for (const key of Object.keys(LAYERS)) {
+  const L = LAYERS[key];
+  const isDone = (key === "physical" || key === "logical" || key === "cross_system");
+  /* 第三层外层板作为内部子层的底板，位于最下方子层下缘；其余层板位于本体层自身高度。 */
+  const planeY = key === "cross_system" ? SOLUTION_SUBLAYERS.at(-1).layerY - 0.55 : L.y;
+  const plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(PLANE_W, PLANE_D),
+    new THREE.MeshBasicMaterial({ color: L.color, transparent: true, opacity: isDone ? 0.018 : 0.008, side: THREE.DoubleSide, depthWrite: false })
+  );
+  plane.rotation.x = -Math.PI / 2; plane.position.y = planeY;
+  scene.add(plane);
+
+  const border = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.PlaneGeometry(PLANE_W, PLANE_D)),
+    new THREE.LineBasicMaterial({ color: L.color, transparent: true, opacity: isDone ? 0.30 : 0.16 })
+  );
+  border.rotation.x = -Math.PI / 2; border.position.y = planeY;
+  scene.add(border);
+  L._plane = plane; L._border = border;
+
+  const el = document.createElement("div");
+  el.className = "layer-label";
+  el.dataset.layer = key;
+  el.style.borderLeftColor = "#" + L.color.toString(16).padStart(6, "0");
+  const isDesigned = key === "physical" || key === "logical" || key === "cross_system";
+  el.innerHTML = `<b>${t(L.name)}${phaseTag(isDesigned)}</b><span>${L.en}</span>`;
+  L._label = el; L._isDone = isDesigned;
+  const pos = new THREE.Vector3(-PLANE_W / 2 - 1.5, L.y, PLANE_D / 2 - 2);
+  addLabel(el, () => pos, 0);
+}
+
+/* 侧面的垂直层级导轨：用连续高度和色彩刻度强调五层的上下关系。 */
+const layerRailGroup = new THREE.Group();
+const layerRailParts = [];
+const layerRailTicks = [];
+const layerRailX = -PLANE_W / 2 - 3.8;
+const layerRailZ = PLANE_D / 2 - 1.2;
+const layerKeys = Object.keys(LAYERS);
+for (let i = 0; i < layerKeys.length - 1; i++) {
+  const fromKey = layerKeys[i], toKey = layerKeys[i + 1];
+  const segmentGeometry = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(layerRailX, LAYERS[fromKey].y, layerRailZ),
+    new THREE.Vector3(layerRailX, LAYERS[toKey].y, layerRailZ),
+  ]);
+  const segment = new THREE.Line(segmentGeometry, new THREE.LineBasicMaterial({ color: LAYERS[fromKey].color, transparent: true, opacity: 0.52, depthTest: false }));
+  segment.userData.fromKey = fromKey; segment.userData.toKey = toKey;
+  layerRailGroup.add(segment); layerRailParts.push(segment);
+}
+for (const key of layerKeys) {
+  const tick = new THREE.Mesh(
+    new THREE.SphereGeometry(0.22, 14, 10),
+    new THREE.MeshBasicMaterial({ color: LAYERS[key].color, transparent: true, opacity: 0.82, depthTest: false })
+  );
+  tick.position.set(layerRailX, LAYERS[key].y, layerRailZ);
+  tick.userData.layerKey = key;
+  layerRailGroup.add(tick); layerRailTicks.push(tick);
+  LAYERS[key]._railTick = tick;
+}
+scene.add(layerRailGroup);
+
+/* ---------- 第三层内部区带 ---------- */
+for (const sublayer of SOLUTION_SUBLAYERS) {
+  const band = new THREE.Mesh(
+    new THREE.PlaneGeometry(sublayer.width, sublayer.depth),
+    new THREE.MeshBasicMaterial({ color: SOLUTION_PANEL_FILL, transparent: true, opacity: SHOW_SOLUTION_SUBLAYER_PANELS ? 0.035 : 0, side: THREE.DoubleSide, depthWrite: false })
+  );
+  // 预留层板几何，绕 X 轴后形成 X-Z 层板；默认不显示，Y 轴负责垂直分层。
+  band.rotation.x = -Math.PI / 2;
+  band.position.set(0, sublayer.layerY, sublayer.rowZ);
+  scene.add(band);
+
+  /* 用一条位于子层中心的水平线标示子层，避免重新引入大面积层板。 */
+  const guideGeometry = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-sublayer.width / 2, 0, 0),
+    new THREE.Vector3(sublayer.width / 2, 0, 0),
+  ]);
+  const border = new THREE.Line(
+    guideGeometry,
+    new THREE.LineBasicMaterial({ color: sublayer.color, transparent: true, opacity: SHOW_SOLUTION_SUBLAYER_GUIDES && !HIDDEN_SOLUTION_SUBLAYER_GUIDES.has(sublayer.key) ? 0.5 : 0 })
+  );
+  border.position.copy(band.position);
+  scene.add(border);
+
+  const el = document.createElement("div");
+  el.className = "sublayer-label";
+  el.dataset.layer = "cross_system";
+  el.dataset.sublayer = sublayer.key;
+  el.innerHTML = `<b>${sublayer.index} · ${t(sublayer.name)}</b><span>${sublayer.en}</span>`;
+  const labelPos = new THREE.Vector3(sublayer.width / 2 + 1.8, sublayer.layerY, sublayer.rowZ);
+  el.style.transform = "translate(0, -50%)";
+  addLabel(el, () => labelPos, 0);
+
+  sublayer._plane = band;
+  sublayer._border = border;
+  sublayer._label = el;
+}
+
+/* 第三层子层导轨：外移到平台右侧，避免穿过节点和标签。 */
+const sublayerRailGroup = new THREE.Group();
+const sublayerRailParts = [];
+const sublayerRailTicks = [];
+const sublayerRailX = Math.max(...SOLUTION_SUBLAYERS.map((sublayer) => sublayer.width / 2)) + 4.2;
+for (let i = 0; i < SOLUTION_SUBLAYERS.length - 1; i++) {
+  const from = SOLUTION_SUBLAYERS[i], to = SOLUTION_SUBLAYERS[i + 1];
+  const geometry = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(sublayerRailX, from.layerY, from.rowZ),
+    new THREE.Vector3(sublayerRailX, to.layerY, to.rowZ),
+  ]);
+  const segment = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: from.color, transparent: true, opacity: 0.56, depthTest: false }));
+  segment.userData.fromKey = from.key; segment.userData.toKey = to.key;
+  sublayerRailGroup.add(segment); sublayerRailParts.push(segment);
+}
+for (const sublayer of SOLUTION_SUBLAYERS) {
+  const tick = new THREE.Mesh(
+    new THREE.SphereGeometry(0.18, 14, 10),
+    new THREE.MeshBasicMaterial({ color: sublayer.color, transparent: true, opacity: 0.88, depthTest: false })
+  );
+  tick.position.set(sublayerRailX, sublayer.layerY, sublayer.rowZ);
+  tick.userData.sublayerKey = sublayer.key;
+  sublayerRailGroup.add(tick); sublayerRailTicks.push(tick);
+}
+/* 四个独立子层沿原有竖向层板导轨连接。 */
+sublayerRailGroup.visible = true;
+scene.add(sublayerRailGroup);
+
+/* ---------- 节点 ---------- */
+const nodeById = {};
+const pickables = [];
+
+function nodeSize() { return 0.82; } // 缩小实体模型与底部光环，降低多层视图的拥挤感。
+function isTodoNode(node) { return !!node.todo || node.layer === "governance" || node.layer === "business"; }
+
+function nodeGeometry(layer) {
+  switch (layer) {
+    case "physical":      return new THREE.BoxGeometry(1.7, 1.7, 1.7);
+    case "logical":       return new THREE.SphereGeometry(1.05, 26, 20);
+    case "cross_system":  return new THREE.OctahedronGeometry(1.3, 0);
+    case "governance":    return new THREE.DodecahedronGeometry(1.2, 0);
+    case "business":      return new THREE.IcosahedronGeometry(1.15, 0);
+    default:               return new THREE.SphereGeometry(1, 20, 16);
+  }
+}
+
+for (const n of DISPLAY_NODES) {
+  const L = LAYERS[n.layer];
+  const s = nodeSize();
+  const isTodo = isTodoNode(n);
+  const solutionSublayer = SOLUTION_SUBLAYER_BY_NODE.get(n.id);
+  const nodeBaseY = solutionSublayer?.layerY ?? L.y;
+  const nodeZ = solutionSublayer ? 0 : n.z;
+  const mat = new THREE.MeshStandardMaterial({
+    color: L.color, emissive: L.color, emissiveIntensity: isTodo ? 0.06 : 0.22,
+    roughness: 0.32, metalness: 0.28, transparent: true, opacity: isTodo ? 0.28 : 1,
+  });
+  const mesh = new THREE.Mesh(nodeGeometry(n.layer), mat);
+  // 第三层节点沿原有层高排列，同一子层内沿 X 轴保持单行。
+  mesh.position.set(n.x, nodeBaseY + s * 1.05, nodeZ);
+  mesh.scale.setScalar(s);
+  mesh.userData.node = n;
+  scene.add(mesh);
+
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(s * 1.25, s * 1.45, 36),
+    new THREE.MeshBasicMaterial({ color: L.color, transparent: true, opacity: isTodo ? 0.08 : 0.3, side: THREE.DoubleSide, depthWrite: false })
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(n.x, nodeBaseY + 0.06, nodeZ);
+  scene.add(ring);
+
+  const el = document.createElement("div");
+  el.className = "node-label";
+  el.dataset.layer = n.layer;
+  el.dataset.node = n.id;
+  const pendingTag = todoTag(isTodo);
+  el.innerHTML = nodeLabelHtml(n, isTodo);
+  el.addEventListener("click", (ev) => { ev.stopPropagation(); selectNode(n.id); });
+  addLabel(el, () => mesh.position, s + 0.35);
+
+  n._mesh = mesh; n._ring = ring; n._label = el; n._isTodo = isTodo; n._size = s;
+  nodeById[n.id] = n;
+  pickables.push(mesh);
+}
+
+/* ---------- 连线 ---------- */
+function linkCurve(link) {
+  const a = nodeById[link.from], b = nodeById[link.to];
+  if (!a || !b) return null;
+  if (link.from === link.to) {
+    const p = a._mesh.position, s = a._size;
+    return new THREE.CubicBezierCurve3(
+      p.clone().add(new THREE.Vector3(s + 0.2, 0.5, 0.6)),
+      p.clone().add(new THREE.Vector3(s + 4.6, 3.0, 2.6)),
+      p.clone().add(new THREE.Vector3(-0.6, 4.6, -2.8)),
+      p.clone().add(new THREE.Vector3(-0.2, s + 0.6, -0.7))
+    );
+  }
+  const pa = a._mesh.position.clone(), pb = b._mesh.position.clone();
+  const dirAB = pb.clone().sub(pa).normalize();
+  pa.addScaledVector(dirAB, a._size * 1.25);
+  pb.addScaledVector(dirAB, -b._size * 1.35);
+  const mid = pa.clone().add(pb).multiplyScalar(0.5);
+  const dist = pa.distanceTo(pb);
+  const radial = new THREE.Vector3(mid.x, 0, mid.z);
+  if (radial.lengthSq() < 0.01) radial.set(0, 0, 1);
+  radial.normalize();
+  const sameLayer = Math.abs(pa.y - pb.y) < 3;
+  const ctrl = mid.addScaledVector(radial, dist * (sameLayer ? 0.10 : 0.16)).add(new THREE.Vector3(0, sameLayer ? 1.6 : 0, 0));
+  return new THREE.QuadraticBezierCurve3(pa, ctrl, pb);
+}
+
+const linkByName = {};
+let linkLabelsOn = false;
+for (const lk of LINKS) {
+  const curve = linkCurve(lk);
+  if (!curve) continue;
+  const color = CAT_COLOR[lk.cat];
+  const group = new THREE.Group();
+  let mainMat;
+
+  if (lk.derived) {
+    const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(48));
+    mainMat = new THREE.LineDashedMaterial({ color, transparent: true, opacity: 0.28, dashSize: 0.65, gapSize: 0.45 });
+    const line = new THREE.Line(geo, mainMat);
+    line.computeLineDistances();
+    group.add(line);
+  } else {
+    const tube = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 40, 0.075, 7, false),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.32, depthWrite: false })
+    );
+    mainMat = tube.material;
+    group.add(tube);
+  }
+
+  const tip = curve.getPoint(1), tan = curve.getTangent(0.99).normalize();
+  const cone = new THREE.Mesh(
+    new THREE.ConeGeometry(0.26, 0.72, 10),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.42, depthWrite: false })
+  );
+  cone.position.copy(tip);
+  cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tan);
+  group.add(cone);
+  group.visible = false;
+  scene.add(group);
+
+  const el = document.createElement("div");
+  el.className = "link-label" + (linkLabelsOn ? "" : " dim");
+  el.textContent = t(lk.name) + " · " + lk.card;
+  el.dataset.link = lk.name;
+  el.dataset.linkHidden = "true";
+  const midPt = curve.getPoint(0.5);
+  addLabel(el, () => midPt, 0.35);
+
+  lk._group = group; lk._mainMat = mainMat; lk._coneMat = cone.material; lk._label = el;
+  lk._baseOpacity = lk.derived ? 0.28 : 0.32;
+  linkByName[lk.name] = lk;
+}
+
+/* 默认收起连线；选中节点后展开直接关系，也可通过顶栏查看全部关系。 */
+let showAllLinks = false;
+let planesOn = true;
+let expandedLinkNames = new Set();
+let activeLayerKeys = new Set(Object.keys(LAYERS));
+
+function updateLinkLabelVisibility(lk) {
+  const label = labelItems.find((item) => item.el.dataset.link === lk.name);
+  if (!label) return;
+  const visible = linkLabelsOn && !!lk._group?.visible;
+  label.el.dataset.linkHidden = visible ? "" : "true";
+  label.el.style.display = visible ? "" : "none";
+  label.el.classList.toggle("dim", !visible);
+}
+
+function layerAllowsLink(link) {
+  return activeLayerKeys.has(nodeById[link.from]?.layer) && activeLayerKeys.has(nodeById[link.to]?.layer);
+}
+
+function syncExplorationLinkVisibility() {
+  if (diagnosisMode || storyOn) return;
+  for (const lk of LINKS) {
+    if (!lk._group) continue;
+    const visible = layerAllowsLink(lk) && (showAllLinks || expandedLinkNames.has(lk.name));
+    lk._group.visible = visible;
+    const label = labelItems.find((item) => item.el.dataset.link === lk.name);
+    if (label) {
+      label.el.dataset.layerHidden = layerAllowsLink(lk) ? "" : "true";
+      updateLinkLabelVisibility(lk);
+    }
+  }
+}
+
+/* ---------- Action 轨道芯片 ---------- */
+let chipGroup = null, chipLabels = [];
+function clearChips() {
+  if (chipGroup) { scene.remove(chipGroup); chipGroup = null; }
+  for (const c of chipLabels) { c.el.remove(); const i = labelItems.indexOf(c); if (i >= 0) labelItems.splice(i, 1); }
+  chipLabels = [];
+}
+function spawnChips(node) {
+  clearChips();
+  chipGroup = new THREE.Group();
+  const r = node._size + 2.6;
+  node.actions.forEach((name, i) => {
+    const a = ACTIONS[name] || { mode: "query" };
+    const ang = (i / node.actions.length) * Math.PI * 2;
+    const chip = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.34, 0),
+      new THREE.MeshStandardMaterial({ color: 0xb08cf8, emissive: 0xb08cf8, emissiveIntensity: 0.5, roughness: 0.3 })
+    );
+    chip.position.set(Math.cos(ang) * r, 0.4, Math.sin(ang) * r);
+    chipGroup.add(chip);
+
+    const el = document.createElement("div");
+    el.className = "chip-label";
+    el.dataset.layer = node.layer;
+    const m = MODE_STYLE[a.mode] || {};
+    el.innerHTML = `${name}<em>${m.zh || a.mode}</em>`;
+    const wp = new THREE.Vector3();
+    const item = addLabel(el, () => chip.getWorldPosition(wp), 0.85);
+    chipLabels.push(item);
+  });
+  chipGroup.position.copy(node._mesh.position);
+  scene.add(chipGroup);
+}
+
+/* ---------- 高亮 / 选择 ---------- */
+let selectedId = null;
+let previewLayer = null;
+
+function clearLayerPreview() {
+  if (!previewLayer) return;
+  const isLight = document.documentElement.classList.contains("light-theme");
+  for (const [key, layer] of Object.entries(LAYERS)) {
+    const isDone = (key === "physical" || key === "logical" || key === "cross_system");
+    if (layer._plane) layer._plane.material.opacity = key === "cross_system" ? 0 : (isLight ? (isDone ? 0.03 : 0.014) : (isDone ? 0.018 : 0.008));
+    if (layer._border) layer._border.material.opacity = key === "cross_system" ? 0 : (isLight ? (isDone ? 0.42 : 0.25) : (isDone ? 0.30 : 0.16));
+  }
+  for (const n of DISPLAY_NODES) {
+    const isTodo = isTodoNode(n);
+    n._mesh.material.opacity = isTodo ? 0.28 : 1;
+    n._mesh.material.emissiveIntensity = isTodo ? 0.06 : 0.22;
+    n._ring.material.opacity = isTodo ? 0.08 : 0.3;
+    n._label?.classList.remove("dim");
+  }
+  for (const lk of LINKS) {
+    if (!lk._mainMat) continue;
+    lk._mainMat.opacity = lk._baseOpacity;
+    lk._coneMat.opacity = 0.42;
+    const lbl = labelItems.find((it) => it.el.textContent.startsWith(lk.name));
+    if (lbl) lbl.el.classList.toggle("dim", !linkLabelsOn);
+  }
+  previewLayer = null;
+}
+
+function applyLayerPreview(layerKey) {
+  clearLayerPreview();
+  if (!layerKey || !LAYERS[layerKey] || selectedId || storyOn) return;
+  previewLayer = layerKey;
+  for (const [key, layer] of Object.entries(LAYERS)) {
+    const isCurrent = key === layerKey;
+    const isDone = (key === "physical" || key === "logical" || key === "cross_system");
+    if (layer._plane?.visible) layer._plane.material.opacity = key === "cross_system" ? 0 : (isCurrent ? (isDone ? 0.065 : 0.045) : (isDone ? 0.012 : 0.008));
+    if (layer._border?.visible) layer._border.material.opacity = key === "cross_system" ? 0 : (isCurrent ? (isDone ? 0.4 : 0.24) : (isDone ? 0.08 : 0.04));
+  }
+  for (const n of DISPLAY_NODES) {
+    if (!n._mesh.visible) continue;
+    const isCurrent = n.layer === layerKey;
+    const isTodo = isTodoNode(n);
+    n._mesh.material.opacity = isCurrent ? (isTodo ? 0.45 : 1) : 0.25;
+    n._mesh.material.emissiveIntensity = isCurrent ? (isTodo ? 0.18 : 0.36) : 0.08;
+    n._ring.material.opacity = isCurrent ? (isTodo ? 0.18 : 0.4) : 0.10;
+    n._label?.classList.toggle("dim", !isCurrent);
+  }
+  for (const lk of LINKS) {
+    if (!lk._mainMat || !lk._group.visible) continue;
+    const isCurrent = nodeById[lk.from]?.layer === layerKey || nodeById[lk.to]?.layer === layerKey;
+    lk._mainMat.opacity = isCurrent ? Math.min(lk._baseOpacity + 0.12, 0.68) : 0.12;
+    lk._coneMat.opacity = isCurrent ? 0.9 : 0.08;
+    const lbl = labelItems.find((it) => it.el.textContent.startsWith(lk.name));
+    if (lbl) lbl.el.classList.toggle("dim", !isCurrent || !linkLabelsOn);
+  }
+}
+function setNodeFaded(n, faded, strong) {
+  n._mesh.material.opacity = faded ? 0.32 : (isTodoNode(n) ? 0.28 : 1);
+  n._mesh.material.emissiveIntensity = strong ? 0.65 : (faded ? 0.10 : 0.22);
+  n._ring.material.opacity = faded ? 0.14 : 0.3;
+  const lbl = labelItems.find(it => it.el.querySelector && it.el.querySelector(`b`) && it.el.textContent.includes(n.id));
+  if (lbl) { lbl.el.classList.toggle("dim", faded); lbl.el.classList.toggle("sel", !!strong); }
+}
+function setLinkFaded(lk, faded, hot) {
+  const o = faded ? 0.18 : (hot ? 0.95 : lk._baseOpacity);
+  lk._mainMat.opacity = o;
+  lk._coneMat.opacity = faded ? 0.12 : (hot ? 1 : 0.42);
+  const lbl = labelItems.find(it => it.el.textContent.startsWith(lk.name));
+  if (lbl) { lbl.el.classList.toggle("dim", faded || (!hot && !linkLabelsOn)); lbl.el.classList.toggle("hot", !!hot); }
+}
+
+function clearHighlight() {
+  clearLayerPreview();
+  selectedId = null;
+  expandedLinkNames.clear();
+  for (const n of DISPLAY_NODES) {
+    setNodeFaded(n, false, false);
+    if (n._label) n._label.style.opacity = "";
+  }
+  for (const lk of LINKS) {
+    if (lk._mainMat) setLinkFaded(lk, false, false);
+    const label = labelItems.find(it => it.el.dataset.link === lk.name);
+    if (label) label.el.style.opacity = "";
+  }
+  for (const item of labelItems) {
+    if (item.el.dataset.layer) item.el.style.opacity = "";
+  }
+  diagnosisNodeHistory.clear();
+  diagnosisLinkHistory.clear();
+  clearChips();
+  syncExplorationLinkVisibility();
+}
+
+function highlightSet(nodeIds, linkNames) {
+  const ns = nodeIds ? new Set(nodeIds) : null;
+  const ls = linkNames ? new Set(linkNames) : null;
+  for (const n of DISPLAY_NODES) setNodeFaded(n, ns ? !ns.has(n.id) : false, false);
+  for (const lk of LINKS) {
+    if (!lk._mainMat) continue;
+    const on = ls ? ls.has(lk.name) : true;
+    lk._group.visible = on && layerAllowsLink(lk);
+    const label = labelItems.find((item) => item.el.dataset.link === lk.name);
+    if (label) updateLinkLabelVisibility(lk);
+    setLinkFaded(lk, !on, on && !!ls);
+  }
+}
+
+function selectNode(id) {
+  if (storyOn) return;
+  clearLayerPreview();
+  const node = nodeById[id];
+  if (!node) return;
+  selectedId = id;
+  const related = new Set([id]);
+  const incident = [];
+  for (const lk of LINKS) {
+    if (lk.from === id || lk.to === id) { incident.push(lk.name); related.add(lk.from); related.add(lk.to); }
+  }
+  expandedLinkNames = new Set(incident);
+  for (const n of DISPLAY_NODES) setNodeFaded(n, !related.has(n.id), n.id === id);
+  const inc = new Set(incident);
+  for (const lk of LINKS) {
+    if (!lk._mainMat) continue;
+    const visible = inc.has(lk.name) && layerAllowsLink(lk);
+    lk._group.visible = visible;
+    const label = labelItems.find((item) => item.el.dataset.link === lk.name);
+    if (label) updateLinkLabelVisibility(lk);
+    setLinkFaded(lk, !visible, visible);
+  }
+  spawnChips(node);
+  showPanel(node);
+  /* 聚焦时只收窄视距，保留节点周边的关系和上下文；固定上限避免连续点击逐次放大。 */
+  const focusRadius = Math.max(42, Math.min(orbit.radius, DEFAULT_VIEW.radius * 0.82));
+  tweenView({ target: node._mesh.position.clone(), radius: focusRadius }, 900);
+}
+
+function deselect() {
+  clearHighlight();
+  panel.classList.remove("open");
+}
+
+/* ---------- 拾取 ---------- */
+const raycaster = new THREE.Raycaster();
+const mouseNdc = new THREE.Vector2();
+let hovered = null;
+
+function pickAt(ev) {
+  mouseNdc.set((ev.clientX / innerWidth) * 2 - 1, -(ev.clientY / innerHeight) * 2 + 1);
+  raycaster.setFromCamera(mouseNdc, camera);
+  const hits = raycaster.intersectObjects(pickables, false);
+  return hits.length ? hits[0].object.userData.node : null;
+}
+function hoverPick(ev) {
+  const node = pickAt(ev);
+  if (node !== hovered) {
+    if (hovered) hovered._mesh.scale.setScalar(hovered._size);
+    hovered = node;
+    if (node) node._mesh.scale.setScalar(node._size * 1.13);
+    stage.style.cursor = node ? "pointer" : "grab";
+  }
+  if (node) {
+    tooltip.style.display = "block";
+    tooltip.style.left = (ev.clientX + 14) + "px";
+    tooltip.style.top = (ev.clientY + 10) + "px";
+    const isTodo = isTodoNode(node);
+    const nodeTitle = ontologyLanguage === "EN" ? node.id : nodeDisplayText(node);
+    tooltip.innerHTML = `<b>${nodeTitle}</b>${ontologyLanguage === "EN" ? ` ${nodeDisplayText(node)}` : ""}${isTodo ? '<br><span style="color:#ffb547">⚠ 此层待后续打通</span>' : ''}<br><span style="color:#7baabb">点击查看属性 / Link / Action</span>`;
+  } else tooltip.style.display = "none";
+}
+stage.addEventListener("click", (ev) => {
+  if (drag.moved > 6) return;
+  const node = pickAt(ev);
+  if (node) selectNode(node.id);
+  else if (!storyOn) deselect();
+});
+
+/* ---------- 详情面板 ---------- */
+const panel = document.getElementById("panel");
+const panelBody = document.getElementById("panel-body");
+document.getElementById("panel-close").addEventListener("click", deselect);
+
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+function showPanel(node) {
+  const L = LAYERS[node.layer];
+  const lc = "#" + L.color.toString(16).padStart(6, "0");
+  const isTodo = isTodoNode(node);
+  const panelTitle = ontologyLanguage === "EN" ? node.id : nodeDisplayText(node);
+  const panelSubtitle = ontologyLanguage === "EN" ? `${nodeDisplayText(node)} · Ontology concept type` : "本体概念类型";
+  let html = `
+    <div class="kicker">Object Type · ${L.name}</div>
+    <h2 style="color:${lc}">${panelTitle}<small>${panelSubtitle}</small></h2>
+    ${isTodo ? '<div class="desc" style="color:#ffb547;border:1px solid rgba(255,180,70,.3);background:rgba(255,180,70,.08);padding:8px 10px;border-radius:8px;margin-bottom:8px">⚠ 此层为预置框架，待后续进一步打通设计</div>' : ''}
+    <div class="desc">${esc(node.desc)}</div>
+    <section><h3>主键 / 别名</h3>
+      <div class="tagrow"><span class="tg pk">PK: ${node.pk}</span>${node.aliases.map(a => `<span class="tg">${esc(a)}</span>`).join("")}</div>
+    </section>
+    <section><h3>属性分组 Attribute Groups</h3>`;
+  for (const [g, fields] of Object.entries(node.groups)) {
+    html += `<div class="grp"><div class="gname">${GROUP_ZH[g] || g} · ${g}</div>
+      <div class="tagrow">${fields.map(f => `<span class="tg">${esc(f)}</span>`).join("")}</div></div>`;
+  }
+  html += `</section><section><h3>关联 Link Types</h3>`;
+  for (const lk of LINKS) {
+    if (lk.from !== node.id && lk.to !== node.id) continue;
+    const out = lk.from === node.id;
+    const other = out ? lk.to : lk.from;
+    const dot = "#" + CAT_COLOR[lk.cat].toString(16).padStart(6, "0");
+    html += `<div class="lkrow" data-node="${other}">
+      <span class="dot" style="background:${dot}"></span>
+      <code>${lk.name}</code>
+      <span class="dir">${out ? "→ " + other : "← " + other} · ${lk.card}${lk.derived ? " · 派生" : ""}</span>
+    </div>`;
+  }
+  html += `</section><section><h3>可调用 Actions（受控入口）</h3>`;
+  for (const name of node.actions) {
+    const a = ACTIONS[name] || { mode: "query", desc: "" };
+    const m = MODE_STYLE[a.mode] || { zh: a.mode, c: "#888" };
+    html += `<div class="acrow">
+      <span class="mode" style="background:${m.c}22;color:${m.c};border:1px solid ${m.c}55">${m.zh}</span>
+      <span><span class="nm">${name}</span><br><span class="ds">${esc(a.desc)}</span></span>
+    </div>`;
+  }
+  html += `</section>`;
+  panelBody.innerHTML = html;
+  panel.classList.add("open");
+  panelBody.querySelectorAll(".lkrow").forEach((row) => {
+    row.addEventListener("click", () => selectNode(row.dataset.node));
+  });
+}
+
+/* ---------- 故障诊断演示 ---------- */
+const storyBox = document.getElementById("story");
+const caseDropdown = document.getElementById("case-dropdown");
+let storyOn = false, storyIdx = 0, activeCase = CASES[0];
+let diagnosisNodeHistory = new Set();  /* 记录推理过程中曾出现过的节点，用于剪枝弱化 */
+let diagnosisLinkHistory = new Set();  /* 记录推理过程中曾出现过的连线 */
+
+/* ---------- 渲染案例下拉菜单 ---------- */
+function renderCaseDropdown() {
+  caseDropdown.innerHTML = CASES.map(c =>
+    `<div class="case-item${c.id === activeCase.id ? " active" : ""}" data-case="${c.id}">
+       <span class="case-title">${c.title}</span>
+       <span class="case-desc">${c.desc}</span>
+     </div>`
+  ).join("");
+  caseDropdown.querySelectorAll(".case-item").forEach(el => {
+    el.addEventListener("click", () => {
+      const cid = el.dataset.case;
+      activeCase = CASES.find(c => c.id === cid) || CASES[0];
+      caseDropdown.classList.remove("open");
+      startStory();
+    });
+  });
+}
+renderCaseDropdown();
+
+/* 按钮点击：打开下拉 / 退出演示 */
+document.getElementById("btn-story").addEventListener("click", (ev) => {
+  if (storyOn) {
+    exitStory();
+  } else {
+    ev.stopPropagation();
+    caseDropdown.classList.toggle("open");
+  }
+});
+
+/* 点击外部关闭下拉 */
+addEventListener("click", (ev) => {
+  if (!ev.target.closest(".case-wrap")) caseDropdown.classList.remove("open");
+});
+
+function centroidView(nodeIds) {
+  if (!nodeIds) return { target: DEFAULT_VIEW.target.clone(), radius: DEFAULT_VIEW.radius };
+  const c = new THREE.Vector3();
+  for (const id of nodeIds) { if (nodeById[id]) c.add(nodeById[id]._mesh.position); }
+  c.multiplyScalar(1 / nodeIds.length);
+  let maxD = 0;
+  for (const id of nodeIds) maxD = Math.max(maxD, nodeById[id] ? nodeById[id]._mesh.position.distanceTo(c) : 0);
+  return { target: c, radius: THREE.MathUtils.clamp(maxD * 1.9 + 12, 28, 53) }; // 多节点视角比例适中，保留呼吸空间。
+}
+
+function getSteps() { return activeCase.steps; }
+
+function storyStep(i) {
+  storyIdx = i;
+  const steps = getSteps();
+  /* 当索引等于步骤数时，进入全流程总览 */
+  if (i === steps.length) {
+    showStoryOverview();
+    return;
+  }
+  const s = steps[i];
+  document.getElementById("s-step").textContent = `STEP ${i + 1}/${steps.length}`;
+  document.getElementById("s-title").textContent = s.title;
+  document.getElementById("s-action").textContent = s.action;
+  document.getElementById("s-text").innerHTML = s.text;
+  document.getElementById("s-dots").innerHTML = steps.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("");
+  document.getElementById("s-prev").style.visibility = i === 0 ? "hidden" : "visible";
+  document.getElementById("s-next").textContent = i === steps.length - 1 ? "完成 ✓" : "下一步 ›";
+  highlightSet(s.nodes, s.links);
+  const v = centroidView(s.nodes);
+  tweenView({ target: v.target, radius: v.radius, theta: DEFAULT_VIEW.theta + 0.22 * i, phi: 1.12 }, 1200);
+}
+
+/* ---------- 全流程总览：高亮所有步骤节点和路径 ---------- */
+function showStoryOverview() {
+  const steps = getSteps();
+  /* 汇总所有步骤的 nodes 和 links */
+  const allNodes = new Set();
+  const allLinks = new Set();
+  const stepLabels = [];
+  for (const s of steps) {
+    if (s.nodes) s.nodes.forEach(n => allNodes.add(n));
+    if (s.links) s.links.forEach(l => allLinks.add(l));
+    stepLabels.push(s.title.replace(/^.+?：/, ""));
+  }
+  /* 高亮所有节点和连线 */
+  highlightSet([...allNodes], [...allLinks]);
+  /* 给总览中涉及的节点额外加强发光 */
+  for (const nid of allNodes) {
+    const n = nodeById[nid];
+    if (n) n._mesh.material.emissiveIntensity = 0.55;
+  }
+  /* 更新面板文字 */
+  document.getElementById("s-step").textContent = "全流程总览";
+  document.getElementById("s-title").textContent = `${steps.length}步排障流程完整路径`;
+  document.getElementById("s-action").textContent = "";
+  const nodeNames = [...allNodes].map(id => {
+    const n = nodeById[id];
+    return n ? `<b>${n.zh}</b>` : id;
+  });
+  document.getElementById("s-text").innerHTML =
+    `<span style="color:#2dd4a0;font-weight:700">诊断流程已走完，以下为完整排障路径：</span><br><br>` +
+    stepLabels.map((label, i) => `<span style="color:#7baabb">Step ${i + 1}</span> ${label}`).join(`<span style="color:rgba(255,255,255,.25)"> → </span>`) +
+    `<br><br><span style="color:#7baabb">涉及节点：</span>${nodeNames.join(" · ")}`;
+  document.getElementById("s-dots").innerHTML = steps.map(() => `<i class="on"></i>`).join("");
+  document.getElementById("s-prev").style.visibility = "visible";
+  document.getElementById("s-next").textContent = "退出 ›";
+  /* 相机拉远，看全貌 */
+  const v = centroidView([...allNodes]);
+  tweenView({ target: v.target, radius: Math.max(v.radius * 0.82, 42), theta: DEFAULT_VIEW.theta, phi: DEFAULT_VIEW.phi + 0.03 }, 1400);
+}
+function startStory() {
+  storyOn = true; orbit.auto = false; updateRotateBtn();
+  caseDropdown.classList.remove("open");
+  deselect();
+  storyBox.classList.add("open");
+  storyStep(0);
+}
+function exitStory() {
+  storyOn = false;
+  storyBox.classList.remove("open");
+  clearHighlight();
+  tweenView(DEFAULT_VIEW, 1100);
+}
+document.getElementById("s-prev").addEventListener("click", () => {
+  const steps = getSteps();
+  /* 总览中按上一步回到最后一步 */
+  if (storyIdx === steps.length) { storyStep(steps.length - 1); }
+  else if (storyIdx > 0) { storyStep(storyIdx - 1); }
+});
+document.getElementById("s-next").addEventListener("click", () => {
+  const steps = getSteps();
+  if (storyIdx < steps.length - 1) { storyStep(storyIdx + 1); }
+  else if (storyIdx === steps.length - 1) { storyStep(steps.length); } /* 进入总览 */
+  else { exitStory(); } /* 总览中点"退出" */
+});
+document.getElementById("s-exit").addEventListener("click", exitStory);
+addEventListener("keydown", (ev) => {
+  if (!storyOn) return;
+  const steps = getSteps();
+  if (ev.key === "ArrowRight" || ev.key === " ") {
+    ev.preventDefault();
+    if (storyIdx < steps.length - 1) storyStep(storyIdx + 1);
+    else if (storyIdx === steps.length - 1) storyStep(steps.length);
+    else exitStory();
+  }
+  if (ev.key === "ArrowLeft") { ev.preventDefault(); if (storyIdx > 0) storyStep(storyIdx - 1); }
+  if (ev.key === "Escape") exitStory();
+});
+
+/* ---------- 顶栏按钮 ---------- */
+const btnLabels = document.getElementById("btn-labels");
+const btnLinks = document.getElementById("btn-links");
+const btnPlanes = document.getElementById("btn-planes");
+const btnRotate = document.getElementById("btn-rotate");
+function updateRotateBtn() { btnRotate.classList.toggle("off", !orbit.auto); btnRotate.textContent = "自动旋转" + (orbit.auto ? "" : "：关"); }
+function updateLabelsButton() {
+  btnLabels.classList.toggle("off", !linkLabelsOn);
+  btnLabels.textContent = ontologyLanguage === "EN"
+    ? (linkLabelsOn ? "Hide relation labels" : "Show relation labels")
+    : (linkLabelsOn ? "隐藏连线标签" : "显示连线标签");
+}
+function updateLinksButton() {
+  btnLinks.classList.toggle("off", !showAllLinks);
+  btnLinks.textContent = ontologyLanguage === "EN"
+    ? (showAllLinks ? "Collapse relations" : "Show all relations")
+    : (showAllLinks ? "收起全部关系" : "显示全部关系");
+}
+function updatePlanesButton() {
+  btnPlanes.classList.toggle("off", !planesOn);
+  btnPlanes.textContent = ontologyLanguage === "EN" ? (planesOn ? "Layer plates: on" : "Layer plates: off") : (planesOn ? "层板：开" : "层板：关");
+}
+function setPlanesVisibility() {
+  for (const key of Object.keys(LAYERS)) {
+    const visible = planesOn && activeLayerKeys.has(key);
+    if (LAYERS[key]._plane) LAYERS[key]._plane.visible = visible;
+    if (LAYERS[key]._border) LAYERS[key]._border.visible = visible;
+  }
+  for (const sublayer of SOLUTION_SUBLAYERS) {
+    const visible = planesOn && activeLayerKeys.has("cross_system");
+    if (sublayer._plane) sublayer._plane.visible = visible;
+    if (sublayer._border) sublayer._border.visible = visible;
+  }
+  sublayerRailGroup.visible = planesOn && activeLayerKeys.has("cross_system") && !diagnosisMode;
+}
+btnLabels.addEventListener("click", () => {
+  linkLabelsOn = !linkLabelsOn;
+  for (const lk of LINKS) {
+    if (!lk._mainMat) continue;
+    updateLinkLabelVisibility(lk);
+  }
+  updateLabelsButton();
+});
+btnLinks.addEventListener("click", () => {
+  if (storyOn || diagnosisMode) return;
+  showAllLinks = !showAllLinks;
+  if (selectedId) deselect();
+  else syncExplorationLinkVisibility();
+  updateLinksButton();
+});
+btnPlanes.addEventListener("click", () => {
+  planesOn = !planesOn;
+  setPlanesVisibility();
+  updatePlanesButton();
+});
+btnRotate.addEventListener("click", () => { orbit.auto = !orbit.auto; updateRotateBtn(); });
+document.getElementById("btn-reset").addEventListener("click", () => {
+  if (storyOn) exitStory(); else { deselect(); tweenView(DEFAULT_VIEW, 1100); }
+});
+/* ---------- 外层层级过滤同步 ---------- */
+function applyLayerFilter(enabled) {
+  const active = new Set(enabled || Object.keys(LAYERS));
+  activeLayerKeys = active;
+  for (const key of Object.keys(LAYERS)) {
+    const on = active.has(key);
+    const layer = LAYERS[key];
+    if (layer._plane) layer._plane.visible = on && planesOn;
+    if (layer._border) layer._border.visible = on && planesOn;
+    for (const item of labelItems) if (item.el.dataset.layer === key) { item.el.dataset.layerHidden = on ? "" : "true"; item.el.style.display = on ? "" : "none"; }
+  }
+  for (const segment of layerRailParts) segment.visible = active.has(segment.userData.fromKey) && active.has(segment.userData.toKey);
+  for (const tick of layerRailTicks) tick.visible = active.has(tick.userData.layerKey);
+  for (const sublayer of SOLUTION_SUBLAYERS) {
+    const on = active.has("cross_system");
+    if (sublayer._plane) sublayer._plane.visible = on && planesOn;
+    if (sublayer._border) sublayer._border.visible = on && planesOn;
+  }
+  sublayerRailGroup.visible = planesOn && active.has("cross_system") && !diagnosisMode;
+  for (const n of DISPLAY_NODES) {
+    const on = active.has(n.layer);
+    n._mesh.visible = on; n._ring.visible = on;
+    if (n._label) { n._label.dataset.layerHidden = on ? "" : "true"; n._label.style.display = on ? "" : "none"; }
+  }
+  for (const lk of LINKS) {
+    if (!lk._group) continue;
+    const allowed = active.has(nodeById[lk.from]?.layer) && active.has(nodeById[lk.to]?.layer);
+    const visible = allowed && (showAllLinks || expandedLinkNames.has(lk.name));
+    lk._group.visible = visible;
+    const label = labelItems.find((item) => item.el.dataset.link === lk.name);
+    if (label) {
+      label.el.dataset.layerHidden = allowed ? "" : "true";
+      updateLinkLabelVisibility(lk);
+    }
+  }
+}
+function applyDiagnosisView({ nodes, links, contextNodes, contextLinks, zoomScale = 1, theme, compact, resetHistory = false }) {
+  if (storyOn) exitStory();
+  if (resetHistory) {
+    diagnosisNodeHistory.clear();
+    diagnosisLinkHistory.clear();
+  }
+  deselect();
+  if (theme) applyOntologyTheme(theme);
+  diagnosisMode = !!compact;
+  document.documentElement.classList.toggle("embedded-diagnosis", diagnosisMode);
+  layerRailGroup.visible = !diagnosisMode;
+  sublayerRailGroup.visible = !diagnosisMode && planesOn;
+  refreshLanguage();
+  if (diagnosisMode) orbit.auto = false;
+  updateRotateBtn();
+
+  const validActiveNodes = (nodes || []).filter((id) => nodeById[id]);
+  const requestedVisibleNodes = contextNodes?.length ? contextNodes : validActiveNodes;
+  const validVisibleNodes = [...new Set(requestedVisibleNodes.filter((id) => nodeById[id]))];
+  const knownLinkNames = new Set(LINKS.map((link) => link.name));
+  const validActiveLinks = (links || []).filter((name) => knownLinkNames.has(name));
+  const requestedVisibleLinks = contextLinks?.length ? contextLinks : validActiveLinks;
+  const validVisibleLinks = [...new Set(requestedVisibleLinks.filter((name) => knownLinkNames.has(name)))];
+  const activeNodes = new Set(validActiveNodes);
+  const visibleNodes = new Set(validVisibleNodes);
+  const activeLinks = new Set(validActiveLinks);
+  const visibleLinks = new Set(validVisibleLinks);
+  const visibleLayers = new Set(validVisibleNodes.map((id) => nodeById[id].layer));
+
+  /* 将当前可见节点和连线记入历史，用于后续剪枝弱化 */
+  for (const id of validVisibleNodes) diagnosisNodeHistory.add(id);
+  for (const name of validVisibleLinks) diagnosisLinkHistory.add(name);
+  /* 被剪枝的层级也需要保留弱化显示 */
+  const prunedLayers = new Set();
+  for (const id of diagnosisNodeHistory) {
+    if (nodeById[id] && !visibleNodes.has(id)) prunedLayers.add(nodeById[id].layer);
+  }
+
+  for (const [key, layer] of Object.entries(LAYERS)) {
+    const visible = visibleLayers.has(key);
+    const pruned = prunedLayers.has(key);
+    if (layer._plane) { layer._plane.visible = planesOn; layer._plane.material.opacity = visible ? 0.026 : (pruned ? 0.008 : 0.004); }
+    if (layer._border) { layer._border.visible = planesOn; layer._border.material.opacity = visible ? 0.34 : (pruned ? 0.08 : 0.03); }
+    for (const item of labelItems) {
+      if (item.el.dataset.layer === key) {
+        item.el.dataset.layerHidden = (visible || pruned) ? "" : "true";
+        item.el.style.display = (visible || pruned) ? "" : "none";
+        item.el.style.opacity = visible ? "" : (pruned ? "0.22" : "");
+      }
+    }
+  }
+  const crossSystemVisible = visibleLayers.has("cross_system") || prunedLayers.has("cross_system");
+  for (const sublayer of SOLUTION_SUBLAYERS) {
+    if (sublayer._plane) sublayer._plane.visible = planesOn && crossSystemVisible;
+    if (sublayer._border) sublayer._border.visible = planesOn && crossSystemVisible;
+  }
+  sublayerRailGroup.visible = !diagnosisMode && planesOn && crossSystemVisible;
+
+  for (const n of DISPLAY_NODES) {
+    const visible = visibleNodes.has(n.id);
+    const active = activeNodes.has(n.id);
+    const pruned = !visible && diagnosisNodeHistory.has(n.id);  /* 曾出现但被剪枝 */
+    const isTodo = isTodoNode(n);
+    if (visible) {
+      n._mesh.visible = true;
+      n._ring.visible = true;
+      setNodeFaded(n, !active, active);
+    } else if (pruned) {
+      /* 剪枝节点：保留可见但极度弱化 */
+      n._mesh.visible = true;
+      n._ring.visible = true;
+      n._mesh.material.opacity = isTodo ? 0.04 : 0.07;
+      n._mesh.material.emissiveIntensity = 0.015;
+      n._ring.material.opacity = 0.02;
+    } else {
+      n._mesh.visible = false;
+      n._ring.visible = false;
+    }
+    if (n._label) {
+      if (visible) {
+        n._label.dataset.nodeHidden = "";
+        n._label.style.display = "";
+        n._label.style.opacity = "";
+        n._label.classList.toggle("dim", !active);
+        n._label.classList.toggle("sel", active);
+      } else if (pruned) {
+        /* 剪枝节点标签：保留但极低透明度 */
+        n._label.dataset.nodeHidden = "";
+        n._label.style.display = "";
+        n._label.style.opacity = "0.12";
+        n._label.classList.add("dim");
+        n._label.classList.remove("sel");
+      } else {
+        n._label.dataset.nodeHidden = "true";
+        n._label.style.display = "none";
+        n._label.style.opacity = "";
+      }
+    }
+  }
+  for (const lk of LINKS) {
+    if (!lk._group) continue;
+    const visible = visibleLinks.has(lk.name);
+    const active = activeLinks.has(lk.name);
+    const pruned = !visible && diagnosisLinkHistory.has(lk.name);  /* 曾出现但被剪枝 */
+    if (visible) {
+      lk._group.visible = true;
+      setLinkFaded(lk, !active, active);
+    } else if (pruned) {
+      /* 剪枝连线：保留可见但极度弱化 */
+      lk._group.visible = true;
+      lk._mainMat.opacity = 0.035;
+      lk._coneMat.opacity = 0.02;
+    } else {
+      lk._group.visible = false;
+    }
+    const label = labelItems.find((item) => item.el.dataset.link === lk.name);
+    if (label) {
+      if (visible) {
+        label.el.dataset.linkHidden = "";
+        label.el.style.display = "";
+        label.el.style.opacity = "";
+        label.el.classList.toggle("dim", !active);
+      label.el.classList.toggle("hot", active);
+      } else if (pruned) {
+        /* 剪枝连线标签：保留但极低透明度 */
+        label.el.dataset.linkHidden = "";
+        label.el.style.display = "";
+        label.el.style.opacity = "0.08";
+        label.el.classList.add("dim");
+        label.el.classList.remove("hot");
+      } else {
+        label.el.dataset.linkHidden = "true";
+        label.el.style.display = "none";
+        label.el.style.opacity = "";
+    }
+  }
+}
+
+  if (validVisibleNodes.length) {
+    const v = centroidView(validVisibleNodes);
+    const diagnosisTarget = v.target.clone().lerp(DEFAULT_VIEW.target, 0.42);
+    const baseDiagnosisRadius = Math.min(Math.max(v.radius * 0.95, 41), 55); // 诊断视角与默认视角同步拉远，保持清晰与开阔感。
+    const diagnosisRadius = Math.max(baseDiagnosisRadius * (Number.isFinite(zoomScale) ? zoomScale : 1), 34);
+    tweenView({ target: diagnosisTarget, radius: diagnosisRadius, theta: DEFAULT_VIEW.theta + 0.18, phi: DEFAULT_VIEW.phi }, 900);
+  }
+}
+function applyOntologyTheme(theme) {
+  const isLight = theme === "light";
+  document.documentElement.classList.toggle("light-theme", isLight);
+  const colorFactor = isLight ? 0.68 : 1;
+  scene.fog.density = isLight ? 0.0035 : 0.0062;
+  scene.fog.color.setHex(isLight ? LIGHT_SCENE_COLOR : 0x060e12);
+  renderer.setClearColor(isLight ? LIGHT_SCENE_COLOR : 0x060e12, 1);
+  for (const layer of Object.values(LAYERS)) {
+    const layerColor = new THREE.Color(layer.color).multiplyScalar(colorFactor);
+    const isDone = layer._isDone;
+    if (layer._plane) {
+      layer._plane.material.color.copy(layerColor);
+      layer._plane.material.opacity = isLight ? (isDone ? 0.03 : 0.014) : (isDone ? 0.018 : 0.008);
+    }
+    if (layer._border) {
+      layer._border.material.color.copy(layerColor);
+      layer._border.material.opacity = isLight ? (isDone ? 0.42 : 0.25) : (isDone ? 0.30 : 0.16);
+    }
+    if (layer._railTick) layer._railTick.material.color.copy(layerColor);
+  }
+  for (const segment of layerRailParts) {
+    const sourceColor = LAYERS[segment.userData.fromKey]?.color || 0x5d7185;
+    segment.material.color.copy(new THREE.Color(sourceColor).multiplyScalar(colorFactor));
+  }
+  for (const sublayer of SOLUTION_SUBLAYERS) {
+    const sublayerColor = new THREE.Color(sublayer.color).multiplyScalar(colorFactor);
+    const panelFill = new THREE.Color(SOLUTION_PANEL_FILL).multiplyScalar(isLight ? 0.78 : 1);
+    if (sublayer._plane) { sublayer._plane.material.color.copy(panelFill); sublayer._plane.material.opacity = SHOW_SOLUTION_SUBLAYER_PANELS ? (isLight ? 0.05 : 0.032) : 0; }
+    if (sublayer._border) { sublayer._border.material.color.copy(sublayerColor); sublayer._border.material.opacity = SHOW_SOLUTION_SUBLAYER_GUIDES && !HIDDEN_SOLUTION_SUBLAYER_GUIDES.has(sublayer.key) ? (isLight ? 0.68 : 0.5) : 0; }
+  }
+  for (const segment of sublayerRailParts) {
+    const sublayer = SOLUTION_SUBLAYERS.find((item) => item.key === segment.userData.fromKey);
+    if (sublayer) segment.material.color.copy(new THREE.Color(sublayer.color).multiplyScalar(colorFactor));
+  }
+  for (const tick of sublayerRailTicks) {
+    const sublayer = SOLUTION_SUBLAYERS.find((item) => item.key === tick.userData.sublayerKey);
+    if (sublayer) tick.material.color.copy(new THREE.Color(sublayer.color).multiplyScalar(colorFactor));
+  }
+  for (const node of DISPLAY_NODES) {
+    if (!node._mesh) continue;
+    const nodeColor = new THREE.Color(LAYERS[node.layer].color);
+    node._mesh.material.color.copy(nodeColor);
+    node._mesh.material.emissive.copy(nodeColor);
+    node._mesh.material.emissiveIntensity = isLight ? (isTodoNode(node) ? 0.15 : 0.38) : (isTodoNode(node) ? 0.06 : 0.22);
+    node._ring.material.opacity = isLight ? (isTodoNode(node) ? 0.12 : 0.38) : (isTodoNode(node) ? 0.08 : 0.3);
+  }
+  for (const lk of LINKS) {
+    if (!lk._mainMat) continue;
+    const linkColor = new THREE.Color(CAT_COLOR[lk.cat]).multiplyScalar(colorFactor);
+    lk._mainMat.color.copy(linkColor);
+    if (lk._coneMat) lk._coneMat.color.copy(linkColor);
+    lk._mainMat.opacity = isLight ? Math.min(lk._baseOpacity * 1.45, 0.52) : lk._baseOpacity;
+    if (lk._coneMat) lk._coneMat.opacity = isLight ? 0.58 : 0.42;
+  }
+}
+addEventListener("message", (ev) => {
+  if (ev.data?.type === "ontology-layer-filter") applyLayerFilter(ev.data.enabled);
+  if (ev.data?.type === "ontology-layer-preview") applyLayerPreview(ev.data.layer);
+  if (ev.data?.type === "ontology-theme") applyOntologyTheme(ev.data.theme);
+  if (ev.data?.type === "ontology-diagnosis-view") { if (ev.data.language) { ontologyLanguage = ev.data.language; refreshLanguage(); } applyDiagnosisView(ev.data); }
+});
+/* ---------- 统计 ---------- */
+document.getElementById("st-obj").textContent = DISPLAY_NODES.length;
+document.getElementById("st-lnk").textContent = LINKS.length;
+document.getElementById("st-act").textContent = Object.keys(ACTIONS).length;
+applyOntologyTheme(initialIsLight ? "light" : "dark");
+refreshLanguage();
+updateLinksButton();
+
+/* ---------- 主循环 ---------- */
+let lastT = performance.now();
+function animate(now) {
+  requestAnimationFrame(animate);
+  const dt = Math.min((now - lastT) / 1000, 0.05);
+  lastT = now;
+  if (orbit.auto && !camTween) orbit.theta += dt * 0.07;
+  stepTween(now);
+  applyOrbit();
+  if (!diagnosisMode) {
+    if (chipGroup) chipGroup.rotation.y += dt * 0.45;
+    for (const n of DISPLAY_NODES) n._mesh.rotation.y += dt * 0.12;
+  }
+  renderer.render(scene, camera);
+  updateLabels();
+}
+addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+applyOrbit();
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
