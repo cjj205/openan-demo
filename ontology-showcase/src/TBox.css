@@ -1,0 +1,66 @@
+/* 历史版本 T-Box 查询页样式。独立文件，避免影响 A-Box 诊断工作台。 */
+.model-layout { display:grid; grid-template-columns:292px minmax(0,1fr); gap:24px; min-height:calc(100svh - 72px); padding:24px 32px 32px; }
+.model-sidebar { padding:24px; min-height:0; overflow:auto; }
+.model-sidebar::-webkit-scrollbar { display:none; }
+.model-sidebar { -ms-overflow-style:none; scrollbar-width:none; }
+.panel-title-row,.canvas-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.search-box { margin-top:23px; display:flex; align-items:center; gap:9px; height:43px; padding:0 13px; border-radius:14px; border:1px solid #323239; background:#242429; color:#a1a1aa; }
+.search-box input { width:100%; border:0; color:#e4e4e7; outline:0; font-size:12px; background:transparent; }
+.search-box input::placeholder { color:#71717a; }
+.search-hint { margin:7px 2px 0; color:#60a5fa; font-size:11px; }
+.layer-list { display:grid; gap:6px; }
+.layer-item { width:100%; min-height:57px; display:grid; grid-template-columns:10px minmax(0,1fr) auto; align-items:center; gap:9px; text-align:left; padding:9px 10px; border:1px solid #2e2e34; border-radius:12px; background:rgba(255,255,255,.012); color:#e4e4e7; transition:.18s ease; }
+.layer-item:hover { background:#242429; border-color:#47474f; }
+.layer-item:not(.selected) { opacity:.48; }
+.layer-dot { width:8px; height:8px; border-radius:50%; }
+.layer-copy { min-width:0; display:grid; gap:2px; }.layer-copy strong { font-size:12px; }.layer-copy small { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#71717a; font-size:10px; }
+.layer-state { padding:3px 6px; border-radius:6px; color:#6ee7b7; background:rgba(16,185,129,.12); font-size:10px; font-weight:800; }.layer-item:not(.selected) .layer-state { color:#a1a1aa; background:#27272a; }
+.stats-title { margin-top:20px; }.stats-stack { overflow:hidden; border:1px solid #303038; border-radius:15px; background:#202025; }.stats-stack div { height:43px; display:grid; grid-template-columns:25px 1fr auto; gap:7px; align-items:center; padding:0 11px; border-bottom:1px solid #303038; color:#a1a1aa; font-size:11px; }.stats-stack div:last-child { border-bottom:0; }.stats-stack b { color:#f4f4f5; font-size:17px; }.stat-icon { width:21px; height:21px; display:grid; place-items:center; border-radius:7px; font-size:12px; font-weight:900; }
+.tbox-legend-title { margin-top:20px; }.tbox-legend { display:grid; gap:11px; padding:12px; border:1px solid #303038; border-radius:15px; background:#202025; color:#aeb6c3; font-size:10px; }.tbox-legend-group { display:grid; gap:6px; }.tbox-legend-group + .tbox-legend-group { padding-top:10px; border-top:1px solid #303038; }.tbox-legend-group strong { color:#e4e4e7; font-size:10px; letter-spacing:.06em; }.tbox-legend-group span { display:flex; align-items:center; gap:7px; line-height:1.3; }.tbox-legend-line { width:21px; height:0; flex:0 0 auto; border-top:2px solid; border-radius:99px; }.tbox-legend-line.structural { border-color:#6f86c9; }.tbox-legend-line.evidence { border-color:#f5c842; }.tbox-legend-line.diagnosis { border-color:#ef4460; }.tbox-legend-node,.tbox-legend-action { width:12px; height:12px; flex:0 0 auto; display:grid; place-items:center; border-radius:4px; color:#d9c5ff; background:rgba(176,140,248,.2); font-style:normal; }.tbox-legend-action { color:#baf8e6; background:rgba(45,212,160,.16); font-size:9px; }
+.ontology-panel { min-width:0; display:flex; flex-direction:column; overflow:hidden; }.canvas-header { flex:0 0 auto; padding:22px 28px 16px; border-bottom:1px solid #28282d; }.model-canvas { position:relative; min-height:0; flex:1; overflow:hidden; background:#081013; }.model-canvas iframe { width:100%; height:100%; min-height:680px; display:block; border:0; }.canvas-note { position:absolute; z-index:2; left:18px; bottom:16px; display:flex; align-items:center; gap:7px; padding:8px 11px; border:1px solid rgba(120,200,220,.14); border-radius:10px; background:rgba(7,14,20,.86); color:#8fa8b5; font-size:10px; pointer-events:none; }.canvas-note span { width:6px; height:6px; border-radius:50%; background:#34d399; }
+
+@media (max-width:1180px) { .model-layout { padding-left:20px; padding-right:20px; } }
+@media (max-width:900px) {
+  .model-layout { grid-template-columns:1fr; min-height:calc(100svh - 112px); }
+  .model-sidebar { overflow:visible; }
+  .model-canvas iframe { min-height:610px; }
+}
+@media (max-width:620px) {
+  .model-layout { padding:14px; gap:14px; }
+  .canvas-header { padding:20px; }
+  .model-canvas iframe { min-height:540px; }
+}
+
+@media (min-width:901px) {
+  .model-layout { height:100%; min-height:0; padding:24px 30px 28px; }
+  .model-sidebar { padding:20px; overflow:auto; }
+  .ontology-panel { height:100%; }
+  .model-sidebar .panel-title-row h1 { font-size:18px; }
+  .model-sidebar .search-box { height:39px; margin-top:17px; }
+  .model-sidebar .section-label { margin:17px 0 8px; font-size:10px; }
+  .model-sidebar .layer-list { gap:5px; }
+  .model-sidebar .layer-item { min-height:43px; padding:6px 8px; }
+  .model-sidebar .layer-copy { gap:1px; }.model-sidebar .layer-copy strong { font-size:11px; }.model-sidebar .layer-copy small { font-size:9px; }
+  .model-sidebar .layer-state { padding:2px 5px; font-size:9px; }
+  .model-sidebar .stats-title { margin-top:17px; }.model-sidebar .stats-stack div { height:35px; font-size:10px; }.model-sidebar .stats-stack b { font-size:15px; }.model-sidebar .stat-icon { width:19px; height:19px; font-size:11px; }.model-sidebar .tbox-legend { gap:8px; padding:10px; font-size:9px; }.model-sidebar .tbox-legend-group { gap:4px; }.model-sidebar .tbox-legend-group + .tbox-legend-group { padding-top:8px; }
+  .model-canvas iframe { min-height:0; height:100%; }
+}
+@media (min-width:901px) and (max-height:760px) {
+  .model-layout { padding-top:18px; padding-bottom:20px; }
+  .model-sidebar { padding:16px; }.model-sidebar .panel-title-row h1 { font-size:18px; }.model-sidebar .search-box { margin-top:13px; }.model-sidebar .section-label { margin-top:13px; }.model-sidebar .layer-item { min-height:39px; padding-top:5px; padding-bottom:5px; }.model-sidebar .layer-copy small { display:none; }.model-sidebar .stats-title { margin-top:13px; }.model-sidebar .stats-stack div { height:31px; }.canvas-header { padding:17px 22px 13px; }.canvas-header h2 { font-size:20px; }
+}
+@media (min-width:901px) and (min-height:800px) {
+  .model-sidebar .section-label { font-size:12px; letter-spacing:.08em; }.model-sidebar .layer-list { gap:8px; }.model-sidebar .layer-item { min-height:52px; padding:9px 11px; }.model-sidebar .layer-copy { gap:3px; }.model-sidebar .layer-copy strong { font-size:14px; }.model-sidebar .layer-copy small { font-size:11px; }.model-sidebar .layer-state { padding:4px 7px; font-size:11px; }.model-sidebar .stats-title { margin-top:24px; }.model-sidebar .stats-stack div { height:48px; font-size:12px; }.model-sidebar .stats-stack b { font-size:18px; }.model-sidebar .stat-icon { width:23px; height:23px; font-size:13px; }.model-sidebar .tbox-legend { padding:13px; font-size:11px; }.model-sidebar .tbox-legend-group { gap:7px; }
+}
+
+.light-theme .search-box { border-color:#d5dfeb; background:#f6f8fc; color:#71809a; }.light-theme .search-box input { color:#1f2b3e; }.light-theme .search-box input::placeholder { color:#8b98aa; }
+.light-theme .layer-item { border-color:#dce4ee; background:#fff; color:#253249; }.light-theme .layer-item:hover { background:#f2f6fc; border-color:#b8c7da; }.light-theme .layer-item:not(.selected) .layer-state { color:#71809a; background:#e9eef5; }
+.light-theme .stats-stack { border-color:#dbe3ed; background:#f8faff; }.light-theme .stats-stack div { border-color:#e0e7f0; color:#65748a; }.light-theme .stats-stack b { color:#1d2a3f; }.light-theme .canvas-header { border-color:#e0e7f0; }.light-theme .model-canvas { background:#edf4f8; }.light-theme .canvas-note { border-color:rgba(79,121,150,.18); background:rgba(255,255,255,.88); color:#587088; box-shadow:0 5px 20px rgba(32,55,85,.1); }
+.light-theme .tbox-legend { border-color:#dbe3ed; background:#f8faff; color:#63758b; }.light-theme .tbox-legend-group + .tbox-legend-group { border-color:#e0e7f0; }.light-theme .tbox-legend-group strong { color:#253249; }
+
+@media (min-width:901px) {
+  .model-sidebar .panel-title-row { min-height:28px; margin:0 0 16px; }
+  .model-sidebar .search-box { margin-top:0; }
+  .model-sidebar .section-label { margin-top:22px; }
+  .model-sidebar .stats-title { margin-top:20px; }
+}
