@@ -1,0 +1,261 @@
+/* storyline.css — 动态故事线样式（快照态默认加载只有透明交互层，保证像素回归基准） */
+.st-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
+
+/* ---- 画布缩放（V2.21：用户缩放回归画布区域级——.fc-zoom 施加 scale(z) 绕画布中心（区域本地坐标），
+   工单列表/成效/A2A-T 日志/工具条等页面元素不随缩放改变；整页层（ScreenCanvas）只承担视口适配 k。
+   覆盖层双层：外层 .st-zoomwrap = 区域重适配 F（transform 过渡仅服务于收起/展开回位），
+   内层 .st-zoomz = 用户缩放 Z（瞬时，与 .fc-zoom/固定节点反向同步），等效 CTM = F∘Z ---- */
+.fc-zoom {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+.st-zoomwrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform-origin: 975px 470.5px;
+  transition: transform 0.25s ease;
+}
+.st-zoomz {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform-origin: 1112.5px 470.5px;
+}
+
+/* ---- 透明点击层通用（工具栏/缩放条）---- */
+.st-tbtn, .st-zoombar button {
+  position: absolute;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  border-radius: 4px;
+}
+.st-tbtn:hover, .st-zoombar button:hover:not(:disabled) {
+  background: rgba(92, 172, 255, 0.14);
+}
+.st-zoombar button:disabled { cursor: default; }
+.st-zoombar button:disabled:hover { background: none; }
+
+/* ---- 日志传感器（快照态首次交互点亮实时日志表，不可见）---- */
+.st-logsensor {
+  position: absolute;
+  pointer-events: auto;
+  z-index: 21;
+}
+
+/* ---- 卡片状态 ---- */
+.st-idle { opacity: 0.5; }
+.st-chip-active { animation: stPulse 1.2s ease-in-out infinite; }
+@keyframes stPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.6); }
+}
+.st-dim { opacity: 0.45; }
+
+/* ---- 连线（SVG 矢量重绘，几何对齐高保真：水平段/riser/肘弯 + V 形箭头）---- */
+.st-clines { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 14; }
+/* 激光脉冲（彗星短条，stroke-dashoffset 沿 path 滑动）+ 协议胶囊 */
+.st-flow { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 15; }
+.st-pill { animation: stPillIn 0.3s ease-out; }
+@keyframes stPillIn { from { opacity: 0; } to { opacity: 1; } }
+/* 连线下方 A2A-T 消息（V2.13：随胶囊淡入，超宽以 …… 截断见 ConnectionFlow fitMsg） */
+.st-flow-msg { animation: stPillIn 0.3s ease-out; }
+
+/* ---- 迷你步骤图标（SVG）：颜色/线宽/字体走 presentation attributes（见 MiniCircles.jsx，防样式表缺失回落黑色）----
+   此处仅保留动画（transform 旋转需 keyframes，无法用属性表达） */
+.st-mc-spin {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: stSpin 0.75s linear infinite;
+}
+/* 执行中 loading 辉光：亮环拖影增强可见性（V2.21：原生 SVG 弧段/底圆，原 <image> 选择器同步扩展） */
+.st-mc-spin > * {
+  filter: drop-shadow(0 0 3px rgba(120, 185, 255, 0.95)) brightness(1.2);
+}
+@keyframes stSpin { to { transform: rotate(360deg); } }
+
+/* ---- 执行中步骤描述（迷你步骤行下方渐变文字；卡片由 bgId height 补丁真实增高）---- */
+.st-desclayer { z-index: 13; }
+.st-desc {
+  position: absolute;
+  font-size: 11px; /* V2.20：12→11px 略缩小（V2.17 曾 10→12px；整页等比缩放下随屏幕放大） */
+  font-weight: 400;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #FFFFFF; /* V3.20：用户定稿改白色（V2.7 曾为浅蓝渐变裁切文字） */
+  animation: stDescIn 0.3s ease-out;
+  transition: opacity 0.4s;
+}
+.st-desc-out { opacity: 0; }
+
+/* ---- Negotiation-T 详细交互面板（专线↔粤东协商中，协商线下方悬浮；组件自带 NegotiationDialog.css）---- */
+/* 层级最高：盖过迷你步骤图标（.st-layer z20）/连线/描述等画布覆盖层，图标不透出（仅让倍速菜单 z30） */
+.st-neglayer { z-index: 25; }
+.st-neglayer .negotiation-dialog { pointer-events: auto; } /* 覆盖层 pointer-events:none 下恢复交互（cvlan 选项/滚动） */
+/* 协商窗口结束：延迟卸载期间淡出（NegotiationPanel OUT_MS） */
+.st-neg-item { transition: opacity 0.35s ease; }
+.st-neg-out { opacity: 0; }
+
+/* ---- 受控日志表 ---- */
+.st-logtable {
+  position: absolute;
+  overflow-y: auto;
+  overflow-x: hidden; /* 横向不出滚动条：超宽内容按省略号截断 */
+  pointer-events: auto;
+  z-index: 21;
+  box-sizing: border-box;
+  font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
+.st-logtable::-webkit-scrollbar { width: 14px; }
+.st-logtable::-webkit-scrollbar-track { background: transparent; }
+.st-logtable::-webkit-scrollbar-thumb {
+  background: rgba(89, 89, 89, 1);
+  border: 4px solid transparent;
+  border-radius: 3px;
+  background-clip: padding-box;
+}
+.st-logtable::-webkit-scrollbar-thumb:hover { background: rgba(119, 119, 119, 1); background-clip: padding-box; }
+.st-lrow {
+  width: 100%; /* V2.13：随表体展宽真实重排（出滚动条时 = 可视宽，与原固定 1308 等效） */
+  border-bottom: 1px solid rgba(243, 243, 243, 0.1);
+  cursor: pointer;
+  animation: stDescIn 0.3s ease-out;
+}
+@keyframes stDescIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.st-lrow:first-child { border-top: 1px solid rgba(243, 243, 243, 0.1); }
+/* 斑马纹（对齐设计稿表格 zebra 样式） */
+.st-lrow:nth-child(even) { background: rgba(119, 119, 119, 0.15); }
+.st-lmain {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding-left: 16px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.st-lrow:hover .st-lmain { background: rgba(243, 243, 243, 0.05); }
+.st-lchev { color: rgba(147, 147, 147, 1); font-size: 10px; margin-right: 16px; transition: transform 0.2s; }
+.st-lchev-open { transform: rotate(180deg); }
+.st-lbadge { flex: none; height: 24px; line-height: 24px; padding: 0 8px; border-radius: 4px; font-size: 12px; margin-right: 22px; }
+.st-ltime { flex: none; color: rgba(201, 201, 201, 1); font-size: 12px; margin-right: 24px; }
+.st-lroute { flex: none; color: rgba(255, 255, 255, 1); font-size: 12px; font-weight: 500; margin-right: 32px; }
+.st-lroute i { color: rgba(201, 201, 201, 1); font-style: normal; font-weight: 400; }
+/* 内部子流程标签（智能体名称后）：细边框小胶囊，蓝系对齐执行中文字 */
+.st-ltag {
+  display: inline-block;
+  height: 17px;
+  line-height: 17px;
+  padding: 0 5px;
+  margin-left: 8px;
+  border: 1px solid rgba(92, 162, 233, 0.5);
+  border-radius: 3px;
+  background: rgba(92, 162, 233, 0.12);
+  color: rgba(140, 190, 255, 1);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  vertical-align: 1px;
+}
+.st-lsum {
+  flex: 1;
+  min-width: 0; /* 允许收缩，超宽摘要省略号截断（防横向溢出） */
+  color: rgba(255, 255, 255, 1);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-lprompt {
+  padding: 8px 16px 12px 56px;
+  color: rgba(201, 201, 201, 1);
+  font-size: 12px;
+  line-height: 20px;
+  word-break: break-all;
+  white-space: pre-wrap;
+  background: rgba(243, 243, 243, 0.04);
+}
+
+/* ---- 面板收起把手（V2.12 收起态覆盖层副本；展开态用设计稿原把手）---- */
+.st-panelhandle {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(2, 12, 69, 1);
+  border: 1px solid rgba(57, 57, 57, 1);
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 22;
+}
+.st-panelhandle:hover { background: rgba(92, 172, 255, 0.18); }
+
+/* ---- 工具栏 ---- */
+.st-pauseicon {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: rgba(0, 103, 209, 1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.st-pauseicon span { width: 3px; height: 8px; background: #fff; }
+.st-speedmenu {
+  position: absolute;
+  width: 72px;
+  background: rgba(2, 12, 69, 0.95);
+  border: 1px solid rgba(119, 119, 119, 1);
+  border-radius: 4px;
+  padding: 4px 0;
+  z-index: 30;
+}
+.st-speeditem {
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  color: rgba(255, 255, 255, 1);
+  font-size: 12px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.st-speeditem:hover { background: rgba(0, 103, 209, 0.55); }
+.st-speeditem-cur { color: rgba(140, 163, 250, 1); }
+
+/* ---- 工单卡（V2.7：整卡可点击切换案例，卡内文字可选中；交互由 LayerView interactions 挂接）---- */
+.st-ocard {
+  cursor: pointer;
+  user-select: text;
+  border-radius: 8px;
+}
+.st-ocard * { user-select: text; }
+.st-ocard:hover { background: rgba(92, 172, 255, 0.14); }
+.st-check {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+  animation: stDescIn 0.3s ease-out;
+}
+.st-check img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
