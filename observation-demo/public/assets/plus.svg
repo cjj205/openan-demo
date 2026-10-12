@@ -1,0 +1,9 @@
+<svg viewBox="0 0 12 12.0117" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="12.000000" height="12.011719" fill="none" customFrame="#000000">
+	<defs>
+		<linearGradient id="paint_linear_10" x1="6" x2="6" y1="4.45183182" y2="12.0123205" gradientUnits="userSpaceOnUse">
+			<stop stop-color="rgb(92,162,233)" offset="0" stop-opacity="1" />
+			<stop stop-color="rgb(0,78,168)" offset="1" stop-opacity="1" />
+		</linearGradient>
+	</defs>
+	<path id="加号" d="M12 7.26899L7.25667 7.26899L7.25667 12.0123L4.76797 12.0123L4.76797 7.26899L0 7.26899L0 4.76797L4.76797 4.76797L4.76797 0L7.25667 0L7.25667 4.76797L12 4.76797L12 7.26899Z" fill="url(#paint_linear_10)" fill-rule="nonzero" />
+</svg>

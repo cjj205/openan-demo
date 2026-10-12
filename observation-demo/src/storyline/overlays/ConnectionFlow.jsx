@@ -1,0 +1,169 @@
+// ConnectionFlow.jsx — 连线激光脉冲 + 协议胶囊（回放态，仅激活连线）
+// 激光对齐设计稿 Negotiation-T 连线上的静态脉冲：短条渐变彗星（亮头 ~28px + 拖尾至 ~150px），
+// 三层不同长度/透明度叠加以近似渐变，以 stroke-dashoffset 沿整条连线 path 滑动（SMIL）——
+// 严格贴线、过肘弯、端点处自然进出（超界部分不绘制）；
+// 协议胶囊 = 激活期间按设计稿位置/文案/配色呈现（SVG 绘制，替代隐藏的设计节点）：
+//   - rev（响应方向）：沿反向 path 滑动，胶囊呈响应变体（Task-T响应 绿 / Negotiation-T响应 琥珀）
+//   - label（事件覆盖）：如 Accept 后专线以完整参数重发任务 → 专线—粤东 task 线显示「Task-T请求」；
+//     粤东抢通结果沿 task 线反向以「Notification-T」传递（LABEL_COLORS 统一青色）
+//   - result（检索结果）：检索胶囊后追加命中结果标注
+import React from 'react';
+import { FLOWS } from '../paths';
+import { LINES } from '../roles-data';
+import { pathLength, pillCounterTransform } from '../roles';
+import { flowPick, flowPickRev } from './ConnectionLines';
+import { CASES } from '../cases';
+import { taskTWindowOf, notifWindowOf } from '../panel-timing';
+
+const FONT = "'HarmonyOS Sans SC','HarmonyOS Sans','HarmonyHeiTi','Microsoft YaHei','PingFang SC',sans-serif";
+// 彗星三层：[长度, 不透明度, 线宽]，亮头朝运动方向（src → dst）
+const COMET = [[28, 0.95, 3], [70, 0.5, 2.5], [150, 0.2, 2]];
+
+// 响应方向（rev）协议胶囊：配色对齐日志徽章（Task-T响应绿 / Negotiation-T响应琥珀）
+const RESP_LABEL = {
+  'Task-T': { text: 'Task-T响应', bg: 'rgba(54,193,141,0.15)', fg: 'rgba(54,193,141,1)' },
+  'Negotiation-T': { text: 'Negotiation-T响应', bg: 'rgba(209,159,0,0.15)', fg: 'rgba(209,159,0,1)' },
+};
+// 事件覆盖标签配色：响应/通知类消息走回程线（neg 线）正向传递时的胶囊配色
+// （V2.11：Task-T响应 不与 Task-T 请求共用 task 线——沿协商回程线正向，绿色对齐日志徽章；
+//  Notification-T 统一青色，对齐设计稿 waimo-zx-notif 线 Notification-T 胶囊）
+const LABEL_COLORS = {
+  'Notification-T': { bg: 'rgba(44,184,201,0.15)', fg: 'rgba(85,204,217,1)' },
+  'Task-T响应': { bg: 'rgba(54,193,141,0.15)', fg: 'rgba(54,193,141,1)' },
+};
+// 胶囊宽度估算（CJK 12px / 西文 6.3px + 两侧留白，与设计稿 Task-T=52、Negotiation-T=93 对齐）
+const textW = (t) => Math.round([...t].reduce((a, c) => a + (c.charCodeAt(0) > 0x2e7f ? 12 : 6.3), 0)) + 13;
+// 连线下方 A2A-T 消息（V2.16 调大至 12px：CJK≈12 / ASCII≈6.2）：宽度按连线长度截断，展示不全以 …… 结尾
+const msgW = (t) => [...t].reduce((a, c) => a + (c.charCodeAt(0) > 0x2e7f ? 12 : 6.2), 0);
+function fitMsg(t, maxW) {
+  if (msgW(t) <= maxW) return t;
+  let out = '';
+  for (const ch of t) {
+    if (msgW(out + ch) + msgW('……') > maxW) break;
+    out += ch;
+  }
+  return out + '……';
+}
+// 连线水平跨度（V2.20）：path 全段 x 极值（M/L 取 x、H 取 x、Q 取控制点与终点 x、V 无 x）。
+// 消息宽度上限改以此为准——原 sprite 盒宽 L.box.w 含箭头/辉光留白（各端 ~4-5px），肘弯线另含
+// riser 纵向段投影，均宽于可见连线，致消息越出连线两端；dGrow 变体仅改 riser 起点 y，x 跨度不变
+function pathXExtent(d) {
+  let minX = Infinity, maxX = -Infinity;
+  const re = /([MHVLQ])((?:[\s,-]*-?[\d.]+)*)/g;
+  let m;
+  while ((m = re.exec(d)) !== null) {
+    const n = (m[2].match(/-?[\d.]+/g) || []).map(Number);
+    const xs = m[1] === 'Q' ? [n[0], n[2]] : m[1] === 'V' ? [] : [n[0]];
+    for (const x of xs) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+    }
+  }
+  return maxX > minX ? { minX, maxX } : null;
+}
+
+export default function ConnectionFlow({ world, pub }) {
+  const active = Object.keys(FLOWS).filter((k) => world.flows[k]);
+  // V3.31：驻留胶囊——Task-T / Notification-T / Negotiation-T 详情面板在场时，对应连线
+  // 协议胶囊不随激光关闭消失，与面板同寿命（面板窗口内连线关闭后仍展示设计标签，
+  // 面板退场/下一连线激活时自然交接；激光与消息不延续——传输已结束，仅标签驻留）
+  const held = [];
+  if (pub) {
+    const c = CASES[pub.caseId];
+    const hold = (key, win) => {
+      if (!world.flows[key] && pub.t >= win.t0 && pub.t < win.t1) held.push(key);
+    };
+    hold('waimo-zx-task', taskTWindowOf(c));
+    hold('waimo-zx-notif', notifWindowOf(c));
+  }
+  if (world.negotiation && !world.flows['zx-yd-neg']) held.push('zx-yd-neg');
+  if (!active.length && !held.length) return null;
+  return (
+    <svg className="st-flow" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true">
+      {active.map((key) => {
+        const f = FLOWS[key];
+        if (!f) return null;
+        const L = LINES[key];
+        const fo = world.flows[key];
+        const rev = !!fo.rev;
+        const d = rev ? flowPickRev(world, key, pub) : flowPick(world, key, pub);
+        // V2.13：重映射后连线变长 → 彗星行程/时长按实际路径长度修正（展开态沿用导出 len）
+        const len = pub ? pathLength(d) : f.len;
+        const dur = Math.min(4.5, Math.max(1.6, len / 140 + 0.9)).toFixed(2) + 's';
+        const base = L && L.label ? L.label : null;
+        const resp = rev && base ? RESP_LABEL[base.text] : null;
+        // 胶囊文案：事件覆盖（label）> 响应变体（rev）> 设计标签；非设计文案 → 宽度按字宽估算，以原胶囊中心居中
+        const text = fo.label || (resp ? resp.text : (base ? base.text : null));
+        const colors = (fo.label && LABEL_COLORS[fo.label]) || resp || base;
+        const w = text && base && text !== base.text ? textW(text) : (L ? L.pillBox.w : 0);
+        const cx = L ? L.pillBox.x + L.pillBox.w / 2 : 0;
+        const x = cx - w / 2;
+        // V2.20：消息截断上限 = 连线水平跨度；消息以胶囊中心居中，个别胶囊中心略偏离线中点时
+        // 取窄侧余量×2，保证两侧均不越出连线端点（收起/重适配只会把连线拉长，静态跨度为保守上限）
+        const ext = pathXExtent(f.d);
+        const msgMax = ext
+          ? Math.max(0, Math.min(ext.maxX - ext.minX, 2 * Math.min(cx - ext.minX, ext.maxX - cx)))
+          : (L ? L.box.w : 0);
+        // V2.13：胶囊保比例——以胶囊中心反向缩放抵消区域拉伸（骑线标签随线中点，文字不变形）
+        const ctr = L ? pillCounterTransform(pub, L.pillBox) : undefined;
+        // V3.28：有详情面板承载消息的连线不再重复展示连线文字——waimo-zx-task（Task-T 面板）、
+        // waimo-zx-notif（Notification-T 面板）常驻抑制；zx-yd-neg 在协商面板窗口内抑制
+        //（协商期外如 Task-T响应/Notification-T 回程消息无面板，保留连线文字）
+        const msgHidden = key === 'waimo-zx-task' || key === 'waimo-zx-notif' || (key === 'zx-yd-neg' && world.negotiation);
+        return (
+          <g key={key} data-key={key} data-dir={rev ? 'rev' : 'fwd'}>
+            {COMET.map((cfg, i) => (
+              <path key={i} d={d} fill="none" stroke="rgba(220,220,220,1)"
+                strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="butt"
+                strokeDasharray={'0 ' + (150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
+                strokeDashoffset="150">
+                <animate attributeName="stroke-dashoffset" from="150" to={-len}
+                  dur={dur} repeatCount="indefinite" />
+              </path>
+            ))}
+            {colors && text ? (
+              <g style={{ transform: ctr, transition: 'transform 0.25s ease' }}>
+                <g className="st-pill" data-key={key}>
+                  <rect x={x} y={L.pillBox.y} width={w} height={L.pillBox.h}
+                    rx="4" fill={colors.bg} />
+                  <text x={cx} y={L.pillBox.y + 16.5} textAnchor="middle"
+                    fontSize="12" fontWeight="400" fontFamily={FONT} fill={colors.fg}>{text}</text>
+                </g>
+                {fo.result && base ? (
+                  <text className="st-flow-result" x={x + w + 8} y={L.pillBox.y + 16.5}
+                    fontSize="12" fontWeight="400" fontFamily={FONT} fill={base.fg}>{fo.result}</text>
+                ) : null}
+                {fo.msg && !msgHidden ? (
+                  // A2A-T 消息：连线下方展示（胶囊/连线之下），与连线保持 1rem 距离（V2.17：胶囊底≈线顶，
+                  // 基线 = 胶囊底 + 1rem + 12px 文本 bbox 顶偏移≈13），宽度不超过连线跨度、超出以 …… 截断
+                  <text className="st-flow-msg" data-key={key} x={cx} y={L.pillBox.y + L.pillBox.h + 16 + 13}
+                    textAnchor="middle" fontSize="12" fontWeight="400" fontFamily={FONT}
+                    fill="rgba(201,201,201,1)">{fitMsg(fo.msg, msgMax)}</text>
+                ) : null}
+              </g>
+            ) : null}
+          </g>
+        );
+      })}
+      {held.map((key) => {
+        // 驻留胶囊：设计标签原位呈现（宽度/中心与激活期一致，衔接无跳变），
+        // 不带激光/结果/消息——仅标签随面板驻留
+        const L = LINES[key];
+        const base = L && L.label ? L.label : null;
+        if (!base) return null;
+        const ctr = pillCounterTransform(pub, L.pillBox);
+        const cx = L.pillBox.x + L.pillBox.w / 2;
+        return (
+          <g key={'held-' + key} style={{ transform: ctr, transition: 'transform 0.25s ease' }}>
+            <g className="st-pill" data-key={key} data-held="1">
+              <rect x={L.pillBox.x} y={L.pillBox.y} width={L.pillBox.w} height={L.pillBox.h}
+                rx="4" fill={base.bg} />
+              <text x={cx} y={L.pillBox.y + 16.5} textAnchor="middle"
+                fontSize="12" fontWeight="400" fontFamily={FONT} fill={base.fg}>{base.text}</text>
+            </g>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}

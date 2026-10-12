@@ -1,0 +1,294 @@
+/* ============ Negotiation-T 详细交互流程对话框（336 × 295） ============ */
+
+.negotiation-dialog {
+  position: relative;
+  width: 336px;
+  height: 295px;
+  border-radius: 8px;
+  /* V3.11：与 react-panels 详情面板（panels.css .glass-panel）背景一致——
+     原设计稿规格 rgba(0,0,0,0.3) + 90deg 横向渐变改为 0.4 黑底 + 180deg 顶部渐变 */
+  background:
+    linear-gradient(180deg, rgba(103, 103, 103, 0.05) 0%, rgba(245, 245, 245, 0) 55%),
+    rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(27px);
+  -webkit-backdrop-filter: blur(27px);
+  box-shadow: none;
+  animation: nd-enter 0.5s ease-out both;
+}
+
+@keyframes nd-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- 标题行 ---------- */
+
+.nd-accent-bar {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  width: 2px;
+  height: 16px;
+  border-radius: 2px;
+  background: #d19f00;
+  z-index: 3;
+}
+
+.nd-title {
+  position: absolute;
+  left: 26px;
+  top: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  font-size: 14px;
+  line-height: 22px;
+  z-index: 3;
+}
+
+.nd-title__name {
+  font-weight: 500;
+  background: linear-gradient(180deg, #fcc800, #9e7400);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.nd-title__desc {
+  font-weight: 400;
+  color: #eeeeee;
+}
+
+/* ---------- 消息列表（垂直滚动容器）：left:0 使第二条气泡贴左，与第一条贴右对称 ---------- */
+
+.nd-messages {
+  position: absolute;
+  left: 0;
+  top: 41px;
+  right: 0;
+  bottom: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.nd-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nd-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nd-messages::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(243, 243, 243, 0.28), rgba(243, 243, 243, 0.1));
+}
+
+/* ---------- 气泡（单描边 + 角部凸出尾巴） ---------- */
+
+.nd-bubble {
+  position: relative;
+}
+
+.nd-bubble__bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 14, 96, 0.4);
+  backdrop-filter: blur(11px);
+  -webkit-backdrop-filter: blur(11px);
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
+}
+
+.nd-bubble__outline {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.nd-bubble--propose {
+  margin-left: auto;
+}
+
+/* 第二条消息（Accept）：专线返回补充信息时入场（淡入 + 上滑，V2.25 放慢至 0.7s） */
+.nd-bubble--accept {
+  margin-top: 16px;
+  animation: ndMsgIn 0.7s ease-out both;
+}
+
+@keyframes ndMsgIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nd-bubble__text {
+  position: absolute;
+  font-size: 12px;
+  line-height: 20px;
+  color: #ffffff;
+  text-align: left;
+  z-index: 2;
+}
+
+.nd-bubble__text--propose {
+  left: 16px;
+  top: 4px;
+  width: 204px;
+}
+
+.nd-bubble__text--accept {
+  left: 31px;
+  top: 4px;
+  width: 254px;
+}
+
+/* ---------- CPE 端口面板（设计稿导出 SVG，266×48） ---------- */
+
+.nd-port-grid-svg {
+  position: absolute;
+  left: 31px;
+  top: 67px;
+  width: 266px;
+  height: 48px;
+  z-index: 2;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* 网格下方斜向辉光 */
+.nd-grid-glow {
+  position: absolute;
+  left: 31px;
+  top: 92px;
+  width: 266px;
+  height: 44px;
+  background: radial-gradient(
+    ellipse 130px 24px at 80% 45%,
+    rgba(201, 201, 201, 0.18),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---------- 单选按钮组（268 × 32） ---------- */
+
+.nd-radio-group {
+  position: absolute;
+  left: 31px;
+  top: 139px;
+  width: 268px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(102, 140, 247, 0.15);
+  display: flex;
+  align-items: stretch;
+  gap: 3px;
+  padding: 2px 3px;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.nd-chip {
+  flex: 0 0 auto;
+  min-width: 0;
+  height: 28px;
+  padding: 0 2px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-family: inherit;
+  font-size: 10.5px;
+  line-height: 20px;
+  color: #c9c9c9;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.nd-chip__label {
+  letter-spacing: -0.3px;
+}
+
+.nd-chip:hover:not(:disabled):not(.nd-chip--selected) {
+  background: rgba(102, 140, 247, 0.18);
+}
+
+.nd-chip:disabled {
+  cursor: default;
+  color: #c9c9c9;
+}
+
+/* 选中项：蓝色半透明底 + 蓝色实线描边 + 顶部白色高光；选中瞬间短促点亮（光束落定/手动点选） */
+.nd-chip--selected {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(145, 199, 255, 0.35), rgba(92, 172, 255, 0) 72%),
+    linear-gradient(180deg, rgba(92, 172, 255, 0.3), rgba(92, 172, 255, 0.12));
+  border-color: #5cacff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  cursor: default;
+  animation: ndChipPick 0.3s ease-out;
+}
+
+@keyframes ndChipPick {
+  from {
+    transform: scale(0.9);
+    filter: brightness(1.8);
+  }
+  to {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* ---------- 三角光束（CPE 面板红色框 → cvlan 选项区左右边沿）----------
+   顶点定于红色框（transform-origin 内联指定），自顶点向下生长点亮、
+   保持后随选中淡出；V2.25 放慢至 1.6s（0.75s 起），时序与 NegotiationDialog.jsx BEAM_SELECT_AT 对齐 */
+.nd-beam {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+  filter: drop-shadow(0 0 5px rgba(92, 172, 255, 0.5));
+  animation: ndBeam 1.6s ease-out 0.75s both;
+}
+
+@keyframes ndBeam {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.15);
+  }
+  35% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+  }
+}

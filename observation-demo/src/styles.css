@@ -1,0 +1,15 @@
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; padding: 0; height: 100%; background: rgb(2, 10, 57); overflow: hidden; }
+/* V2.14：整页铺满（G=scale(vw/1920, vh/1080) 非等比）——文字/图标经 uiPatches 反向缩放保比例 */
+.screen-scaler { position: fixed; inset: 0; }
+.screen-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #161618;
+  transform-origin: top left;
+  flex-shrink: 0;
+}
