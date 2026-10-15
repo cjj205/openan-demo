@@ -93,9 +93,17 @@
   position: absolute;
   font-size: 11px; /* V2.20：12→11px 略缩小（V2.17 曾 10→12px；整页等比缩放下随屏幕放大） */
   font-weight: 400;
-  line-height: 18px;
-  white-space: nowrap;
+  line-height: 17px; /* V5.6：18→17px——两行 34px 恰好容纳于各卡描述区（不超出卡底） */
+  /* V5.4：超出卡片宽度的描述换行展示（悬浮 title 保留全文）；
+     V5.6（用户规格）：卡片高度固定、不随描述动态增减——描述至多两行且不超出卡片区域
+     （-webkit-line-clamp 截断+省略号，全文悬浮 title 可见）；文字水平居中 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
+  white-space: normal;
+  word-break: break-all;
+  text-align: left; /* V5.7（用户规格）：描述文字左对齐（曾居中） */
   color: #FFFFFF; /* V3.20：用户定稿改白色（V2.7 曾为浅蓝渐变裁切文字） */
   animation: stDescIn 0.3s ease-out;
   transition: opacity 0.4s;
@@ -258,4 +266,61 @@
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* ---- 左侧搜索框（V5.13：覆盖设计搜索框，点击聚焦/输入实时过滤工单列表；Esc 清空）---- */
+.st-search {
+  pointer-events: auto;
+  cursor: text;
+  z-index: 21; /* 与日志表同层（覆盖左栏设计框，不与工具条/面板冲突） */
+}
+.st-search__input {
+  position: absolute;
+  left: 12px;
+  top: 5px;
+  width: 214px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: #fff;
+  caret-color: #5cacff;
+}
+.st-search__input::placeholder {
+  color: #939393;
+}
+
+/* ---- 左侧状态筛选（V5.13：设计「筛选」区可点，下拉选择；空态提示）---- */
+.st-ofilter {
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 21;
+}
+.st-ofilter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+}
+.st-ofilter-menu {
+  position: absolute;
+  width: 82px;
+  background: rgba(2, 12, 69, 0.95);
+  border: 1px solid rgba(119, 119, 119, 1);
+  border-radius: 4px;
+  padding: 4px 0;
+  z-index: 30;
+  font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
+.st-oempty {
+  color: #939393;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: center;
+  pointer-events: none;
 }

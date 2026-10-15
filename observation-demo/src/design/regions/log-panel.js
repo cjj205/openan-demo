@@ -324,7 +324,7 @@ export const root = {
                  "children": [
                   {
                    "id": "23:137211",
-                   "name": "WAIMO投诉处理智能体",
+                   "name": "WAIMO投诉处置智能体",
                    "kind": "text",
                    "x": 277,
                    "y": 10,
@@ -341,7 +341,7 @@ export const root = {
                     "justifyContent": "flex-start",
                     "alignItems": "flex-start"
                    },
-                   "text": "WAIMO投诉处理智能体"
+                   "text": "WAIMO投诉处置智能体"
                   },
                   {
                    "id": "23:137212",
@@ -389,7 +389,7 @@ export const root = {
                 },
                 {
                  "id": "23:137214",
-                 "name": "主备专线同时中断，XX至XX段链路全阻，业务完全中断。",
+                 "name": "进行集客专线业务投诉场景网络侧故障诊断，故障现象：专线中断。",
                  "kind": "text",
                  "x": 565,
                  "y": 10,
@@ -406,7 +406,7 @@ export const root = {
                   "justifyContent": "flex-start",
                   "alignItems": "flex-start"
                  },
-                 "text": "主备专线同时中断，XX至XX段链路全阻，业务完全中断。"
+                 "text": "进行集客专线业务投诉场景网络侧故障诊断，故障现象：专线中断。"
                 }
                ]
               }

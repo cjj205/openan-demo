@@ -368,20 +368,31 @@
 }
 .auth-pill--gray { background: rgba(174, 174, 174, 0.15); border-color: #777777; color: #aeaeae; }
 
+/* V5.4 Authorization-T 流程连线：流动虚线（流程图自上而下依次执行的动态效果；
+   仅线段 path 流动，箭头 polygon 保持静止） */
+.auth-flow path {
+  stroke-dasharray: 4 3;
+  animation: authFlowDash 0.8s linear infinite;
+}
+@keyframes authFlowDash {
+  to { stroke-dashoffset: -7; }
+}
+
 /* Notification-T */
+/* V5.21（用户规格·十五次修订）：卡片 = 同色系底色（透明度 0.01）+ 叠加一层白色
+   （透明度 0.05，background-image 叠于 background-color 之上）；整卡描边白色高透明 0.1；
+   头部条内部横向色调 0.25、渐变尾端全透明（90deg / -90deg） */
 .notif-card {
   position: absolute;
   width: 136px;
   height: 120px;
   border-radius: 6px;
-  border: 1px solid transparent;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.064) 0%, rgba(255, 255, 255, 0.04) 30%, rgba(255, 255, 255, 0.016) 100%) padding-box,
-    linear-gradient(180deg, rgba(243, 243, 243, 0.5), rgba(243, 243, 243, 0) 85%) border-box;
 }
-.notif-card__head { position: absolute; left: 0; top: 0; width: 136px; height: 28px; border-radius: 8px 8px 0 0; }
-.notif-card__head--red { background: linear-gradient(180deg, rgba(238, 105, 111, 0.25), rgba(238, 105, 111, 0)); }
-.notif-card__head--green { background: linear-gradient(180deg, rgba(54, 193, 141, 0.25), rgba(54, 193, 141, 0)); }
+.notif-card--red { border: 1px solid rgba(255, 255, 255, 0.1); background-color: rgba(238, 105, 111, 0.01); background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)); }
+.notif-card--green { border: 1px solid rgba(255, 255, 255, 0.1); background-color: rgba(54, 193, 141, 0.01); background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)); }
+.notif-card__head { position: absolute; left: 0; top: 0; width: 136px; height: 28px; border-radius: 6.4px 6.4px 0 0; }
+.notif-card__head--red { background: linear-gradient(90deg, #ee696f40 0%, #ee696f00 100%); }
+.notif-card__head--green { background: linear-gradient(-90deg, #36c18d40 0%, #36c18d00 100%); }
 .notif-card__title {
   position: absolute;
   left: 0;

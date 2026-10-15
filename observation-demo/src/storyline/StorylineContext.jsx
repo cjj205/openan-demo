@@ -4,7 +4,7 @@
 // 仅在事件边界发布状态（离散），连续动效全部由 CSS/SMIL 承担
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { CASES, TIME_SCALE, foldWorld, worldSig } from './cases';
-import { buildPatches, buildUiPatches, ORDERS } from './roles';
+import { buildPatches, buildUiPatches, ORDERS, ORDER_SLOT } from './roles';
 import './storyline.css';
 
 export const StoryContext = createContext(null);
@@ -28,7 +28,8 @@ function makeInteractions(apiRef) {
     },
   });
   const m = {};
-  for (const k of ['c1', 'c2']) m[ORDERS[k].id] = card(k);
+  // V5.23：工单卡整卡点击切换案例——按对调后槽位挂接（case2 在第一卡）
+  for (const k of ['c1', 'c2']) m[ORDERS[ORDER_SLOT[k]].id] = card(k);
   // 面板收起把手（V2.12）：设计把手 boder 条 + 箭头切图（兄弟节点需单独挂接）点击收起；
   // 收起态面板卸载，由覆盖层副本把手（PanelHandles）承担展开
   m['23:137098'] = { onClick: () => apiRef.current.toggleOrders() };
@@ -38,11 +39,11 @@ function makeInteractions(apiRef) {
   return m;
 }
 
-function makePub(mode, caseId, t, speed, zoom, logLive, logHidden, ordersHidden, vscale, api, interactions) {
+function makePub(mode, caseId, t, speed, zoom, logLive, logHidden, ordersHidden, vscale, api, interactions, search, status) {
   const world = mode === 'snapshot' ? null : foldWorld(CASES[caseId], t);
-  const ctx = { mode, caseId, speed, zoom, logLive, logHidden, ordersHidden, vscale, orderInfo: world ? !!world.orderInfo : false };
+  const ctx = { mode, caseId, speed, zoom, logLive, logHidden, ordersHidden, vscale, orderInfo: world ? !!world.orderInfo : false, search, status };
   return {
-    mode, caseId, t, speed, zoom, logLive, logHidden, ordersHidden, vscale, world, api, interactions,
+    mode, caseId, t, speed, zoom, logLive, logHidden, ordersHidden, vscale, world, api, interactions, search, status,
     patches: buildPatches(world, ctx),
     uiPatches: buildUiPatches(ctx),
   };
@@ -59,7 +60,7 @@ export function StorylineProvider({ children }) {
   const commit = (over) => {
     const s = Object.assign(st.current, over);
     lastSig.current = s.mode === 'snapshot' ? '' : worldSig(foldWorld(CASES[s.caseId], s.t));
-    setPub(makePub(s.mode, s.caseId, s.t, s.speed, s.zoom, s.logLive, s.logHidden, s.ordersHidden, s.vscale, apiRef.current, interactions));
+    setPub(makePub(s.mode, s.caseId, s.t, s.speed, s.zoom, s.logLive, s.logHidden, s.ordersHidden, s.vscale, apiRef.current, interactions, s.search, s.status));
   };
 
   const stopLoop = () => {
@@ -89,8 +90,8 @@ export function StorylineProvider({ children }) {
         lastSig.current = sig;
         const s2 = st.current;
         // V2.16 修复：播放循环发布必须携带 vscale（缺失则画布回落 1× → 页面缩小）
-        const ctx = { mode: 'playing', caseId: s2.caseId, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, ordersHidden: s2.ordersHidden, vscale: s2.vscale, orderInfo: !!w.orderInfo };
-        setPub({ mode: 'playing', caseId: s2.caseId, t, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, ordersHidden: s2.ordersHidden, vscale: s2.vscale, world: w, api: apiRef.current, interactions, patches: buildPatches(w, ctx), uiPatches: buildUiPatches(ctx) });
+        const ctx = { mode: 'playing', caseId: s2.caseId, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, ordersHidden: s2.ordersHidden, vscale: s2.vscale, orderInfo: !!w.orderInfo, search: s2.search, status: s2.status };
+        setPub({ mode: 'playing', caseId: s2.caseId, t, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, ordersHidden: s2.ordersHidden, vscale: s2.vscale, world: w, api: apiRef.current, interactions, search: s2.search, status: s2.status, patches: buildPatches(w, ctx), uiPatches: buildUiPatches(ctx) });
       }
     };
     raf.current = requestAnimationFrame(tick);
@@ -152,12 +153,17 @@ export function StorylineProvider({ children }) {
       // 面板收起/展开（V2.12）：纯 UI 状态（与 zoom 同类），不影响故事线世界状态
       toggleLog() { commit({ logHidden: !st.current.logHidden }); },
       toggleOrders() { commit({ ordersHidden: !st.current.ordersHidden }); },
+      // V5.13（用户规格）：左侧搜索框输入/状态筛选（纯 UI 状态）——过滤工单列表
+      //（buildUiPatches orderVisible = 搜索 orderMatches ∧ 状态 statusMatches）
+      setSearch(v) { commit({ search: String(v == null ? '' : v) }); },
+      setStatus(v) { commit({ status: v }); },
     };
   }, []);
   apiRef.current = api;
 
   const [pub, setPub] = useState(() => {
     const q = new URLSearchParams(window.location.search);
+    // V5.24 默认 case2 → V5.25（用户规格）回退：位置对调撤销后默认第一张卡（case1；?case=2 显式指定案例二）
     const caseId = q.get('case') === '2' ? 'c2' : 'c1';
     const mode = q.get('story') === 'seek' ? 'paused' : 'ended';
     // 默认完成态（V2.13）：刷新页面直接呈现所选案例完成态
@@ -167,8 +173,8 @@ export function StorylineProvider({ children }) {
     // 视口适配（V2.14）：整页非等比铺满（G=scale(vw/1920, vh/1080)），
     // 文字/图标等经 uiPatches 反向缩放保比例（见 roles.js totalFactors）
     const vscale = { x: window.innerWidth / 1920, y: window.innerHeight / 1080 };
-    st.current = { mode, caseId, t, speed: 1, zoom: 1, logLive: true, logHidden: false, ordersHidden: false, vscale };
-    return makePub(mode, caseId, t, 1, 1, true, false, false, vscale, api, interactions);
+    st.current = { mode, caseId, t, speed: 1, zoom: 1, logLive: true, logHidden: false, ordersHidden: false, vscale, search: '', status: '全部状态' };
+    return makePub(mode, caseId, t, 1, 1, true, false, false, vscale, api, interactions, '', '全部状态');
   });
 
   useEffect(() => {

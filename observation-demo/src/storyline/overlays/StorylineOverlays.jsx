@@ -15,20 +15,28 @@ import SubStepPanels from './SubStepPanels';
 import LogTable from './LogTable';
 import Toolbar from './Toolbar';
 import WorkOrderSel from './WorkOrderSel';
+import LeftSearch from './LeftSearch';
+import OrderFilter from './OrderFilter';
 import ZoomToolbar from './ZoomToolbar';
 import PanelHandles from './PanelHandles';
 
 // 组间连线（客服—监控室—传输室）滑块动效：渐变短条沿线从左端滑到右端、首尾淡入淡出
-// 关键帧由导出的连线/滑块几何生成（roles-data.js ROOMS.glides）
-const GLIDE_CSS = ROOMS.glides.map((g, i) =>
-  '.st-glide' + i + '{animation:stGlide' + i + ' ' + g.dur + 's linear infinite}' +
-  '@keyframes stGlide' + i + '{' +
-    '0%{transform:translateX(' + g.from + 'px);opacity:0}' +
-    '15%{opacity:.8}' +
-    '85%{opacity:.8}' +
-    '100%{transform:translateX(' + g.to + 'px);opacity:0}' +
-  '}'
-).join('');
+// 关键帧由导出的连线/滑块几何生成（roles-data.js ROOMS.glides）；
+// V5.12（用户规格）：行程收窄至连线两端以内（连线 175.64..435.58 宽 259.94 / 515.58..1099.43
+// 宽 583.85，滑块 80 → 行程 ±89.97 / ±251.93）——滑块不再越至矩形胶囊上
+const GLIDE_LIM = [89.97, 251.93];
+const GLIDE_CSS = ROOMS.glides.map((g, i) => {
+  const lim = GLIDE_LIM[i] != null ? GLIDE_LIM[i] : Math.max(Math.abs(g.from), Math.abs(g.to));
+  const from = -Math.min(Math.abs(g.from), lim);
+  const to = Math.min(g.to, lim);
+  return '.st-glide' + i + '{animation:stGlide' + i + ' ' + g.dur + 's linear infinite}' +
+    '@keyframes stGlide' + i + '{' +
+      '0%{transform:translateX(' + from + 'px);opacity:0}' +
+      '15%{opacity:.8}' +
+      '85%{opacity:.8}' +
+      '100%{transform:translateX(' + to + 'px);opacity:0}' +
+    '}';
+}).join('');
 
 function LogSensor({ onActivate, fit }) {
   const b = LOGS.panelBox;
@@ -80,6 +88,9 @@ export default function StorylineOverlays() {
       {!logs ? null : <LogTable logs={logs} anchor={live ? 'bottom' : 'top'} pub={pub} />}
       {pub.logHidden || live || pub.logLive ? null : <LogSensor onActivate={pub.api.activateLog} fit={lgFit} />}
       {pub.ordersHidden ? null : <WorkOrderSel pub={pub} />}
+      {/* V5.13（用户规格）：左侧搜索框 + 状态筛选（面板收起时随面板隐藏）——输入/选择实时过滤工单列表 */}
+      {pub.ordersHidden ? null : <LeftSearch pub={pub} />}
+      {pub.ordersHidden ? null : <OrderFilter pub={pub} />}
       <PanelHandles pub={pub} />
     </>
   );

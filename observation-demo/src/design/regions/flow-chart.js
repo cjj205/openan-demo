@@ -517,14 +517,15 @@ export const root = {
   {
    "id": "23:135683",
    "name": "矢量 2678",
-   "kind": "sprite",
-   "x": 172.64,
-   "y": 91,
-   "w": 265.94,
-   "h": 6,
-   "rsn": "vector",
-   "absX": 447,
-   "absY": 139
+   "kind": "div",
+   "x": 175.64,
+   "y": 93,
+   "w": 259.94,
+   "h": 0,
+   "style": {
+    "border": "1px dashed rgba(255,255,255,1)",
+    "opacity": 0.2
+   }
   },
   {
    "id": "23:135684",
@@ -543,14 +544,15 @@ export const root = {
   {
    "id": "23:135685",
    "name": "矢量 2679",
-   "kind": "sprite",
-   "x": 512.58,
-   "y": 91,
-   "w": 589.85,
-   "h": 6,
-   "rsn": "vector",
-   "absX": 775,
-   "absY": 139
+   "kind": "div",
+   "x": 515.58,
+   "y": 93,
+   "w": 583.85,
+   "h": 0,
+   "style": {
+    "border": "1px dashed rgba(255,255,255,1)",
+    "opacity": 0.2
+   }
   },
   {
    "id": "23:135686",
@@ -1256,7 +1258,7 @@ export const root = {
            "children": [
             {
              "id": "23:135918",
-             "name": "WAIMO投诉处理智能体",
+             "name": "WAIMO投诉处置智能体",
              "kind": "text",
              "x": 36,
              "y": 64,
@@ -1273,7 +1275,7 @@ export const root = {
               "justifyContent": "flex-start",
               "alignItems": "flex-start"
              },
-             "text": "WAIMO投诉处理智能体"
+             "text": "WAIMO投诉处置智能体"
             },
             {
              "id": "23:135919",
