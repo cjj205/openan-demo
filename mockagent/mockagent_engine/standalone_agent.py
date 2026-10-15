@@ -1,7 +1,7 @@
 """独立 Mock Agent 实例 runner（打桩 Agent 子进程入口）。
 
 由 mock-instances 管理 API 以子进程方式拉起：
-    python -m mockagent.standalone_agent --agent <id>
+    python -m mockagent_engine.standalone_agent --agent <id>
 
 每个 Agent 是 agents/ 下的一个独立目录（agents/<id>/agent.json），
 共享基线在 agents/_defaults.json（llm 默认、12 模板变体池等）。
