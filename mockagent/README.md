@@ -42,10 +42,10 @@ mockagent/                                # 独立项目根 / standalone project
 ├── workflows/                            # 内置 PSOP 工作流（live_assurance_demo.json）
 ├── requirements.txt                      # Python 依赖（a2a-sdk / a2a-t-sdk / workflow-exec-engine ...）
 ├── pyproject.toml / .env.example
-├── mockagent/                            # FastAPI 服务包 / backend package
+├── mockagent_engine/                       # 引擎包 / engine package（服务运行时，Agent 定义在 agents/）
 │   ├── main.py                           # 调测台后端入口（REST + JWT）
 │   ├── agent_registry.py                 # agents/ 目录扫描与聚合
-│   ├── standalone_agent.py               # 独立打桩实例入口（python -m mockagent.standalone_agent --agent <id>）
+│   ├── standalone_agent.py               # 独立打桩实例入口（python -m mockagent_engine.standalone_agent --agent <id>）
 │   ├── protocol_flow.py                  # A2A-T 协议流（意图/授权/协商/任务）
 │   ├── dataset_retrieval.py              # 数据集检索（模板过滤 + 评分 + 标识回填）
 │   ├── llm_client.py                     # LLM 生成模式
@@ -56,6 +56,9 @@ mockagent/                                # 独立项目根 / standalone project
 └── frontend/                             # React 调测台（MockAgent 管理 / 数据集 / 控制台）
 ```
 
+> 命名说明 / Naming：`mockagent/` 是项目根，`mockagent_engine/` 是引擎代码包（Python 导入名不含连字符），`agents/` 是 Agent 定义目录——三者职责互不重叠。
+> `mockagent/` is the project root, `mockagent_engine/` is the engine package (Python imports cannot contain hyphens), and `agents/` holds the agent definitions.
+
 **Agent 目录内容 / What's inside an agent directory**：`agent.json` 声明该 Agent 的名称、端口、提示词变体（stubVariants）、数据集模板范围（datasetTemplates）、LLM 与工作流配置；共享基线在 `agents/_defaults.json`。
 
 ## 三、快速开始 / Quick Start
@@ -63,18 +66,18 @@ mockagent/                                # 独立项目根 / standalone project
 ```bash
 # 后端 Backend (Python 3.12+，项目根目录下 / from project root)
 pip install -r requirements.txt
-uvicorn mockagent.main:app --host 0.0.0.0 --port 9100
+uvicorn mockagent_engine.main:app --host 0.0.0.0 --port 9100
 # API 前缀 API prefix: http://127.0.0.1:9100/api/v1  （JWT 登录 / auth/login）
 
 # 单独启动某个 Agent（等价于管理 API 的 start）
 # Run a single agent standalone (equivalent to the management API start)
-python -m mockagent.standalone_agent --agent wireless-domain-stub
+python -m mockagent_engine.standalone_agent --agent wireless-domain-stub
 
 # 前端 Frontend (Node 18+, from frontend/)
 npm install && npm run dev
 ```
 
-- 实例管理：`POST /api/v1/mock-instances/{id}/start`（后端以 `python -m mockagent.standalone_agent --agent <id>` 拉起，定义读取 `agents/<id>/agent.json`，端口 9005-9010）。
+- 实例管理：`POST /api/v1/mock-instances/{id}/start`（后端以 `python -m mockagent_engine.standalone_agent --agent <id>` 拉起，定义读取 `agents/<id>/agent.json`，端口 9005-9010）。
 - Instance management: `POST /api/v1/mock-instances/{id}/start` spawns each agent on ports 9005-9010 (definitions read from `agents/<id>/agent.json`).
 - 工作流模式：给实例配置 `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` 后，向该实例发送意图请求即可触发端到端编排（详见 `workflows/`）。
 - Workflow mode: enable `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` on an instance, then send an intent request to trigger end-to-end orchestration.

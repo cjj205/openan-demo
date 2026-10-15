@@ -168,7 +168,7 @@ def start_instance(instance_id: str, request: Request, _: dict = Depends(require
         try:
             proc = subprocess.Popen(
                 [
-                    sys.executable, "-m", "mockagent.standalone_agent",
+                    sys.executable, "-m", "mockagent_engine.standalone_agent",
                     "--agent", instance_id,
                 ],
                 cwd=str(Path(__file__).resolve().parents[1]),
@@ -289,7 +289,7 @@ def autostart_instances() -> None:
                     log_file = open(work_dir / "instance.log", "ab")
                     proc = subprocess.Popen(
                         [
-                            sys.executable, "-m", "mockagent.standalone_agent",
+                            sys.executable, "-m", "mockagent_engine.standalone_agent",
                             "--agent", instance_id,
                         ],
                         cwd=str(Path(__file__).resolve().parents[1]),
