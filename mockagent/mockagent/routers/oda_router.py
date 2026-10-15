@@ -1,4 +1,4 @@
-"""ODA Canvas 一键部署：前端配置环境信息 → 通过 K8s API Server-Side Apply 部署 ODA Component。
+﻿"""ODA Canvas 一键部署：前端配置环境信息 → 通过 K8s API Server-Side Apply 部署 ODA Component。
 
 无需服务器安装 kubectl/helm：直接调用 Canvas 集群 API（Bearer Token）。
 对象集：Secret / PVC / Deployment / Service / Component(oda.tmforum.org)。
@@ -33,7 +33,7 @@ class OdaConfig(BaseModel):
     datasetSearch: bool = True
     stubFallback: bool = True
     selectedAgents: list[str] = []   # 要部署的打桩实例 id；空 = 全部
-    autoStart: bool = False          # 部署后 Pod 内自动启动已选实例（OPENAN_DEBUG_AUTOSTART）
+    autoStart: bool = False          # 部署后 Pod 内自动启动已选实例（MOCK_AGENT_AUTOSTART）
 
 
 def _config_path() -> Path:
@@ -123,7 +123,7 @@ def _apply(client: httpx.Client, cfg: OdaConfig, group: str, version: str, plura
         url = f"/api/v1/namespaces/{cfg.namespace}/{plural}/{name}"
     r = client.patch(
         url,
-        params={"fieldManager": "openan-debug", "force": "true"},
+        params={"fieldManager": "mockagent", "force": "true"},
         content=json.dumps(obj, ensure_ascii=False),
         headers={"Content-Type": "application/apply-patch+yaml"},
     )
@@ -135,7 +135,7 @@ def _labels(release: str) -> dict:
     return {
         "app.kubernetes.io/name": "openan-mockagent",
         "app.kubernetes.io/instance": release,
-        "app.kubernetes.io/managed-by": "openan-debug",
+        "app.kubernetes.io/managed-by": "mockagent",
         "oda.tmforum.org/componentName": release,
     }
 
@@ -171,19 +171,19 @@ def _manifests(cfg: OdaConfig) -> list[dict]:
         {"name": f"agent-{a['name']}", "containerPort": a["port"]} for a in agents
     ]
     env = [
-        {"name": "OPENAN_DEBUG_HOST", "value": "0.0.0.0"},
-        {"name": "OPENAN_DEBUG_PORT", "value": "9000"},
-        {"name": "OPENAN_DEBUG_JWT_SECRET", "valueFrom": {"secretKeyRef": {"name": release, "key": "jwt-secret"}}},
-        {"name": "OPENAN_DEBUG_DATASET_SEARCH", "value": "on" if cfg.datasetSearch else "off"},
-        {"name": "OPENAN_DEBUG_STUB_FALLBACK", "value": "on" if cfg.stubFallback else "off"},
+        {"name": "MOCK_AGENT_HOST", "value": "0.0.0.0"},
+        {"name": "MOCK_AGENT_PORT", "value": "9000"},
+        {"name": "MOCK_AGENT_JWT_SECRET", "valueFrom": {"secretKeyRef": {"name": release, "key": "jwt-secret"}}},
+        {"name": "MOCK_AGENT_DATASET_SEARCH", "value": "on" if cfg.datasetSearch else "off"},
+        {"name": "MOCK_AGENT_STUB_FALLBACK", "value": "on" if cfg.stubFallback else "off"},
         {"name": "A2AT_LANGUAGE", "value": "zh-CN"},
-        {"name": "OPENAN_DEBUG_PUBLIC_URL", "value": f"{public_base}/debug/a2a"},
-        {"name": "OPENAN_DEBUG_AGENT_INTERNAL_URL", "value": "http://localhost:9000/debug/a2a/message:send"},
+        {"name": "MOCK_AGENT_PUBLIC_URL", "value": f"{public_base}/debug/a2a"},
+        {"name": "MOCK_AGENT_AGENT_INTERNAL_URL", "value": "http://localhost:9000/debug/a2a/message:send"},
     ]
     if cfg.adminPassword:
-        env.append({"name": "OPENAN_DEBUG_ADMIN_PASSWORD", "valueFrom": {"secretKeyRef": {"name": release, "key": "admin-password"}}})
+        env.append({"name": "MOCK_AGENT_ADMIN_PASSWORD", "valueFrom": {"secretKeyRef": {"name": release, "key": "admin-password"}}})
     if cfg.autoStart:
-        env.append({"name": "OPENAN_DEBUG_AUTOSTART", "value": ",".join(a["id"] for a in agents)})
+        env.append({"name": "MOCK_AGENT_AUTOSTART", "value": ",".join(a["id"] for a in agents)})
     objs.append({
         "apiVersion": "apps/v1",
         "kind": "Deployment",
@@ -257,7 +257,7 @@ def _manifests(cfg: OdaConfig) -> list[dict]:
             "version": "1.0.0",
             "description": f"A2A-T 协议 MockAgent：内嵌默认 Agent + {len(agents)} 个打桩实例（{'、'.join(a['name'] for a in agents) or '无'}；数据集检索回包）",
             "functionalBlock": "CoreCommerce",
-            "maintainers": [{"name": "OpenAN Debug Team", "email": "openan-debug@example.com"}],
+            "maintainers": [{"name": "OpenAN Debug Team", "email": "mockagent@example.com"}],
             "coreFunction": {"exposedAPIs": exposed, "dependentAPIs": []},
             "managementFunction": {"exposedAPIs": management, "dependentAPIs": []},
             "securityFunction": {

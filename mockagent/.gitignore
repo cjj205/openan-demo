@@ -6,7 +6,7 @@ __pycache__/
 *.log
 
 # Runtime data
-server/openan_debug/data/*.json.bak
+data/
 instance.pid
 instance.log
 

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """数据集检索：MockAgent 根据请求（templateUri + prompt）在种子/扩写数据集中选择最接近的对。
 
 - 相似度 = 硬标识覆盖率（工单号/流水号/端口/电路号/时间，权重 0.55） + 字符二元组 Dice（0.45）
@@ -62,7 +62,7 @@ def _load() -> list:
         records = []
         for ds_id, filename in DATASET_FILES:
             try:
-                raw = importlib_resources.files("openan_debug").joinpath(filename).read_text(encoding="utf-8")
+                raw = importlib_resources.files("mockagent").joinpath(filename).read_text(encoding="utf-8")
                 data = json.loads(raw)
             except (OSError, ValueError):
                 continue

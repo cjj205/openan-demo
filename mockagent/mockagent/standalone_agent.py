@@ -1,7 +1,7 @@
 """独立 Mock Agent 实例 runner（打桩 Agent 子进程入口）。
 
 由 mock-instances 管理 API 以子进程方式拉起：
-    python -m openan_debug.standalone_agent --define config/mock_agent_define.json --instance <id>
+    python -m mockagent.standalone_agent --define config/mock_agent_define.json --instance <id>
 
 设计要点：
 - 实例声明来自 mock_agent_define.json：端口 / 工作目录 / 模型连接方案（A2AT_LLM_*）/ Agent 信息 / 初始桩变体；
@@ -40,7 +40,7 @@ def resolve_define_path(explicit: str | None) -> Path:
     candidates = []
     if explicit:
         candidates.append(Path(explicit))
-    override = os.environ.get("OPENAN_DEBUG_MOCK_DEFINE")
+    override = os.environ.get("MOCK_AGENT_MOCK_DEFINE")
     if override:
         candidates.append(Path(override))
     cwd = Path.cwd()
@@ -49,12 +49,13 @@ def resolve_define_path(explicit: str | None) -> Path:
         cwd / DEFINE_FILENAME,
         cwd.parent / "config" / DEFINE_FILENAME,
         cwd.parent / DEFINE_FILENAME,
-        Path(__file__).resolve().parents[2] / "config" / DEFINE_FILENAME,
+        Path(__file__).resolve().parents[1] / DEFINE_FILENAME,
+        Path(__file__).resolve().parents[1] / "config" / DEFINE_FILENAME,
     ]
     for candidate in candidates:
         if candidate.exists():
             return candidate
-    raise SystemExit(f"未找到 {DEFINE_FILENAME}；可用 --define 或 OPENAN_DEBUG_MOCK_DEFINE 指定路径")
+    raise SystemExit(f"未找到 {DEFINE_FILENAME}；可用 --define 或 MOCK_AGENT_MOCK_DEFINE 指定路径")
 
 
 def merged_llm(instance: dict, define: dict) -> dict:

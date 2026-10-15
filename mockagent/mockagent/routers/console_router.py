@@ -1,4 +1,4 @@
-import json
+﻿import json
 import time
 from importlib import resources as importlib_resources
 
@@ -134,7 +134,7 @@ async def console_send(
 def trace_prompts(user: dict = Depends(get_current_user)):
     """实采报文中的真实 A2A-T 渲染 prompt（来自工作台 trace），供调测台示例填充。"""
     try:
-        raw = importlib_resources.files("openan_debug").joinpath("trace_examples.json").read_text(encoding="utf-8")
+        raw = importlib_resources.files("mockagent").joinpath("trace_examples.json").read_text(encoding="utf-8")
         data = json.loads(raw)
     except (OSError, ValueError) as exc:
         raise HTTPException(status_code=404, detail=f"实采 prompt 数据不可用：{exc}")
@@ -145,7 +145,7 @@ def trace_prompts(user: dict = Depends(get_current_user)):
 def demo_dataset(user: dict = Depends(get_current_user)):
     """A2A-T Demo 实采数据集：请求-响应成对（来自 A2A-T Demo.docx 两单协作日志）。"""
     try:
-        raw = importlib_resources.files("openan_debug").joinpath("demo_dataset.json").read_text(encoding="utf-8")
+        raw = importlib_resources.files("mockagent").joinpath("demo_dataset.json").read_text(encoding="utf-8")
         data = json.loads(raw)
     except (OSError, ValueError) as exc:
         raise HTTPException(status_code=404, detail=f"Demo 数据集不可用：{exc}")
@@ -244,7 +244,7 @@ def dataset_agent_associations(user: dict = Depends(get_current_user), db: Sessi
 
 def _load_dataset_file(filename: str) -> dict:
     if filename not in _DATASET_CACHE:
-        raw = importlib_resources.files("openan_debug").joinpath(filename).read_text(encoding="utf-8")
+        raw = importlib_resources.files("mockagent").joinpath(filename).read_text(encoding="utf-8")
         _DATASET_CACHE[filename] = json.loads(raw)
     return _DATASET_CACHE[filename]
 

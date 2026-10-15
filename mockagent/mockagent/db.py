@@ -1,4 +1,4 @@
-import secrets
+﻿import secrets
 import sys
 
 import sqlalchemy.exc
@@ -52,7 +52,7 @@ def init_db(engine, settings: Settings) -> None:
             except sqlalchemy.exc.IntegrityError:
                 session.rollback()
             if settings.admin_password is None:
-                print(f"[openan-debug] bootstrap admin user 'admin' password: {password}", file=sys.stderr)
+                print(f"[mockagent] bootstrap admin user 'admin' password: {password}", file=sys.stderr)
         if session.scalar(select(Agent).limit(1)) is None:
             session.add(Agent())
             try:

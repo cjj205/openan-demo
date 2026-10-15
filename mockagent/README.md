@@ -1,4 +1,4 @@
-# MockAgent — A2A-T 打桩智能体服务 / A2A-T Mock Agent Service
+﻿# MockAgent — A2A-T 打桩智能体服务 / A2A-T Mock Agent Service
 
 > 同步自 [project-openan/openan-debug](https://github.com/project-openan/openan-debug) 的 MockAgent 代码（服务端 + 配置 + 数据集 + 工作流 + 调测台前端）。
 > Synced from the MockAgent code of [project-openan/openan-debug](https://github.com/project-openan/openan-debug) (backend + config + datasets + workflows + debug-console frontend).
@@ -7,7 +7,7 @@
 
 **中文**：MockAgent 是基于 A2A-T SDK 的智能体打桩与调测服务。它提供三类能力：
 
-1. **打桩实例**：按 `config/mock_agent_define.json` 定义拉起 6 个独立 FastAPI 实例（故障诊断 / 业务抢通 / 节能降碳 / 无线域 / 直播 / 业务保障），每个实例挂载标准 A2A-T 端点（AgentCard、message:send、tasks:subscribe 等），可被编排中心或其它智能体真实调用。
+1. **打桩实例**：按 `mock_agent_define.json` 定义拉起 6 个独立 FastAPI 实例（故障诊断 / 业务抢通 / 节能降碳 / 无线域 / 直播 / 业务保障），每个实例挂载标准 A2A-T 端点（AgentCard、message:send、tasks:subscribe 等），可被编排中心或其它智能体真实调用。
 2. **数据集关联与检索**：16 个 Task-T/Notification-T 模板、6060 组「请求-响应」成对样本（`expanded_dataset.json`）；每个实例按 `datasetTemplates` 绑定模板范围，请求按模板过滤 + 相似度评分（标识回填）命中唯一数据对，保证**请求-响应成对匹配**，并在响应 metadata 中携带匹配溯源（`openan.datasetMatch`）。
 3. **三种回包模式**（优先级从高到低）：
    - **工作流编排模式**（`workflow.enabled`）：实例作为工作流宿主，基于 [workflow-engine-sdk-python](https://github.com/project-openan/workflow-engine-sdk-python) 执行内置 PSOP；SELF_LOOP 步骤本地生成，普通步骤经 A2ATransport 派发到其它打桩实例（远端实例按数据集检索回包），执行事件全程留痕。
@@ -16,7 +16,7 @@
 
 **English**: MockAgent is a stubbing & debugging service for A2A-T agents. It provides:
 
-1. **Stub instances**: 6 standalone FastAPI agents (fault diagnosis / service recovery / energy saving / wireless domain / live stream / service assurance) defined in `config/mock_agent_define.json`, each mounting standard A2A-T endpoints (AgentCard, message:send, tasks:subscribe, ...).
+1. **Stub instances**: 6 standalone FastAPI agents (fault diagnosis / service recovery / energy saving / wireless domain / live stream / service assurance) defined in `mock_agent_define.json`, each mounting standard A2A-T endpoints (AgentCard, message:send, tasks:subscribe, ...).
 2. **Dataset binding & retrieval**: 16 Task-T/Notification-T templates with 6060 request-response pairs (`expanded_dataset.json`); each instance is scoped by `datasetTemplates`, requests are matched per template with similarity scoring (identifier backfill), guaranteeing **paired request-response matching** with provenance metadata (`openan.datasetMatch`).
 3. **Three reply modes** (priority high → low):
    - **Workflow mode** (`workflow.enabled`): the instance hosts a built-in PSOP workflow via [workflow-engine-sdk-python](https://github.com/project-openan/workflow-engine-sdk-python); SELF_LOOP steps run locally, normal steps are dispatched over A2ATransport to sibling stub instances (which reply via dataset retrieval), with full event tracing.
@@ -26,45 +26,45 @@
 ## 二、目录结构 / Directory Layout
 
 ```
-mockagent/
-├── config/
-│   └── mock_agent_define.json        # 打桩实例定义（端口/提示词/数据集范围/LLM/工作流）
-├── server/
-│   ├── requirements.txt              # Python 依赖（a2a-sdk / a2a-t-sdk / workflow-exec-engine ...）
-│   ├── pyproject.toml
-│   ├── .env.example
-│   └── openan_debug/                 # FastAPI 服务包
-│       ├── main.py                   # 调测台后端入口（REST + JWT）
-│       ├── standalone_agent.py       # 独立打桩实例入口（python -m openan_debug.standalone_agent）
-│       ├── protocol_flow.py          # A2A-T 协议流（意图/授权/协商/任务）
-│       ├── dataset_retrieval.py      # 数据集检索（模板过滤 + 评分 + 标识回填）
-│       ├── llm_client.py             # LLM 生成模式
-│       ├── workflow_mode.py          # 工作流编排模式（workflow-engine-sdk）
-│       ├── workflows/                # 内置 PSOP 工作流（live_assurance_demo.json）
-│       ├── agent/                    # 实例运行时（A2A app / AgentCard / 执行器）
-│       ├── routers/                  # 调测台 REST 路由（实例管理/数据集/历史/变体/控制台...）
-│       └── data/registry_samples/    # 编排中心样例 PSOP
-└── frontend/                         # React 调测台（MockAgent 管理 / 数据集 / 控制台）
+mockagent/                                # 独立项目根 / standalone project root
+├── mock_agent_define.json                # 打桩实例定义（端口/提示词/数据集范围/LLM/工作流）
+├── requirements.txt                      # Python 依赖（a2a-sdk / a2a-t-sdk / workflow-exec-engine ...）
+├── pyproject.toml / .env.example
+├── mockagent/                            # FastAPI 服务包 / backend package
+│   ├── main.py                           # 调测台后端入口（REST + JWT）
+│   ├── standalone_agent.py               # 独立打桩实例入口（python -m mockagent.standalone_agent）
+│   ├── protocol_flow.py                  # A2A-T 协议流（意图/授权/协商/任务）
+│   ├── dataset_retrieval.py              # 数据集检索（模板过滤 + 评分 + 标识回填）
+│   ├── llm_client.py                     # LLM 生成模式
+│   ├── workflow_mode.py                  # 工作流编排模式（workflow-engine-sdk）
+│   ├── workflows/                        # 内置 PSOP 工作流（live_assurance_demo.json）
+│   ├── agent/                            # 实例运行时（A2A app / AgentCard / 执行器）
+│   ├── routers/                          # 调测台 REST 路由（实例管理/数据集/历史/变体/控制台...）
+│   ├── expanded_dataset.json             # 16 模板 6060 组请求-响应对
+│   └── data/registry_samples/            # 编排中心样例 PSOP
+└── frontend/                             # React 调测台（MockAgent 管理 / 数据集 / 控制台）
 ```
 
 ## 三、快速开始 / Quick Start
 
 ```bash
-# 后端 Backend (Python 3.12+, from server/)
+# 后端 Backend (Python 3.12+，项目根目录下 / from project root)
 pip install -r requirements.txt
-uvicorn openan_debug.main:app --host 0.0.0.0 --port 9100
+uvicorn mockagent.main:app --host 0.0.0.0 --port 9100
 # API 前缀 API prefix: http://127.0.0.1:9100/api/v1  （JWT 登录 / auth/login）
 
 # 前端 Frontend (Node 18+, from frontend/)
 npm install && npm run dev
 ```
 
-- 实例管理：`POST /api/v1/mock-instances/{id}/start`（后端以 `python -m openan_debug.standalone_agent --define config/mock_agent_define.json --instance <id>` 拉起，端口 9005-9010）。
-- Instance management: `POST /api/v1/mock-instances/{id}/start` spawns each agent on ports 9005-9010.
-- 工作流模式：给实例配置 `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` 后，向该实例发送意图请求即可触发端到端编排（详见 `openan_debug/workflows/`）。
+- 实例管理：`POST /api/v1/mock-instances/{id}/start`（后端以 `python -m mockagent.standalone_agent --instance <id>` 拉起，实例定义默认读取项目根 `mock_agent_define.json`，端口 9005-9010）。
+- Instance management: `POST /api/v1/mock-instances/{id}/start` spawns each agent on ports 9005-9010 (instance definitions are read from the root `mock_agent_define.json`).
+- 工作流模式：给实例配置 `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` 后，向该实例发送意图请求即可触发端到端编排（详见 `mockagent/workflows/`）。
 - Workflow mode: enable `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` on an instance, then send an intent request to trigger end-to-end orchestration.
 - LLM 模式：配置 OpenAI 兼容 `baseUrl`/`model`，密钥经环境变量 `MOCK_AGENT_LLM_API_KEY` 注入。
 - LLM mode: configure an OpenAI-compatible `baseUrl`/`model`; the key is read from env `MOCK_AGENT_LLM_API_KEY`.
+- 说明：`a2a-t-sdk` 与 `workflow-exec-engine` 来自 project-openan 开源仓库，若 PyPI 不可用可从源码安装：`pip install git+https://github.com/project-openan/workflow-engine-sdk-python`。
+- Note: `a2a-t-sdk` / `workflow-exec-engine` come from the project-openan repositories; if unavailable on PyPI, install from source, e.g. `pip install git+https://github.com/project-openan/workflow-engine-sdk-python`.
 
 ## 四、验证状态 / Verification Status
 

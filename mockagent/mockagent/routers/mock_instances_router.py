@@ -31,23 +31,23 @@ _LOCK = threading.Lock()
 
 def resolve_define_path() -> Path:
     candidates = []
-    override = os.environ.get("OPENAN_DEBUG_MOCK_DEFINE")
+    override = os.environ.get("MOCK_AGENT_MOCK_DEFINE")
     if override:
         candidates.append(Path(override))
     cwd = Path.cwd()
-    server_dir = Path(__file__).resolve().parents[2]
+    project_dir = Path(__file__).resolve().parents[1]
     candidates += [
         cwd / "config" / DEFINE_FILENAME,
         cwd / DEFINE_FILENAME,
         cwd.parent / "config" / DEFINE_FILENAME,
         cwd.parent / DEFINE_FILENAME,
-        server_dir / "config" / DEFINE_FILENAME,
-        server_dir.parent / "config" / DEFINE_FILENAME,
+        project_dir / DEFINE_FILENAME,
+        project_dir / "config" / DEFINE_FILENAME,
     ]
     for candidate in candidates:
         if candidate.exists():
             return candidate
-    raise HTTPException(status_code=404, detail=f"未找到 {DEFINE_FILENAME}（可用 OPENAN_DEBUG_MOCK_DEFINE 指定路径）")
+    raise HTTPException(status_code=404, detail=f"未找到 {DEFINE_FILENAME}（可用 MOCK_AGENT_MOCK_DEFINE 指定路径）")
 
 
 def _load_define(path: Path) -> dict:
@@ -191,11 +191,11 @@ def start_instance(instance_id: str, request: Request, _: dict = Depends(require
         try:
             proc = subprocess.Popen(
                 [
-                    sys.executable, "-m", "openan_debug.standalone_agent",
+                    sys.executable, "-m", "mockagent.standalone_agent",
                     "--define", str(define_path),
                     "--instance", instance_id,
                 ],
-                cwd=str(Path(__file__).resolve().parents[2]),
+                cwd=str(Path(__file__).resolve().parents[1]),
                 env=os.environ.copy(),
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
@@ -282,7 +282,7 @@ def instance_card(instance_id: str, _: dict = Depends(get_current_user)):
 def autostart_instances() -> None:
     """服务启动后拉起 define 中 autoStart=true 的实例（后台线程，失败仅记日志，不阻塞服务）。
 
-    OPENAN_DEBUG_AUTOSTART（逗号分隔实例 id）设置时优先生效：为空串=不自动启动，
+    MOCK_AGENT_AUTOSTART（逗号分隔实例 id）设置时优先生效：为空串=不自动启动，
     非空=仅拉起列出的实例（ODA Canvas 部署按用户勾选注入）。
     """
     import logging
@@ -294,7 +294,7 @@ def autostart_instances() -> None:
             define = _load_define(define_path)
         except Exception:
             return
-        override = os.environ.get("OPENAN_DEBUG_AUTOSTART")
+        override = os.environ.get("MOCK_AGENT_AUTOSTART")
         if override is not None:
             wanted = {x.strip() for x in override.split(",") if x.strip()}
         else:
@@ -315,11 +315,11 @@ def autostart_instances() -> None:
                     log_file = open(work_dir / "instance.log", "ab")
                     proc = subprocess.Popen(
                         [
-                            sys.executable, "-m", "openan_debug.standalone_agent",
+                            sys.executable, "-m", "mockagent.standalone_agent",
                             "--define", str(define_path),
                             "--instance", instance_id,
                         ],
-                        cwd=str(Path(__file__).resolve().parents[2]),
+                        cwd=str(Path(__file__).resolve().parents[1]),
                         env=os.environ.copy(),
                         stdout=log_file,
                         stderr=subprocess.STDOUT,

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """MockAgent 工作流编排模式（基于 workflow-engine-sdk / workflow-exec-engine）。
 
 - 实例配置 `"workflow": {"enabled": true, "workflowId": "..."}` 后作为工作流宿主：
@@ -49,12 +49,12 @@ _WF_CACHE: dict[str, dict] = {}
 
 
 def load_builtin(workflow_id: str) -> dict | None:
-    """加载内置工作流定义（server/openan_debug/workflows/<id>.json）。"""
+    """加载内置工作流定义（server/mockagent/workflows/<id>.json）。"""
     if workflow_id in _WF_CACHE:
         return _WF_CACHE[workflow_id]
     filename = f"{workflow_id.replace('-', '_')}.json"
     try:
-        raw = importlib_resources.files("openan_debug").joinpath("workflows").joinpath(filename).read_text(encoding="utf-8")
+        raw = importlib_resources.files("mockagent").joinpath("workflows").joinpath(filename).read_text(encoding="utf-8")
         data = json.loads(raw)
     except (OSError, ValueError):
         logger.warning("workflow definition not found: %s", filename)
@@ -67,7 +67,7 @@ def list_builtin() -> list[dict]:
     """列出内置工作流（id/name/description）。"""
     result = []
     try:
-        root = importlib_resources.files("openan_debug").joinpath("workflows")
+        root = importlib_resources.files("mockagent").joinpath("workflows")
         for item in sorted(Path(str(root)).glob("*.json")) if root.is_dir() else []:
             try:
                 data = json.loads(item.read_text(encoding="utf-8"))
