@@ -137,6 +137,9 @@
 
 .nd-bubble__text {
   position: absolute;
+  /* V5.4：清除 <p> 默认 1em 上下边距——原边距使文字实际下移 12px，Accept 第二行文字
+     被 CPE 端口面板图片遮盖（用户反馈）；各定位公式均以 top:4 起算 */
+  margin: 0;
   font-size: 12px;
   line-height: 20px;
   color: #ffffff;

@@ -6,6 +6,12 @@ import { root as FLOW_ROOT } from '../design/regions/flow-chart';
 import { root as LOG_ROOT } from '../design/regions/log-panel';
 
 export { CARDS, CHEVRONS, BUTTONS, DECOR, LINES, LOGS, ORDERS, ROOMS, ZOOM };
+
+// V5.23 工单卡位置对调 → V5.25（用户规格）对调回退：case1 工单在第一张卡、case2 在第二张。
+// 槽位映射保留（恒等映射），文案补丁/点击交互/角标/选中态仍统一走 ORDER_SLOT
+export const ORDER_SLOT = { c1: 'c1', c2: 'c2' };
+const ORDER_NO_IDS = { c1: '23:137124', c2: '23:137160' }; // 槽位 → 工单号文字 id
+const CUST_IDS = { c1: '23:137144', c2: '23:137171' };     // 槽位 → 客户名文字 id
 export const AGENTS = ['WAIMO', 'ZX', 'YD', 'YX'];
 
 // 卡片描述溢出省略（工单卡描述行超出卡片宽度时截断，悬浮 title 展示全文）
@@ -310,18 +316,48 @@ export function pathLength(d) {
   return len;
 }
 
+// V5.13（用户规格）：工单搜索匹配——工单号/投诉客户/会话意图（卡片描述行）子串匹配、
+// 不区分大小写；空串/全空格 = 全部显示（LeftSearch 输入框 / buildUiPatches 卡片过滤共用）
+export function orderMatches(k, q) {
+  const s = String(q || '').trim().toLowerCase();
+  if (!s) return true;
+  const c = CASES[k];
+  return [c.orderNo, c.customer, c.desc].some((t) => String(t || '').toLowerCase().includes(s));
+}
+
+// V5.13（用户规格）：工单状态筛选——筛选下拉（全部状态/处理中/已完成，设计「筛选」区
+// 位于工单列表标题右侧）；两案卡片状态均为「已完成」（设计烤入标签）；
+// orderVisible = 搜索 ∧ 状态（卡片过滤/角标/空态提示共用口径）
+export const ORDER_STATUS = { c1: '已完成', c2: '已完成' };
+export const ORDER_STATUS_OPTIONS = ['全部状态', '处理中', '已完成'];
+export function statusMatches(k, status) {
+  return !status || status === '全部状态' || ORDER_STATUS[k] === status;
+}
+export function orderVisible(k, ctx) {
+  return orderMatches(k, ctx.search) && statusMatches(k, ctx.status);
+}
+
 // 纯 UI 补丁（与故事线世界状态无关，任何模式生效；默认值时为空，保证快照像素回归）
 export function buildUiPatches(ctx) {
   const P = new Map();
   // 工单卡：可选中文字 + 整卡点击切换案例（类/交互见 .st-ocard 与 StorylineContext interactions）+ 悬浮提示
   // （c1 悬浮提示随协商补充后的工单信息同步，见 buildPatches d1）
+  // V5.13（用户规格）：搜索框实时过滤 + 状态筛选（orderVisible = 搜索 ∧ 状态）——不匹配的
+  // 工单卡整卡隐藏（角标同步隐藏，见 WorkOrderSel；空态提示见 OrderFilter）；设计搜索占位
+  // 文字由 LeftSearch 覆盖层输入框原生 placeholder 取代（I23:137118;2:356130 隐藏）；
+  // 「筛选」标签文字随所选状态更新（I23:137104;3:27462;2:29596，设计烤入「全部状态」）
   for (const k of ['c1', 'c2']) {
     const d = k === 'c1' && ctx.orderInfo ? CASES.c1.orderDescUpdated : CASES[k].desc;
-    P.set(ORDERS[k].id, {
+    const hidden = !orderVisible(k, ctx);
+    // V5.23：内容按 ORDER_SLOT 落位（case2 → 第一卡槽）
+    P.set(ORDERS[ORDER_SLOT[k]].id, {
       c: 'st-ocard',
       title: CASES[k].orderNo + '｜' + CASES[k].customer + '｜' + d,
+      ...(hidden ? { hide: true } : {}),
     });
   }
+  P.set('I23:137118;2:356130', { hide: true });
+  P.set('I23:137104;3:27462;2:295964', { text: ctx.status && ORDER_STATUS_OPTIONS.includes(ctx.status) ? ctx.status : '全部状态' });
   // 粤东/粤西卡技能标签：「生成抢通方案 + 抢通方案下发」合并为「业务抢通」（V2.10）——
   // 第二枚胶囊改文案并按 4 字收窄（80px，对齐「故障定位」胶囊），第三枚整组隐藏；
   // V2.28：胶囊图标随设计 V3.1 Skill 切图更新（设计源已换 ic_ict_closed_loop_skill.svg，
@@ -336,11 +372,75 @@ export function buildUiPatches(ctx) {
     { pillId: '23:136816', iconId: '23:136817', textId: '23:136830', dropId: '23:136831', faultId: '23:136797', pillLeft: '115px', faultLeft: '27px' }, // 粤西卡
     { pillId: '23:136096', iconId: '23:136097', textId: '23:136110', dropId: '23:136111', faultId: '23:136077', pillLeft: '100px', faultLeft: '12px' }, // 粤西发光容器母版
   ];
+  // V5（用户规格 2026-10-12）：「业务抢通」技能胶囊**粤东/粤西两卡常驻**（两案一致）——
+  // 技能胶囊为能力声明，与本案例是否执行抢通无关；「故障定位」胶囊两侧常驻、位置随 V2.18 居中
   for (const s of SKILL_MERGE) {
     P.set(s.textId, { text: '业务抢通', s: { width: '48px' } });
     P.set(s.pillId, { s: { width: '80px', left: s.pillLeft } });
     P.set(s.faultId, { s: { left: s.faultLeft } });
     P.set(s.dropId, { hide: true });
+  }
+  // V4：步骤5（问题处置）时长标签 per-case（设计烤入"3分钟"）——c1=调度处置 144 分钟 / c2=抢通执行 10 分钟
+  P.set(CHEVRONS[4].durId, { text: ctx.caseId === 'c1' ? '144分钟' : '10分钟' });
+  // V5.11（用户规格）：房间胶囊（客服/监控室/传输室）统一玻璃蓝样式——
+  // border-radius 0.2rem(4px) / 180° 蓝渐变 + 中心辐射底（#5CACFF3D→透明、#91C7FF44→透明）/
+  // 0.05rem(1px) #5CACFF 描边（容器 id 手工登记：23:135676 客服 / 23:135678 监控室 /
+  // 23:135680 传输室，见 design/regions/flow-chart.js；组间连线同批改白色半透明线、光束滑块保留）
+  const ROOM_TAB_STYLE = {
+    backgroundImage: 'linear-gradient(180deg, rgba(92,172,255,0.24) 0%, rgba(92,172,255,0) 100%), radial-gradient(circle at 50% 50%, rgba(145,199,255,0.27) 0%, rgba(92,172,255,0) 100%)',
+    border: '1px solid rgba(92,172,255,1)',
+    borderRadius: '4px',
+  };
+  for (const id of ['23:135676', '23:135678', '23:135680']) P.set(id, { s: ROOM_TAB_STYLE });
+  // V5.12（用户规格）：流程中心/编排中心卡片——border-radius 0.4rem(8px)、#A89FF966 底、
+  // 0.05rem(1px) #715AFB 描边（设计原 0.15 底加深为 0.4；id：23:136979 流程中心 / 23:136490 编排中心）
+  const SVC_STYLE = {
+    backgroundColor: 'rgba(168,159,249,0.4)',
+    border: '1px solid rgba(113,90,251,1)',
+    borderRadius: '8px',
+  };
+  for (const id of ['23:136490', '23:136979']) P.set(id, { s: SVC_STYLE });
+  // V5.13（用户规格）：顶部导航三图标换设计切图 SVG 原生渲染（高保真图标切图-全量
+  // 20261008/0.顶部导航图标）——原图标为位图 sprite 叠层（烤入底色）；隐藏子层、
+  // 容器以切图填充：23:137665 协作观测（28×28）/ 23:137692 月亮 / 23:137698 刷新（20×20）
+  //（标题装饰位图同批改为 CSS/SVG 重建，见 design/regions/title.js V5.13 注释）
+  const NAV_ICONS = [
+    { boxId: '23:137665', src: '/icons/ic_ict_highlight_inter_domain_links_textured.svg', hide: ['23:137666', '23:137667', '23:137668', '23:137669'] },
+    { boxId: '23:137692', src: '/icons/ic_public_moon.svg', hide: ['23:137694', '23:137695', '23:137697'] },
+    { boxId: '23:137698', src: '/icons/ic_public_refresh_clockwise.svg', hide: ['23:137700'] },
+  ];
+  for (const ic of NAV_ICONS) {
+    for (const id of ic.hide) P.set(id, { hide: true });
+    P.set(ic.boxId, { s: { backgroundImage: 'url(' + ic.src + ')', backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat' } });
+  }
+  // V4：外层步骤名（设计烤入）——投诉定界→定界定位、方案生成→问题处置（两案同名，文档口径）
+  P.set(CHEVRONS[2].nameId, { text: '定界定位' });
+  P.set(CHEVRONS[4].nameId, { text: '问题处置' });
+  // V4：粤东/粤西卡迷你步骤标题（设计烤入）——槽1 问题定位→根因定位、槽2 方案生成→抢通执行
+  //（槽3 抢通执行两案均不使用→隐藏；发光容器母版无导出标题 id，回放态不渲染、快照态沿用设计文字）
+  for (const k of ['YD', 'YX']) {
+    P.set(CARDS[k].mini[0].titleId, { text: '根因定位' });
+    P.set(CARDS[k].mini[1].titleId, { text: '抢通执行' });
+  }
+  // V5：工单卡客户名（用户规格）——#FFFFFF / Microsoft YaHei / bold / 0.8rem 行高 1.2rem，
+  // 字距 0、左对齐；较长客户名（10/16 字）溢出省略 + 悬浮全文（工单描述行同款 ELLIPSIS）
+  const NAME_FONT = {
+    ...ELLIPSIS,
+    color: '#FFFFFF',
+    fontFamily: "'Microsoft YaHei'",
+    fontWeight: 'bold',
+    fontSize: '0.8rem',
+    lineHeight: '1.2rem',
+    letterSpacing: '0rem',
+    textAlign: 'left',
+    width: '136px',
+  };
+  // V5.23（用户规格）：工单卡位置对调——工单号/客户名文字随案例写入对调后的槽位
+  //（原设计烤入 c1/c2 各自槽位的文案，对调后须显式改写 text）
+  for (const k of ['c1', 'c2']) {
+    const slot = ORDER_SLOT[k];
+    P.set(ORDER_NO_IDS[slot], { text: CASES[k].orderNo });
+    P.set(CUST_IDS[slot], { text: CASES[k].customer, title: CASES[k].customer, s: NAME_FONT });
   }
   // 面板收起（V2.12）：设计把手与箭头可点提示（收起后由覆盖层副本把手承担展开）；
   // 日志面板包裹层 pointer-events:none，其把手/箭头需显式恢复 auto 才可点
@@ -352,15 +452,9 @@ export function buildUiPatches(ctx) {
   // 曾使其不可选中——观感似切图）；logLive 恒 true，LogSensor 覆盖层不挂载，无点击拦截冲突
   P.set(LOGS.titleTextId, { s: { pointerEvents: 'auto', cursor: 'text' } });
   P.set(LOGS.countTextId, { s: { pointerEvents: 'auto', cursor: 'text' } });
-  // 点阵（V2.24 用户偏差增强可见度；V3.4 颜色改浅灰 #C9C9C9；V3.6 用户反馈过显——
-  // 透明度 0.45→0.25、与背景对比度减半）：平铺间距 16px（V2.25 用户定稿），
-  // 点阵层级不变（卡片/面板之下，半透明本就透出——上提层级会叠在卡片/文字上）。
-  P.set(DOT_BG_ID, {
-    s: {
-      backgroundImage: 'radial-gradient(rgba(201,201,201,0.25) 1px, rgba(0,0,0,0) 1.3px)',
-      backgroundSize: '16px 16px',
-    },
-  });
+  // 点阵背景：V5.20（用户规格）整层去除——不再铺点（原 V2.24..V2.25：浅灰 16px 平铺；
+  // V3.4 颜色 #C9C9C9、V3.6 透明度 0.25——均随去除废止）
+  P.set(DOT_BG_ID, { hide: true });
   // 回放按钮组图标水平对齐（V2.16）：单步/倍速/停止按钮的 1px 边框使内部绝对定位的图标/
   // 文字整体下移 1px（回放按钮为实底无边框）→ 改 inset box-shadow 描边（视觉等效、不占布局）
   for (const id of ['23:137029', '23:137058', '23:137063']) {
@@ -388,13 +482,7 @@ export function buildUiPatches(ctx) {
         P.set(f.id, { ...prev, s: { ...prev.s, ...fixedCounterStyle(ctx, Pz, b) } });
       }
     }
-    // 点阵背景平铺覆盖：收起日志时下缘补齐（V2.17 视口等比后无需横向补齐——画布本身即 1920×1080）；
-    // V2.21：固定节点反向含 1/z → 补齐高度同步乘 z，使反向后仍覆盖 1080 画布高；
-    // V2.25：余量 +16 → +20（新平铺间距 16px 一整行余量）
-    const dprev = P.get(DOT_BG_ID) || {};
-    const dsize = {};
-    if (fy !== 1) dsize.height = Math.round((Math.ceil(1080 * fy) + 20) * (ctx.zoom || 1)) + 'px';
-    if (dsize.height) P.set(DOT_BG_ID, { ...dprev, s: { ...dprev.s, ...dsize } });
+    //（点阵背景下缘补齐补丁随 V5.20 点阵整层去除而移除）
   }
   // ---- V2.13 收起重适配·保比例：集群节点/文字保持原始长宽比（连线/底板随区域拉伸铺满）。
   // 恒等补丁常驻（展开态 scale(1,1) 不影响像素回归），transform 过渡与区域变换同步（0.25s）----
@@ -440,9 +528,10 @@ export function buildPatches(world, ctx) {
   set(CARDS.YX.glowNameTextId, { text: '粤西SPN网络内生智能' });
   // 左侧工单卡描述：真实文案 + 溢出省略 + 悬浮全文；
   // c1 协商补充 vlan 后（orderInfo，t=226 Accept）工单信息更新为补充后的端口专线信息
+  // V5.23：描述随 ORDER_SLOT 落位
   const d1 = world && world.orderInfo ? CASES.c1.orderDescUpdated : CASES.c1.desc;
-  set(ORDERS.c1.descTextId, { text: d1, title: d1, s: ELLIPSIS });
-  set(ORDERS.c2.descTextId, { text: CASES.c2.desc, title: CASES.c2.desc, s: ELLIPSIS });
+  set(ORDERS[ORDER_SLOT.c1].descTextId, { text: d1, title: d1, s: ELLIPSIS });
+  set(ORDERS[ORDER_SLOT.c2].descTextId, { text: CASES.c2.desc, title: CASES.c2.desc, s: ELLIPSIS });
 
   if (!world) {
     for (const k of AGENTS) {
@@ -454,19 +543,19 @@ export function buildPatches(world, ctx) {
     // 第二条日志：整行切图（斑马纹位图）改文字呈现 —— 位图隐藏、斑马纹以单元格底色补回
     hide(LOGS.zebraSpriteId);
     set(LOGS.zebraCellId, { s: { backgroundColor: 'rgba(119,119,119,0.15)' } });
-    // 静态日志行占位文案修正（对应案例一第 4/6/8 条事件的展示文案）
-    set(LOGS.rowTexts.row1Summary, { text: '主备专线同时中断，粤东至粤西段链路全阻，业务完全中断。' });
-    set(LOGS.rowTexts.row2To, { text: '粤东SPN网络内生智能' });
-    set(LOGS.rowTexts.row2Summary, { text: '诊断粤东SPN侧链路故障根因' });
-    set(LOGS.rowTexts.row3From, { text: '粤东SPN网络内生智能' });
+    // 静态日志行占位文案修正（对应案例一第 2/4/8 条事件的展示文案，V4 工单1）
+    set(LOGS.rowTexts.row1Summary, { text: '进行集客专线业务投诉场景网络侧故障诊断，达成诊断目标，电路编号：广州-深圳GE1508KA/P。故障现象：专线中断。' });
+    set(LOGS.rowTexts.row2To, { text: '粤西SPN网络内生智能' });
+    set(LOGS.rowTexts.row2Summary, { text: '对网络侧故障进行诊断，返回故障根因和修复建议等诊断结果信息。接入端口名称：P36169-YWHJ-棠溪村微网格业务汇聚机房1（990）-1-1-TPN1EM10F-10-ETH' });
+    set(LOGS.rowTexts.row3From, { text: '粤西SPN网络内生智能' });
     // V2.13/V2.14：收起或非 16:9 视口（快照态）连线 sprite 位图无法随集群端点重适配 → 整组隐藏，
     // 由覆盖层 SVG 连线（StorylineOverlays 以伪 world 全量呈现）接管
     const TF0 = totalFactors(ctx);
     if (TF0.fx !== 1 || TF0.fy !== 1) {
       for (const L of Object.values(LINES)) hide(L.spriteId);
     }
-    // 粤西卡内嵌描述（快照态可见）：占位文案 → 真实描述
-    set(CARDS.YX.descTextId, { text: CASES.c1.d.fax });
+    // 粤西卡内嵌描述（快照态可见）：占位文案 → 真实描述（V4：c1 粤西=故障侧·光纤中断）
+    set(CARDS.YX.descTextId, { text: CASES.c1.d.yx0 });
     // 白色房间高亮底：默认打开不展示（回放态由下方分支按当前房间定位）
     hide(ROOMS.bgId);
     // 快照态点亮日志：仅日志区变实时（隐藏静态行/装饰滚动条），其余保持设计稿
@@ -499,7 +588,9 @@ export function buildPatches(world, ctx) {
   // 组间连线（客服—监控室—传输室）滑块动效；监控室—传输室段（连线 sprite+滑块）随传输室登场
   ROOMS.glides.forEach((g, i) => {
     if (!csOn && i === csRoomIdx - 1) { hide(g.id); return; }
-    set(g.id, { c: 'st-glide' + i });
+    // V5.12（用户规格）：光束滑块仅在回放中移动——其余时刻（暂停/完成/快照）不施加
+    // 动画类、静止呈现于连线中点
+    if (ctx.mode === 'playing') set(g.id, { c: 'st-glide' + i });
   });
   if (!csOn) { hide(CS_TAB_ID); hide(CS_LINK_ID); }
 
@@ -533,8 +624,8 @@ export function buildPatches(world, ctx) {
       set(card.badgePillId, { s: { backgroundColor: 'rgba(13,148,88,1)' } });
       set(card.badgeTextId, { text: '已完成', s: { color: 'rgba(255,255,255,1)' } });
     }
-    // 执行中步骤描述 → 卡片真实增高（bgId height 补丁：连续圆角边框，无接缝）；
-    // transition 常驻保证增高/回落双向平滑（步骤完成卡片恢复、描述淡出）
+    // 执行中步骤描述 → 卡片高度固定（V5.6 用户规格：不随描述动态增高/回落——
+    // 描述至多两行、不超出卡底，见 StepDesc/storyline.css line-clamp；height 补丁仅保持设计值）
     const grown = world.desc[k] ? (card.descExt || 0) : 0;
     const bgPrev = P.get(card.bgId) || {};
     P.set(card.bgId, {
@@ -546,17 +637,42 @@ export function buildPatches(world, ctx) {
       },
     });
     // 迷你步骤链：静态圆点全部隐藏（覆盖层统一渲染）；V3.24 未执行到的子步骤整体不出现——
-    // todo 标题/连接线隐藏（补丁按次全量重算，状态离开 todo 即恢复渲染），执行到该步时才展示
+    // todo 标题/连接线隐藏（补丁按次全量重算，状态离开 todo 即恢复渲染），执行到该步时才展示；
+    // V4：完成态 caseDone 强制点亮按案例槽位使用集裁剪（usedMini 之外的槽位保持 todo → 不展示）；
+    // V5 槽位紧凑：标题随槽位前移补位（使用集第 p 个槽位平移至第 p 个位置，与 MiniCircles
+    // 紧凑落位一致），连接线按「位置 p ↔ p+1」呈现——未使用槽位不留空
     const states = world.mini[k];
-    card.mini.forEach((m, i) => {
+    const um = (CASES[ctx.caseId] && CASES[ctx.caseId].usedMini) || null;
+    const used = um && um[k] ? um[k] : card.mini.map((_, i) => i);
+    // V5.5（用户规格）：迷你步骤行水平居中——可见子步骤数 n < 总槽位 N 时，标题/连接线
+    // 随行整体右移 (N−n)×间距/2（各卡满行为设计居中版式，满行 shift=0；与 MiniCircles
+    // 圆点同源）——每次出现下一个子步骤（n 增）重算一次，0.25s 过渡平滑回中
+    const Nsl = card.mini.length;
+    const mSpacing = Nsl > 1 ? card.mini[1].slotBox.x - card.mini[0].slotBox.x : 0;
+    const nVis = used.filter((i) => world.caseDone || states[i] !== 'todo').length;
+    const cShift = (Nsl - nVis) * mSpacing / 2;
+    card.mini.forEach((m) => { m.slotHideIds.forEach(hide); });
+    // 未使用槽位标题隐藏（回放中其状态恒为 todo；显式隐藏覆盖快照烤入版式）
+    card.mini.forEach((m, i) => { if (!used.includes(i)) set(m.titleId, { hide: true }); });
+    // 连接线 connId[p]（设计位置 p↔p+1）：使用集内相邻两槽（used[p]、used[p+1]）均执行到
+    // 才显示，颜色随位置 p 槽位状态；位置超出使用集（其后无槽位）隐藏；V5.5 随行居中平移
+    card.mini.forEach((m, p) => {
+      if (!m.connId) return;
+      const iA = used[p];
+      const iB = used[p + 1];
+      if (iA === undefined || iB === undefined) { hide(m.connId); return; }
+      const sA = world.caseDone ? 'done' : states[iA];
+      const sB = world.caseDone ? 'done' : states[iB];
+      if (sA === 'todo' || sB === 'todo') hide(m.connId);
+      else set(m.connId, { s: {
+        backgroundColor: sA === 'done' ? 'rgba(54,193,141,1)' : 'rgba(243,243,243,0.15)',
+        transform: 'translateX(' + cShift + 'px)',
+        transition: 'transform 0.25s ease',
+      } });
+    });
+    used.forEach((i, p) => {
+      const m = card.mini[i];
       const s = world.caseDone ? 'done' : states[i];
-      m.slotHideIds.forEach(hide);
-      // 连接线 connId[i] 连接槽 i 与 i+1：后一槽执行到（非 todo）才显示，颜色随本槽状态
-      if (m.connId) {
-        const nxt = i + 1 < card.mini.length ? (world.caseDone ? 'done' : states[i + 1]) : 'done';
-        if (s === 'todo' || nxt === 'todo') hide(m.connId);
-        else set(m.connId, { s: { backgroundColor: s === 'done' ? 'rgba(54,193,141,1)' : 'rgba(243,243,243,0.15)' } });
-      }
       if (s === 'todo') { set(m.titleId, { hide: true }); return; }
       const ts = s === 'active'
             ? {
@@ -586,6 +702,11 @@ export function buildPatches(world, ctx) {
               backgroundClip: 'border-box',
             }
             : { color: 'rgba(255,255,255,1)', backgroundImage: 'none', WebkitBackgroundClip: 'border-box', backgroundClip: 'border-box' };
+      // V5 紧凑平移：使用集第 p 个槽位标题移至第 p 个位置（槽间距 52px）；
+      // V5.5：+ 居中平移 cShift（可见数变化时整行回中，transition 平滑）
+      const dx = card.mini[p].slotBox.x - m.slotBox.x + cShift;
+      if (dx) ts.transform = 'translateX(' + dx + 'px)';
+      ts.transition = 'transform 0.25s ease';
       set(m.titleId, { s: ts });
     });
   }
@@ -637,9 +758,10 @@ export function buildPatches(world, ctx) {
   hide(LOGS.scrollbarId);
   set(LOGS.countTextId, { text: world.logs.length + '条' });
 
-  // ---- 左侧工单卡：选中态 / 回放中状态 ----
-  const sel = ctx.caseId === 'c1' ? ORDERS.c1 : ORDERS.c2;
-  const uns = ctx.caseId === 'c1' ? ORDERS.c2 : ORDERS.c1;
+  // ---- 左侧工单卡：选中态 / 回放中状态（V5.23：随 ORDER_SLOT 落位） ----
+  const other = ctx.caseId === 'c1' ? 'c2' : 'c1';
+  const sel = ORDERS[ORDER_SLOT[ctx.caseId]];
+  const uns = ORDERS[ORDER_SLOT[other]];
   set(sel.id, { s: { border: '1px solid rgba(46,134,222,1)' } });
   set(uns.id, { s: { border: '1px solid rgba(119,119,119,1)' } });
   ORDERS.checkIds.forEach(hide); // 静态对勾隐藏，覆盖层浮动对勾替代

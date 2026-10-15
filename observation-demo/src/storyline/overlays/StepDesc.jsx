@@ -8,6 +8,8 @@ import React, { useEffect, useState } from 'react';
 import { CARDS, AGENTS, satCssStyle } from '../roles';
 
 const DESC_DELAY = 600;
+// V5.6（用户规格）：卡片高度固定——描述区恒按两行（34px）计，实际行数由 CSS
+// line-clamp 截断（至多两行、不超出卡底，全文悬浮 title）
 
 export default function StepDesc({ world, pub }) {
   const [items, setItems] = useState([]);
@@ -46,8 +48,8 @@ export default function StepDesc({ world, pub }) {
         const anchor = { x: c.box.x + c.box.w / 2, y: c.box.y + c.box.h / 2 };
         return (
           <div key={it.k} style={{ position: 'absolute', left, top, width,
-            ...satCssStyle(pub, { x: left, y: top, w: width, h: 18 }, anchor) }}>
-            <div className={'st-desc' + (it.out ? ' st-desc-out' : '')}>
+            ...satCssStyle(pub, { x: left, y: top, w: width, h: 34 }, anchor) }}>
+            <div className={'st-desc' + (it.out ? ' st-desc-out' : '')} title={it.text}>
               {it.text}
             </div>
           </div>

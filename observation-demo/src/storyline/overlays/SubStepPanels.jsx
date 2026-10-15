@@ -10,10 +10,11 @@
 import React from 'react';
 import { CARDS, LINES, satCssStyle } from '../roles';
 import { CASES, TIME_SCALE } from '../cases';
-import { taskTWindowOf, searchWindowOf, orchestrationWindowOf, notifWindowOf, dispatchWindowOf, intentWindowOf } from '../panel-timing';
+import { taskTWindowOf, searchWindowOf, orchestrationWindowOf, notifWindowOf, dispatchWindowOf, intentWindowOf, authorizationWindowOf } from '../panel-timing';
 import PlatformNodeCard from '../../components/panels/PlatformNodeCard.jsx';
 import IntentRecognitionPanel from '../../components/panels/IntentRecognitionPanel.jsx';
 import SearchAgentPanel from '../../components/panels/SearchAgentPanel.jsx';
+import AuthorizationTPanel from '../../components/panels/AuthorizationTPanel.jsx';
 import DispatchPanel from '../../components/panels/DispatchPanel.jsx';
 import DynamicOrchestrationPanel from '../../components/panels/DynamicOrchestrationPanel.jsx';
 import TaskTPanel from '../../components/panels/TaskTPanel.jsx';
@@ -39,24 +40,26 @@ const belowLine = (key, w, h) => {
 
 // 子步骤详情面板（回放态，执行到对应子步骤/连线激活期时呈现）
 // V3.15：检索面板拆分两处——WAIMO 检索（reg-waimo-search）在平台卡右侧、选中「专线投诉处置智能体」；
-// 专线检索（reg-zx-search）在专线卡正下方、选中「粤东/粤西」（案例二粤西不登场仅选中粤东）
+// 专线检索（reg-zx-search）在专线卡正下方、选中「粤东/粤西」（V4：两案例均双登场均选中两个）
+// V4：意图识别/Task-T/调度处置/Notification-T 面板注入 caseId——文案随案例切换（工单1/工单2）
 const PANEL_DEFS = [
   {
     // V3.21：意图识别面板分步动态（输入→Reasoning→Action→Observation→输出）——
     // 传入激活窗口与播放上下文（t/mode/speed），面板内部时钟按窗口进度推进；
     // V3.28：WAIMO 卡增高至 252（底缘 691），面板自 677 下移至 699 避让；
-    // V3.31：窗口改 intentWindowOf（mini0 窗口上限 36 业务秒——全窗 65 秒分步偏慢）
+    // V5.2（回退此前逻辑）：信息顺时针依次渐入、常驻累计，左侧输入三行整体出现（不分开显示），
+    // 各段 12 业务秒；窗口 = mini0 全窗（12..72，全部展示完成后才进入定界定位）。
+    // V5.2：定界定位无详情面板——内容在 WAIMO 卡底描述区 4 句依次出现（cases.js desc 事件）
     key: 'intent', Comp: IntentRecognitionPanel,
-    props: (pub) => ({ ...intentWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE }),
+    props: (pub) => ({ ...intentWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, caseId: pub.caseId }),
     when: (w, pub) => { const { t0, t1 } = intentWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
     box: { x: 580, y: 699, w: 498, h: 232 }, anchor: () => center(CARDS.WAIMO.box),
   },
   {
     // V3.30：调度处置面板三段分步（①手机 → ②左侧消息气泡 → ③右侧回复气泡）；
-    // V3.32：窗口 = WAIMO mini2 激活 → ZX mini4（修复验证）激活——面板消失后
-    // 才执行修复验证（mini2 仅 4/3 业务秒，延展窗口保分步节奏可读）
+    // V4：仅工单1 挂载（WAIMO 调度处置·现场上站修复；工单2 问题处置=粤西SPN 抢通，无此面板）
     key: 'dispatch', Comp: DispatchPanel,
-    props: (pub) => ({ ...dispatchWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE }),
+    props: (pub) => ({ ...dispatchWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, caseId: pub.caseId }),
     when: (w, pub) => { const { t0, t1 } = dispatchWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
     box: { x: 733, y: 699, w: 192, h: 352 }, anchor: () => center(CARDS.WAIMO.box),
   },
@@ -80,7 +83,7 @@ const PANEL_DEFS = [
     // V3.19：专线检索面板置于检索结果文字（命中：粤东、粤西SPN…，胶囊右侧 1042..1235 × 280..296）
     // 下方（顶 306）；右缘收敛至 1132 避让专线卡左上角徽章/标题（卡左缘 1136）
     key: 'search-zx', Comp: SearchAgentPanel,
-    props: (pub) => ({ ...searchWindowOf(CASES[pub.caseId], 'reg-zx-search'), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, selected: pub.caseId === 'c2' ? ['yd'] : ['yd', 'yx'] }),
+    props: (pub) => ({ ...searchWindowOf(CASES[pub.caseId], 'reg-zx-search'), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, selected: ['yd', 'yx'] }),
     when: (w, pub) => { const { t0, t1 } = searchWindowOf(CASES[pub.caseId], 'reg-zx-search'); return pub.t >= t0 && pub.t < t1; },
     box: { x: 896, y: 306, w: 236, h: 194 },
     anchor: () => ({ x: (center(PLATFORM).x + center(CARDS.ZX.box).x) / 2, y: (center(PLATFORM).y + center(CARDS.ZX.box).y) / 2 }),
@@ -90,17 +93,31 @@ const PANEL_DEFS = [
     // 见 taskTWindowOf），8 段分步动态 + 滚动跟随；位置自连线居中左移至右缘齐 ZX 卡左缘
     // （778..1136），不与专线卡迷你步骤/描述区域重叠
     key: 'task-t', Comp: TaskTPanel,
-    props: (pub) => ({ ...taskTWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE }),
+    props: (pub) => ({ ...taskTWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, caseId: pub.caseId }),
     when: (w, pub) => { const { t0, t1 } = taskTWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
     box: { x: 778, y: 562, w: 358, h: 330 }, anchor: () => WZ_MID,
   },
   {
     // V3.27：Notification-T 面板三段分步（抢通前 → 箭头 → 抢通后）；窗口 = waimo-zx-notif
     // 连线激活 → WAIMO mini3（投诉闭环）激活——分步完成后投诉闭环才开始
+    // V4：仅工单2 挂载（粤西抢通·隧道调优前后对比；工单1 无 Notification-T 消息）
     key: 'notif-t', Comp: NotificationTPanel,
-    props: (pub) => ({ ...notifWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE }),
+    props: (pub) => ({ ...notifWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, caseId: pub.caseId }),
     when: (w, pub) => { const { t0, t1 } = notifWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
     box: belowLine('waimo-zx-notif', 352, 236), anchor: () => WZ_MID,
+  },
+  {
+    // V5.13：Authorization-T 面板「动网操作预授权检查」（仅工单2）——V5.17（用户规格）：
+    // 专线根因总结汇总回传完成后、粤西抢通执行开始前呈现（面板消失后才开始抢通执行），
+    // 流程图 3 段：①抢通方案生成 → ②查询预授权策略 → ③剩余元素同时出现
+    // （是/否+箭头连线+执行动网操作/人工授权），主干/「是」分支箭头流动虚线；
+    // 定位于粤西卡左侧（右缘距卡 12px、上缘避让专线卡迷你步骤/描述区与协商回程线；
+    // V5.11 面板去除「授权策略下发」后高 302→246，下缘不再触及日志表）；
+    // 锚定粤西卡中心随集群平移
+    key: 'authorization-t', Comp: AuthorizationTPanel,
+    props: (pub) => ({ ...authorizationWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, caseId: pub.caseId }),
+    when: (w, pub) => { const { t0, t1 } = authorizationWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
+    box: { x: 1254, y: 678, w: 336, h: 246 }, anchor: () => center(CARDS.YX.box),
   },
 ];
 

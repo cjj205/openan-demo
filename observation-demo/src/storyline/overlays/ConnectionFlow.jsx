@@ -29,17 +29,31 @@ const RESP_LABEL = {
 //  Notification-T 统一青色，对齐设计稿 waimo-zx-notif 线 Notification-T 胶囊）
 const LABEL_COLORS = {
   'Notification-T': { bg: 'rgba(44,184,201,0.15)', fg: 'rgba(85,204,217,1)' },
+  // V4：工单2 粤西抢通的两段 Notification（方案上报/执行成功）——同青色系（zx-yx-neg 线多标签变体）
+  'Notification-T·上报': { bg: 'rgba(44,184,201,0.15)', fg: 'rgba(85,204,217,1)' },
+  'Notification-T·成功': { bg: 'rgba(44,184,201,0.15)', fg: 'rgba(85,204,217,1)' },
   'Task-T响应': { bg: 'rgba(54,193,141,0.15)', fg: 'rgba(54,193,141,1)' },
 };
 // 胶囊宽度估算（CJK 12px / 西文 6.3px + 两侧留白，与设计稿 Task-T=52、Negotiation-T=93 对齐）
 const textW = (t) => Math.round([...t].reduce((a, c) => a + (c.charCodeAt(0) > 0x2e7f ? 12 : 6.3), 0)) + 13;
-// 连线下方 A2A-T 消息（V2.16 调大至 12px：CJK≈12 / ASCII≈6.2）：宽度按连线长度截断，展示不全以 …… 结尾
-const msgW = (t) => [...t].reduce((a, c) => a + (c.charCodeAt(0) > 0x2e7f ? 12 : 6.2), 0);
+// 连线下方 A2A-T 消息（V2.16 调大至 12px）：宽度按连线长度截断，展示不全以 …… 结尾。
+// V5.4（用户反馈：消息越出连线两端、覆盖节点卡片）：原字符估宽偏窄（西文实际 ~7px、
+// 省略号为全角 12px）→ 改用 canvas measureText 按实际字体度量（缓存），截断上限再留
+// 8px 安全边，确保文字不超过连线长度
+const MSG_FONT = "12px 'HarmonyOS Sans SC','HarmonyOS Sans','HarmonyHeiTi','Microsoft YaHei','PingFang SC',sans-serif";
+let msgCtx = null;
+const msgWCache = new Map();
+function msgW(t) {
+  if (typeof document === 'undefined') return [...t].reduce((a, c) => a + (c.charCodeAt(0) > 0x2e7f ? 12 : 6.2), 0);
+  if (!msgCtx) msgCtx = document.createElement('canvas').getContext('2d');
+  if (!msgWCache.has(t)) { msgCtx.font = MSG_FONT; msgWCache.set(t, msgCtx.measureText(t).width); }
+  return msgWCache.get(t);
+}
 function fitMsg(t, maxW) {
   if (msgW(t) <= maxW) return t;
   let out = '';
   for (const ch of t) {
-    if (msgW(out + ch) + msgW('……') > maxW) break;
+    if (msgW(out + ch + '……') > maxW) break;
     out += ch;
   }
   return out + '……';
@@ -64,19 +78,25 @@ function pathXExtent(d) {
 
 export default function ConnectionFlow({ world, pub }) {
   const active = Object.keys(FLOWS).filter((k) => world.flows[k]);
-  // V3.31：驻留胶囊——Task-T / Notification-T / Negotiation-T 详情面板在场时，对应连线
+  // V3.31：驻留——Task-T / Notification-T / Negotiation-T 详情面板在场时，对应连线
   // 协议胶囊不随激光关闭消失，与面板同寿命（面板窗口内连线关闭后仍展示设计标签，
-  // 面板退场/下一连线激活时自然交接；激光与消息不延续——传输已结束，仅标签驻留）
+  // 面板退场/下一连线激活时自然交接）；V5.19（用户规格）：激光动效同样随面板驻留
+  // 延续——面板未消失前连线保持激活观感（消息文字不延续——传输已结束，内容由面板承载）
   const held = [];
+  let notifHold = false;
   if (pub) {
     const c = CASES[pub.caseId];
     const hold = (key, win) => {
       if (!world.flows[key] && pub.t >= win.t0 && pub.t < win.t1) held.push(key);
     };
     hold('waimo-zx-task', taskTWindowOf(c));
-    hold('waimo-zx-notif', notifWindowOf(c));
+    const notifWin = notifWindowOf(c);
+    hold('waimo-zx-notif', notifWin);
+    // V5.17：waimo-zx-notif 连线文字抑制仅在 Notification-T 面板在场窗口内（V4 原为案例级
+    // 常驻抑制——工单2 根因总结后的 Task-T响应 汇总回传 372..384 无面板承载，被误伤隐藏）
+    notifHold = notifWin.t1 > 0 && pub.t >= notifWin.t0 && pub.t < notifWin.t1;
   }
-  if (world.negotiation && !world.flows['zx-yd-neg']) held.push('zx-yd-neg');
+  if (world.negotiation && !world.flows['zx-yx-neg']) held.push('zx-yx-neg');
   if (!active.length && !held.length) return null;
   return (
     <svg className="st-flow" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true">
@@ -107,9 +127,18 @@ export default function ConnectionFlow({ world, pub }) {
         // V2.13：胶囊保比例——以胶囊中心反向缩放抵消区域拉伸（骑线标签随线中点，文字不变形）
         const ctr = L ? pillCounterTransform(pub, L.pillBox) : undefined;
         // V3.28：有详情面板承载消息的连线不再重复展示连线文字——waimo-zx-task（Task-T 面板）、
-        // waimo-zx-notif（Notification-T 面板）常驻抑制；zx-yd-neg 在协商面板窗口内抑制
-        //（协商期外如 Task-T响应/Notification-T 回程消息无面板，保留连线文字）
-        const msgHidden = key === 'waimo-zx-task' || key === 'waimo-zx-notif' || (key === 'zx-yd-neg' && world.negotiation);
+        // waimo-zx-notif（Notification-T 面板）常驻抑制；协商面板在场时 zx-yx-neg 与
+        // zx-yx-task（Accept 后 Task-T请求 重发）线均**仅展示协议胶囊、不展示消息内容**
+        //（V5.10 用户规格；V4：工单1 协商挂粤西 zx-yx-neg 线；waimo-zx-notif 仅在有
+        // Notification-T 面板的案例、且面板在场窗口内抑制——工单1 该线为 Task-T响应 汇总、
+        // 无面板承载，保留连线文字；V5.17：工单2 面板窗口前的 Task-T响应 372..384 同样保留）
+        // V5.14（用户规格）：检索智能体弹框在场——检索连线（reg-waimo-search / reg-zx-search）
+        // **仅展示协议胶囊**，命中结果/消息文字均不展示（信息由检索面板承载）
+        const searchLine = key === 'reg-waimo-search' || key === 'reg-zx-search';
+        const msgHidden = key === 'waimo-zx-task'
+          || (key === 'waimo-zx-notif' && notifHold)
+          || (world.negotiation && (key === 'zx-yx-neg' || key === 'zx-yx-task'))
+          || searchLine;
         return (
           <g key={key} data-key={key} data-dir={rev ? 'rev' : 'fwd'}>
             {COMET.map((cfg, i) => (
@@ -129,16 +158,17 @@ export default function ConnectionFlow({ world, pub }) {
                   <text x={cx} y={L.pillBox.y + 16.5} textAnchor="middle"
                     fontSize="12" fontWeight="400" fontFamily={FONT} fill={colors.fg}>{text}</text>
                 </g>
-                {fo.result && base ? (
+                {fo.result && base && !searchLine ? (
                   <text className="st-flow-result" x={x + w + 8} y={L.pillBox.y + 16.5}
                     fontSize="12" fontWeight="400" fontFamily={FONT} fill={base.fg}>{fo.result}</text>
                 ) : null}
                 {fo.msg && !msgHidden ? (
                   // A2A-T 消息：连线下方展示（胶囊/连线之下），与连线保持 1rem 距离（V2.17：胶囊底≈线顶，
-                  // 基线 = 胶囊底 + 1rem + 12px 文本 bbox 顶偏移≈13），宽度不超过连线跨度、超出以 …… 截断
+                  // 基线 = 胶囊底 + 1rem + 12px 文本 bbox 顶偏移≈13），宽度不超过连线跨度（按实际字体
+                  // 度量截断，V5.4 再留 8px 安全边——不越出连线两端、不覆盖节点卡片）、超出以 …… 截断
                   <text className="st-flow-msg" data-key={key} x={cx} y={L.pillBox.y + L.pillBox.h + 16 + 13}
                     textAnchor="middle" fontSize="12" fontWeight="400" fontFamily={FONT}
-                    fill="rgba(201,201,201,1)">{fitMsg(fo.msg, msgMax)}</text>
+                    fill="rgba(201,201,201,1)">{fitMsg(fo.msg, Math.max(0, msgMax - 8))}</text>
                 ) : null}
               </g>
             ) : null}
@@ -146,15 +176,29 @@ export default function ConnectionFlow({ world, pub }) {
         );
       })}
       {held.map((key) => {
-        // 驻留胶囊：设计标签原位呈现（宽度/中心与激活期一致，衔接无跳变），
-        // 不带激光/结果/消息——仅标签随面板驻留
+        // 驻留连线（V5.19 用户规格：消息详情面板在场时连线动效维持——激光彗星随面板
+        // 驻留延续至面板退场，不随消息传输结束停止）：胶囊设计标签原位呈现（宽度/中心
+        // 与激活期一致，衔接无跳变）；不带结果/消息；两案 flow 事件均未用 rev → 正向 path
         const L = LINES[key];
         const base = L && L.label ? L.label : null;
         if (!base) return null;
+        const f = FLOWS[key];
+        const d = f ? flowPick(world, key, pub) : null;
+        const len = pub && d ? pathLength(d) : (f ? f.len : 0);
+        const dur = Math.min(4.5, Math.max(1.6, len / 140 + 0.9)).toFixed(2) + 's';
         const ctr = pillCounterTransform(pub, L.pillBox);
         const cx = L.pillBox.x + L.pillBox.w / 2;
         return (
           <g key={'held-' + key} style={{ transform: ctr, transition: 'transform 0.25s ease' }}>
+            {d ? COMET.map((cfg, i) => (
+              <path key={i} d={d} fill="none" stroke="rgba(220,220,220,1)"
+                strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="butt"
+                strokeDasharray={'0 ' + (150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
+                strokeDashoffset="150">
+                <animate attributeName="stroke-dashoffset" from="150" to={-len}
+                  dur={dur} repeatCount="indefinite" />
+              </path>
+            )) : null}
             <g className="st-pill" data-key={key} data-held="1">
               <rect x={L.pillBox.x} y={L.pillBox.y} width={L.pillBox.w} height={L.pillBox.h}
                 rx="4" fill={base.bg} />

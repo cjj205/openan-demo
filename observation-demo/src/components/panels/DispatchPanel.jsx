@@ -39,9 +39,9 @@ export default function DispatchPanel(props) {
         <polygon points="0,12 16,0 16,40 0,28" fill="url(#disp-beam-r)" />
       </svg>
 
-      {/* ② 消息气泡 */}
+      {/* ② 消息气泡（V4：原文档 APP 定位结果——YWHJ 业务汇聚机房端口收光无光，光纤中断） */}
       <div className={'disp-msg ir-reveal' + on(2)}>
-        投诉工单的定位结果：***网元的***端口收光方向于0.279KM处发生光纤中断，请前往故障点修复。
+        投诉工单的定位结果：YWHJ - 业务汇聚机房 1 (990) 的 12-TPJ1EM8F-4 端口收光无光，发光正常，原因是光纤中断。请前往故障点修复。
       </div>
 
       {/* ① 手机预览（对话沉浸式，已去除烤入光带的左缘） */}
