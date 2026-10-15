@@ -1,0 +1,14 @@
+{
+  "key": "minimal-agent",
+  "label": "样例：极简 Agent（快速上手）",
+  "description": "注册中心 README 的最小可注册卡片",
+  "card": {
+    "name": "My Agent",
+    "description": "一个示例 Agent。",
+    "version": "1.0.0",
+    "provider": { "organization": "MyOrg", "url": "https://example.com" },
+    "capabilities": { "streaming": true, "pushNotifications": false, "extensions": [] },
+    "skills": [ { "id": "example-skill", "name": "示例技能", "description": "演示基本的 Agent 注册流程。", "tags": ["demo"] } ],
+    "supportedInterfaces": [ { "url": "http://127.0.0.1:8080/", "protocolBinding": "HTTP+JSON", "protocolVersion": "1.0.0" } ]
+  }
+}

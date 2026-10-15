@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.db
+*.log
+
+# Runtime data
+server/openan_debug/data/*.json.bak
+instance.pid
+instance.log
+
+# Node
+node_modules/
+dist/
+
+# Secrets
+.env
+*.env.local
