@@ -5,6 +5,8 @@
 - POST   /api/v1/mock-instances/{id}/stop     停止实例（含服务重启后的孤儿进程）
 - GET    /api/v1/mock-instances/{id}/logs     读取实例工作目录日志尾部
 - GET    /api/v1/mock-instances/{id}/card     代理获取实例 AgentCard（避免浏览器跨端口直连）
+
+实例定义来自 agents/<id>/agent.json（每个 Agent 一个目录），共享基线 agents/_defaults.json。
 """
 import json
 import os
@@ -19,42 +21,19 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import PlainTextResponse
 from sqlalchemy import select
 
+from .. import agent_registry
 from ..auth import get_current_user, require_admin
 from ..models import Agent
 
 router = APIRouter(prefix="/api/v1/mock-instances", tags=["mock-instances"])
 
-DEFINE_FILENAME = "mock_agent_define.json"
 _PROCESSES: dict[str, subprocess.Popen] = {}
 _LOCK = threading.Lock()
 
 
-def resolve_define_path() -> Path:
-    candidates = []
-    override = os.environ.get("MOCK_AGENT_MOCK_DEFINE")
-    if override:
-        candidates.append(Path(override))
-    cwd = Path.cwd()
-    project_dir = Path(__file__).resolve().parents[1]
-    candidates += [
-        cwd / "config" / DEFINE_FILENAME,
-        cwd / DEFINE_FILENAME,
-        cwd.parent / "config" / DEFINE_FILENAME,
-        cwd.parent / DEFINE_FILENAME,
-        project_dir / DEFINE_FILENAME,
-        project_dir / "config" / DEFINE_FILENAME,
-    ]
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    raise HTTPException(status_code=404, detail=f"未找到 {DEFINE_FILENAME}（可用 MOCK_AGENT_MOCK_DEFINE 指定路径）")
-
-
-def _load_define(path: Path) -> dict:
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as exc:
-        raise HTTPException(status_code=500, detail=f"实例定义文件解析失败：{exc}")
+def _load_define(path: Path | None = None) -> dict:
+    """聚合 agents/ 目录为 define 形态（{"defaults", "instances"}），供本路由与其它路由使用。"""
+    return agent_registry.load_define()
 
 
 def _instance_by_id(define: dict, instance_id: str) -> dict:
@@ -155,10 +134,9 @@ def _instance_view(request: Request, define: dict, instance: dict) -> dict:
 
 @router.get("")
 def list_instances(request: Request, _: dict = Depends(get_current_user)):
-    define_path = resolve_define_path()
-    define = _load_define(define_path)
+    define = _load_define()
     return {
-        "definePath": str(define_path),
+        "definePath": str(agent_registry.agents_dir()),
         "instances": [_instance_view(request, define, item) for item in define.get("instances", [])],
     }
 
@@ -176,8 +154,7 @@ def _log_tail(instance: dict, lines: int) -> str:
 
 @router.post("/{instance_id}/start")
 def start_instance(instance_id: str, request: Request, _: dict = Depends(require_admin)):
-    define_path = resolve_define_path()
-    define = _load_define(define_path)
+    define = _load_define()
     instance = _instance_by_id(define, instance_id)
     port = int(instance.get("port", 9300))
     with _LOCK:
@@ -192,8 +169,7 @@ def start_instance(instance_id: str, request: Request, _: dict = Depends(require
             proc = subprocess.Popen(
                 [
                     sys.executable, "-m", "mockagent.standalone_agent",
-                    "--define", str(define_path),
-                    "--instance", instance_id,
+                    "--agent", instance_id,
                 ],
                 cwd=str(Path(__file__).resolve().parents[1]),
                 env=os.environ.copy(),
@@ -219,8 +195,7 @@ def start_instance(instance_id: str, request: Request, _: dict = Depends(require
 
 @router.post("/{instance_id}/stop")
 def stop_instance(instance_id: str, request: Request, _: dict = Depends(require_admin)):
-    define_path = resolve_define_path()
-    define = _load_define(define_path)
+    define = _load_define()
     instance = _instance_by_id(define, instance_id)
     stopped = False
     with _LOCK:
@@ -260,14 +235,14 @@ def stop_instance(instance_id: str, request: Request, _: dict = Depends(require_
 
 @router.get("/{instance_id}/logs", response_class=PlainTextResponse)
 def instance_logs(instance_id: str, lines: int = 100, _: dict = Depends(get_current_user)):
-    define = _load_define(resolve_define_path())
+    define = _load_define()
     instance = _instance_by_id(define, instance_id)
     return _log_tail(instance, max(1, min(lines, 500))) or "(暂无日志)"
 
 
 @router.get("/{instance_id}/card")
 def instance_card(instance_id: str, _: dict = Depends(get_current_user)):
-    define = _load_define(resolve_define_path())
+    define = _load_define()
     instance = _instance_by_id(define, instance_id)
     port = int(instance.get("port", 9300))
     try:
@@ -290,8 +265,7 @@ def autostart_instances() -> None:
 
     def _run():
         try:
-            define_path = resolve_define_path()
-            define = _load_define(define_path)
+            define = _load_define()
         except Exception:
             return
         override = os.environ.get("MOCK_AGENT_AUTOSTART")
@@ -316,8 +290,7 @@ def autostart_instances() -> None:
                     proc = subprocess.Popen(
                         [
                             sys.executable, "-m", "mockagent.standalone_agent",
-                            "--define", str(define_path),
-                            "--instance", instance_id,
+                            "--agent", instance_id,
                         ],
                         cwd=str(Path(__file__).resolve().parents[1]),
                         env=os.environ.copy(),

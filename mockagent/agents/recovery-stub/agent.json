@@ -1,0 +1,52 @@
+{
+  "id": "recovery-stub",
+  "name": "业务抢通打桩 Agent",
+  "organization": "OpenAN-Stub",
+  "description": "业务抢通/严重故障通知打桩：Notification-T 服务恢复与故障订阅模板（与工作台实采报文场景对齐）",
+  "layer": "network",
+  "networkDomain": "transmission",
+  "port": 9006,
+  "workDir": "data/mock_agents/recovery-stub",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [
+    {
+      "templateUri": "Notification-T/network-layer/service-recovery/v1",
+      "variantJson": {
+        "faultManagement.ServiceRecovery": {
+          "recoveryId": "STUB-REC-{{caseId}}",
+          "status": "recovered"
+        }
+      }
+    },
+    {
+      "templateUri": "Notification-T/network-layer/subscribe-incident/v1",
+      "variantJson": {
+        "faultManagement.Incident": {
+          "csn": "INC-{{timestamp}}",
+          "name": "ETH-LOS",
+          "priority": "critical",
+          "status": "open",
+          "topic": "{{slots.通知主题}}"
+        }
+      }
+    },
+    {
+      "templateUri": "Notification-T/network-layer/recovery-event-subscription/v1",
+      "variantJson": {
+        "Notification-T.recoveryEventSubscription": {
+          "订阅结果": "成功",
+          "提示": "订阅成功，启动业务抢通事件上报任务",
+          "source": "agents/recovery-stub/agent.json"
+        }
+      }
+    }
+  ],
+  "datasetTemplates": [
+    "Notification-T/network-layer/service-recovery/v1",
+    "Notification-T/network-layer/recovery-event-subscription/v1",
+    "Notification-T/network-layer/subscribe-incident/v1"
+  ]
+}

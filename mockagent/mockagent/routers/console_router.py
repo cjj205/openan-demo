@@ -1,6 +1,6 @@
-﻿import json
+import json
 import time
-from importlib import resources as importlib_resources
+from pathlib import Path
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -12,11 +12,18 @@ from ..auth import get_current_user
 from ..deps import get_db, get_settings
 from ..models import Agent, RequestLog
 from ..schemas import ConsoleSendRequest
-from .mock_instances_router import _health_probe, _instance_by_id, _load_define, resolve_define_path
+from .. import agent_registry
+from .mock_instances_router import _health_probe, _instance_by_id
 
 router = APIRouter(prefix="/api/v1/console", tags=["console"])
 
 DEFAULT_EXTENSION = "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1"
+
+
+def _dataset_file(filename: str) -> str:
+    """读取项目根 datasets/ 目录下的数据集文件。"""
+    path = Path(__file__).resolve().parents[2] / "datasets" / filename
+    return path.read_text(encoding="utf-8")
 
 
 def _local_base(url: str) -> str:
@@ -28,7 +35,7 @@ def _local_base(url: str) -> str:
 
 def _resolve_instance_target(db: Session, instance_id: str) -> tuple[str, int | None]:
     """调测台打桩实例目标：请求打到实例进程真实端口（与外部 SDK 客户端完全一致的链路）。"""
-    define = _load_define(resolve_define_path())
+    define = agent_registry.load_define()
     instance = _instance_by_id(define, instance_id)
     port = int(instance.get("port") or 0)
     if port <= 0 or not _health_probe(port):
@@ -134,7 +141,7 @@ async def console_send(
 def trace_prompts(user: dict = Depends(get_current_user)):
     """实采报文中的真实 A2A-T 渲染 prompt（来自工作台 trace），供调测台示例填充。"""
     try:
-        raw = importlib_resources.files("mockagent").joinpath("trace_examples.json").read_text(encoding="utf-8")
+        raw = _dataset_file("trace_examples.json")
         data = json.loads(raw)
     except (OSError, ValueError) as exc:
         raise HTTPException(status_code=404, detail=f"实采 prompt 数据不可用：{exc}")
@@ -145,7 +152,7 @@ def trace_prompts(user: dict = Depends(get_current_user)):
 def demo_dataset(user: dict = Depends(get_current_user)):
     """A2A-T Demo 实采数据集：请求-响应成对（来自 A2A-T Demo.docx 两单协作日志）。"""
     try:
-        raw = importlib_resources.files("mockagent").joinpath("demo_dataset.json").read_text(encoding="utf-8")
+        raw = _dataset_file("demo_dataset.json")
         data = json.loads(raw)
     except (OSError, ValueError) as exc:
         raise HTTPException(status_code=404, detail=f"Demo 数据集不可用：{exc}")
@@ -157,7 +164,7 @@ _DATASET_CACHE: dict = {}
 
 def _agent_scopes() -> list[dict]:
     """各 Agent 的数据集关联范围：内嵌默认 Agent = 全部模板；实例 = define.datasetTemplates。"""
-    define = _load_define(resolve_define_path())
+    define = agent_registry.load_define()
     scopes: list[dict] = [{
         "agentId": None,
         "instanceId": None,
@@ -224,7 +231,7 @@ def dataset_agent_associations(user: dict = Depends(get_current_user), db: Sessi
         if sc.get("instanceId") is None:
             agent_row = next((a for a in agent_rows if a.id == default_agent_id), None)
         else:
-            inst = next((i for i in _load_define(resolve_define_path()).get("instances", []) if i.get("id") == sc["instanceId"]), None)
+            inst = next((i for i in agent_registry.load_define().get("instances", []) if i.get("id") == sc["instanceId"]), None)
             if inst is not None:
                 agent_row = next(
                     (a for a in agent_rows if a.organization == inst.get("organization") and a.name == inst.get("name")),
@@ -244,7 +251,7 @@ def dataset_agent_associations(user: dict = Depends(get_current_user), db: Sessi
 
 def _load_dataset_file(filename: str) -> dict:
     if filename not in _DATASET_CACHE:
-        raw = importlib_resources.files("mockagent").joinpath(filename).read_text(encoding="utf-8")
+        raw = _dataset_file(filename)
         _DATASET_CACHE[filename] = json.loads(raw)
     return _DATASET_CACHE[filename]
 
@@ -302,7 +309,7 @@ def dataset_pairs(
             agent_row = db.get(Agent, agent_id)
             scope_templates = None
             if agent_row is not None:
-                define = _load_define(resolve_define_path())
+                define = agent_registry.load_define()
                 inst = next(
                     (i for i in define.get("instances", []) if i.get("organization") == agent_row.organization and i.get("name") == agent_row.name),
                     None,

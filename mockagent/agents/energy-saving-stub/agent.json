@@ -1,0 +1,41 @@
+{
+  "id": "energy-saving-stub",
+  "name": "无线节能打桩 Agent",
+  "organization": "OpenAN-Stub",
+  "description": "基站节能打桩：Task-T 无线层节能模板，返回节能策略桩数据",
+  "layer": "network",
+  "networkDomain": "ran",
+  "port": 9007,
+  "workDir": "data/mock_agents/energy-saving-stub",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [
+    {
+      "templateUri": "Task-T/network-layer/ran-energy-saving/v1",
+      "variantJson": {
+        "energyManagement.EnergySaving": {
+          "cellId": "CELL-STUB-{{caseId}}",
+          "action": "deep_sleep",
+          "expectedSaving": "12%",
+          "duration": "02:00-04:00"
+        }
+      }
+    },
+    {
+      "templateUri": "Task-T/network-layer/ran-energy-saving/v1",
+      "variantJson": {
+        "energyManagement.EnergySaving": {
+          "cellId": "CELL-STUB-{{caseId}}-B",
+          "action": "symbol_shutdown",
+          "expectedSaving": "7%",
+          "duration": "23:00-05:00"
+        }
+      }
+    }
+  ],
+  "datasetTemplates": [
+    "Task-T/network-layer/ran-energy-saving/v1"
+  ]
+}

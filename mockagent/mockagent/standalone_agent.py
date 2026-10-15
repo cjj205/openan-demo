@@ -1,10 +1,13 @@
 """独立 Mock Agent 实例 runner（打桩 Agent 子进程入口）。
 
 由 mock-instances 管理 API 以子进程方式拉起：
-    python -m mockagent.standalone_agent --define config/mock_agent_define.json --instance <id>
+    python -m mockagent.standalone_agent --agent <id>
+
+每个 Agent 是 agents/ 下的一个独立目录（agents/<id>/agent.json），
+共享基线在 agents/_defaults.json（llm 默认、12 模板变体池等）。
 
 设计要点：
-- 实例声明来自 mock_agent_define.json：端口 / 工作目录 / 模型连接方案（A2AT_LLM_*）/ Agent 信息 / 初始桩变体；
+- 实例声明来自 agents/<id>/agent.json：端口 / 工作目录 / 模型连接方案（A2AT_LLM_*）/ Agent 信息 / 初始桩变体；
 - 与主调试服务共用同一 SQLite（Agent 行、变体池、历史联调记录 RequestLog），便于在调测台统一管理；
 - 模型连接方案写入 <工作目录>/llm.env，实例的 FlowEnvironment/A2ATServer 以该文件构造；
   llm.enabled=false 时写入 dummy 方案（即"LLM-less fallback mode"纯打桩）；
@@ -27,35 +30,12 @@ from sqlalchemy.orm import Session
 from .agent.a2a_app import build_a2a_app
 from .agent.executor import MockAgentExecutor
 from .agent.flow_env import FALLBACK_ENV, FlowEnvironment
+from .agent_registry import load_agent, load_defaults, resolve_agent_dir
 from .config import load_settings
 from .db import init_db, make_engine
 from .llm_client import from_define
 from .models import Agent, RequestLog, Variant
 from . import workflow_mode
-
-DEFINE_FILENAME = "mock_agent_define.json"
-
-
-def resolve_define_path(explicit: str | None) -> Path:
-    candidates = []
-    if explicit:
-        candidates.append(Path(explicit))
-    override = os.environ.get("MOCK_AGENT_MOCK_DEFINE")
-    if override:
-        candidates.append(Path(override))
-    cwd = Path.cwd()
-    candidates += [
-        cwd / "config" / DEFINE_FILENAME,
-        cwd / DEFINE_FILENAME,
-        cwd.parent / "config" / DEFINE_FILENAME,
-        cwd.parent / DEFINE_FILENAME,
-        Path(__file__).resolve().parents[1] / DEFINE_FILENAME,
-        Path(__file__).resolve().parents[1] / "config" / DEFINE_FILENAME,
-    ]
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    raise SystemExit(f"未找到 {DEFINE_FILENAME}；可用 --define 或 MOCK_AGENT_MOCK_DEFINE 指定路径")
 
 
 def merged_llm(instance: dict, define: dict) -> dict:
@@ -221,18 +201,18 @@ def build_runner_app(instance: dict, define: dict, settings) -> FastAPI:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="OpenAN-Debug standalone mock agent instance")
-    parser.add_argument("--define", default=None, help="mock_agent_define.json 路径")
-    parser.add_argument("--instance", required=True, help="实例 id")
+    parser = argparse.ArgumentParser(description="Standalone mock agent (one directory per agent under agents/)")
+    parser.add_argument("--agent", required=True, help="Agent id（agents/<id>）或 agent.json 所在目录路径")
     parser.add_argument("--host", default=None, help="覆盖实例 host")
     parser.add_argument("--port", type=int, default=None, help="覆盖实例 port")
     args = parser.parse_args()
 
-    define_path = resolve_define_path(args.define)
-    define = json.loads(define_path.read_text(encoding="utf-8"))
-    instance = next((item for item in define.get("instances", []) if item.get("id") == args.instance), None)
-    if instance is None:
-        raise SystemExit(f"实例 {args.instance!r} 未在 {define_path} 中定义")
+    try:
+        agent_dir = resolve_agent_dir(args.agent)
+    except FileNotFoundError as exc:
+        raise SystemExit(str(exc))
+    instance = load_agent(agent_dir)
+    define = {"defaults": load_defaults(), "instances": [instance]}
 
     settings = load_settings()
     host = args.host or instance.get("host") or define.get("defaults", {}).get("host", "0.0.0.0")
@@ -244,8 +224,8 @@ def main() -> None:
     (work_dir / "instance.pid").write_text(str(os.getpid()), encoding="utf-8")
     name = instance.get("agentName") or instance["name"]
     print(
-        f"[standalone-agent] 实例 {instance['id']} ({name}) 启动：http://{host}:{port} "
-        f"workDir={work_dir} define={define_path}",
+        f"[mockagent] 实例 {instance['id']} ({name}) 启动：http://{host}:{port} "
+        f"workDir={work_dir} agent.json={agent_dir}",
         flush=True,
     )
     try:

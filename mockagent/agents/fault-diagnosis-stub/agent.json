@@ -1,0 +1,61 @@
+{
+  "id": "fault-diagnosis-stub",
+  "name": "故障诊断打桩 Agent",
+  "organization": "OpenAN-Stub",
+  "description": "私线投诉诊断打桩：Task-T 私线投诉模板，返回确定性工单桩数据",
+  "layer": "service",
+  "port": 9005,
+  "workDir": "data/mock_agents/fault-diagnosis-stub",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [
+    {
+      "templateUri": "Task-T/network-layer/private-line-complaint/v1",
+      "variantJson": {
+        "faultManagement.TroubleTicket": {
+          "ticketId": "TT-STUB-{{caseId}}",
+          "status": "processing",
+          "诊断结果": "成功",
+          "诊断结果详细信息": "已完成网络侧根因定位：接入光缆中断导致专线业务中断，正在执行保护倒换恢复业务",
+          "修复建议": "保护倒换完成后确认业务恢复；如未恢复联系传输机房熔接修复",
+          "故障根因列表": [
+            {
+              "故障根因名称": "光缆中断",
+              "详细描述": "接入段光缆被施工挖断，专线业务信号丢失",
+              "修复建议": "熔接修复或倒换至保护路由",
+              "故障根因点位置": "P180-SZ-PTN7900-23-TPA1EG24-17"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "templateUri": "Task-T/network-layer/private-line-complaint/v1",
+      "variantJson": {
+        "faultManagement.TroubleTicket": {
+          "ticketId": "TT-STUB-{{caseId}}-B",
+          "status": "resolved",
+          "诊断结果": "成功",
+          "诊断结果详细信息": "接入光缆熔接修复完成，专线业务恢复正常，误码率与时延指标回归正常范围",
+          "修复建议": "无需进一步处理",
+          "故障根因列表": [
+            {
+              "故障根因名称": "光缆中断",
+              "详细描述": "接入段光缆被施工挖断，专线业务信号丢失",
+              "修复建议": "熔接修复或倒换至保护路由",
+              "故障根因点位置": "P180-SZ-PTN7900-23-TPA1EG24-17"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "datasetTemplates": [
+    "Task-T/network-layer/private-line-complaint/v1",
+    "Task-T/network-layer/complaint-diagnosis/v1",
+    "Task-T/private-line-complaint/v1",
+    "Negotiation-T/information-negotiation/propose/v1"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "service-assurance-stub",
+  "name": "业务保障打桩 Agent",
+  "organization": "OpenAN-Stub",
+  "description": "业务保障智能体打桩：专线投诉诊断、业务抢通事件与故障订阅；优先检索数据集返回最接近的成对响应",
+  "layer": "service",
+  "port": 9010,
+  "workDir": "data/mock_agents/service-assurance-stub",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [
+    {
+      "templateUri": "Task-T/network-layer/private-line-complaint/v1",
+      "variantJson": {
+        "artifactName": "private-line-service-complain-diagnosis",
+        "artifactPrompt": "1. 诊断结果：成功\n2. 诊断结果详细信息：接入端口收光无光，发光正常，原因是光缆中断。\n3. 修复建议：前往故障点修复光缆，修复后核查端口告警是否消除。\n4. 故障根因列表：\n   - 故障根因名称：光缆中断，详细描述：接入段光缆中断导致专线业务信号丢失，修复建议：熔接修复或倒换至保护路由，故障根因点位置：LINK {{caseId}}，故障对象类型：LINK"
+      }
+    },
+    {
+      "templateUri": "Notification-T/network-layer/service-recovery/v1",
+      "variantJson": {
+        "artifactName": "recovery-execution-event",
+        "artifactPrompt": "### 业务抢通事件\n1. 业务抢通方案执行状态：已结束\n2. 投诉诊断任务流水号；{{caseId}}\n3. OSS侧事件流水号；SA-REC-{{timestamp}}\n4. 接入端口名称；P180-SZ-PTN7900-23-TPA1EG24-17\n5. 是否已授权OMC自动抢通：是\n6. 业务抢通方案名称；隧道调优\n7. 业务抢通方案详情；（场景: PROTECT_PATH_FAULT; 抢通方案已就绪，已自动下发执行）\n8. 业务抢通方案执行结束时间；2026-09-23 11:58:31\n9. 业务抢通方案执行结果：成功"
+      }
+    },
+    {
+      "templateUri": "Notification-T/network-layer/subscribe-incident/v1",
+      "variantJson": {
+        "faultManagement.Incident": {
+          "csn": "INC-{{timestamp}}",
+          "name": "ETH-LOS",
+          "priority": "critical",
+          "status": "open",
+          "topic": "{{slots.通知主题}}"
+        }
+      }
+    }
+  ],
+  "datasetTemplates": [
+    "Task-T/network-layer/private-line-complaint/v1",
+    "Notification-T/network-layer/service-recovery/v1",
+    "Notification-T/network-layer/subscribe-incident/v1"
+  ],
+  "workflow": {
+    "enabled": true,
+    "workflowId": "live-assurance-demo"
+  }
+}

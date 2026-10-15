@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """MockAgent 工作流编排模式（基于 workflow-engine-sdk / workflow-exec-engine）。
 
 - 实例配置 `"workflow": {"enabled": true, "workflowId": "..."}` 后作为工作流宿主：
@@ -13,7 +13,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from importlib import resources as importlib_resources
 from pathlib import Path
 
 from a2a.types import Part
@@ -48,13 +47,18 @@ AGENT_TEMPLATE_MAP = {
 _WF_CACHE: dict[str, dict] = {}
 
 
+def _workflows_dir() -> Path:
+    """项目根 workflows/ 目录（内置 PSOP 工作流）。"""
+    return Path(__file__).resolve().parents[1] / "workflows"
+
+
 def load_builtin(workflow_id: str) -> dict | None:
-    """加载内置工作流定义（server/mockagent/workflows/<id>.json）。"""
+    """加载内置工作流定义（workflows/<id>.json）。"""
     if workflow_id in _WF_CACHE:
         return _WF_CACHE[workflow_id]
     filename = f"{workflow_id.replace('-', '_')}.json"
     try:
-        raw = importlib_resources.files("mockagent").joinpath("workflows").joinpath(filename).read_text(encoding="utf-8")
+        raw = (_workflows_dir() / filename).read_text(encoding="utf-8")
         data = json.loads(raw)
     except (OSError, ValueError):
         logger.warning("workflow definition not found: %s", filename)
@@ -66,16 +70,13 @@ def load_builtin(workflow_id: str) -> dict | None:
 def list_builtin() -> list[dict]:
     """列出内置工作流（id/name/description）。"""
     result = []
-    try:
-        root = importlib_resources.files("mockagent").joinpath("workflows")
-        for item in sorted(Path(str(root)).glob("*.json")) if root.is_dir() else []:
-            try:
-                data = json.loads(item.read_text(encoding="utf-8"))
-                result.append({"id": data.get("id") or item.stem, "name": data.get("name", ""), "description": data.get("description", "")})
-            except ValueError:
-                continue
-    except (OSError, FileNotFoundError):
-        pass
+    root = _workflows_dir()
+    for item in sorted(root.glob("*.json")) if root.is_dir() else []:
+        try:
+            data = json.loads(item.read_text(encoding="utf-8"))
+            result.append({"id": data.get("id") or item.stem, "name": data.get("name", ""), "description": data.get("description", "")})
+        except ValueError:
+            continue
     return result
 
 

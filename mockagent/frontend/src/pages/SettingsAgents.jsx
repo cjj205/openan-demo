@@ -202,13 +202,13 @@ export default function SettingsAgentsPage() {
     <Layout>
       <h2>Mock Agent 管理</h2>
       <p className="muted" style={{ marginBottom: 12 }}>
-        当前不支持在页面创建 Mock Agent：Agent 由 <code>config/mock_agent_define.json</code> 打桩实例自动注册（管理员可启停）；
+        当前不支持在页面创建 Mock Agent：Agent 由 <code>agents/&lt;id&gt;/agent.json</code> 打桩实例自动注册（管理员可启停）；
         默认 Agent 固定使用 /debug/a2a 端点，打桩实例端点为 <code>http://{'{host}'}:{'{port}'}</code>，各自维护独立变体池
       </p>
       <div className="card">
-        <h2>打桩实例（mock_agent_define.json）</h2>
+        <h2>打桩实例（agents/ 目录，每个 Agent 一个目录）</h2>
         <p className="muted" style={{ marginBottom: 10 }}>
-          实例按 <code>{definePath || 'config/mock_agent_define.json'}</code> 声明启动为独立进程（各自端口/工作目录/模型连接方案），
+          实例按 <code>{definePath || 'agents/&lt;id&gt;/agent.json'}</code> 声明启动为独立进程（各自端口/工作目录/模型连接方案），
           变体池与历史联调记录与主服务共用；llm.enabled=false 时为纯打桩模式。
           {instanceError && <span className="error-text" style={{ marginLeft: 8 }}>{instanceError}</span>}
         </p>
@@ -312,7 +312,7 @@ export default function SettingsAgentsPage() {
               </tr>
             ))}
             {instances.length === 0 && (
-              <tr><td colSpan={9}><span className="muted">未定义打桩实例（config/mock_agent_define.json）或定义文件不可达</span></td></tr>
+              <tr><td colSpan={9}><span className="muted">未定义打桩实例（agents/&lt;id&gt;/agent.json）或定义不可达</span></td></tr>
             )}
           </tbody>
         </table>

@@ -20,7 +20,7 @@ DEFAULT_TIMEOUT = 120.0
 
 @dataclass(frozen=True)
 class LlmConfig:
-    """实例 LLM 连接方案（来源 mock_agent_define.json defaults/instance.llm 合并）。"""
+    """实例 LLM 连接方案（来源 agents/_defaults.json 与 agents/<id>/agent.json 的 llm 合并 合并）。"""
 
     enabled: bool
     provider: str

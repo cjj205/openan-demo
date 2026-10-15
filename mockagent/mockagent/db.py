@@ -1,4 +1,4 @@
-﻿import secrets
+import secrets
 import sys
 
 import sqlalchemy.exc

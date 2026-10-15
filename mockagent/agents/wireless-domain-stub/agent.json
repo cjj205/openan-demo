@@ -1,0 +1,42 @@
+{
+  "id": "wireless-domain-stub",
+  "name": "无线域打桩 Agent",
+  "organization": "OpenAN-Stub",
+  "description": "无线域智能体打桩：无线小区故障诊断、无线节能与无线故障订阅；优先检索数据集返回最接近的成对响应",
+  "layer": "network",
+  "networkDomain": "ran",
+  "port": 9008,
+  "workDir": "data/mock_agents/wireless-domain-stub",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [
+    {
+      "templateUri": "Task-T/network-layer/wireless-cell-diagnosis/v1",
+      "variantJson": {
+        "artifactName": "wireless-cell-diagnosis-result",
+        "artifactPrompt": "1. 诊断结果：成功\n2. 诊断结果详细信息：小区 CELL-46001（松山湖-大学城站）切换成功率突降，目标小区测量报告正常，疑似切换参数配置异常。\n3. 修复建议：核查切换参数（CIO/迟滞）配置并回退异常修改。\n4. 故障根因列表：\n   - 故障根因名称：切换参数配置异常，详细描述：切换参数配置异常导致切换失败率升高，修复建议：核查切换参数（CIO/迟滞）配置并回退异常修改，故障根因点位置：CELL {{caseId}}，故障对象类型：CELL"
+      }
+    },
+    {
+      "templateUri": "Task-T/network-layer/ran-energy-saving/v1",
+      "variantJson": {
+        "artifactName": "ran-energy-saving-task-result",
+        "artifactPrompt": "1. 任务执行结果：成功\n2. 意图执行结果基本信息：区域：松山湖管委会；意图目标达成情况：已达成（能耗目标 30%）\n3. 意图执行结果详情：节能增益达成情况：达标；实际节能增益百分比：18%；目标调整建议：无\n4. 速率目标达成情况：达标；实际速率：满足保障目标；目标调整建议：无\n5. 节能动作：深度休眠/符号关断（按NR小区分批执行）；生效时段：00:00:00~06:00:00，按天循环"
+      }
+    },
+    {
+      "templateUri": "Notification-T/network-layer/subscribe-incident/v1",
+      "variantJson": {
+        "artifactName": "incident-subscription-result",
+        "artifactPrompt": "1. 订阅结果：成功\n2. 订阅标识：SUB-RAN-{{caseId}}\n3. 订阅条件确认：故障优先级=高，故障名称=掉线率升高/切换失败\n4. 上报方式确认：通过DataPart上报Incident数据"
+      }
+    }
+  ],
+  "datasetTemplates": [
+    "Task-T/network-layer/wireless-cell-diagnosis/v1",
+    "Task-T/network-layer/ran-energy-saving/v1",
+    "Notification-T/network-layer/subscribe-incident/v1"
+  ]
+}

@@ -1,4 +1,4 @@
-﻿"""ODA Canvas 一键部署：前端配置环境信息 → 通过 K8s API Server-Side Apply 部署 ODA Component。
+"""ODA Canvas 一键部署：前端配置环境信息 → 通过 K8s API Server-Side Apply 部署 ODA Component。
 
 无需服务器安装 kubectl/helm：直接调用 Canvas 集群 API（Bearer Token）。
 对象集：Secret / PVC / Deployment / Service / Component(oda.tmforum.org)。
@@ -77,11 +77,11 @@ def put_config(payload: OdaConfig, user: dict = Depends(get_current_user)):
     return {"ok": True}
 
 
-# ---------- 打桩实例清单（与 mock_agent_define.json 对齐） ----------
+# ---------- 打桩实例清单（与 agents/ 目录对齐） ----------
 def _agents() -> list[dict]:
-    from .mock_instances_router import _load_define, resolve_define_path
+    from .. import agent_registry
 
-    define = _load_define(resolve_define_path())
+    define = agent_registry.load_define()
     return [
         {"id": i["id"], "name": str(i["id"]).replace("-stub", ""), "port": int(i.get("port", 9300))}
         for i in define.get("instances", [])
@@ -276,9 +276,9 @@ def _manifests(cfg: OdaConfig) -> list[dict]:
 @router.get("/agents")
 def list_agents(user: dict = Depends(get_current_user)):
     """可供选择的打桩实例清单（部署选择用）。"""
-    from .mock_instances_router import _load_define, resolve_define_path
+    from .. import agent_registry
 
-    define = _load_define(resolve_define_path())
+    define = agent_registry.load_define()
     return {
         "agents": [
             {"id": i["id"], "name": i.get("name") or i["id"], "port": int(i.get("port", 9300)),
