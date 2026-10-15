@@ -68,6 +68,8 @@ mockagent/                                # 独立项目根 / standalone project
 
 **场景初始化 / Scenario initialization**：`POST /api/v1/scenarios/{id}/init` 一键就绪场景——① 校验三类配置；② 把 PSOP 工作流写入运行时注册表（全局 `workflows/<id>.json` + 宿主 workDir 副本，`workflows/` 为运行时产物不入库）；③ 按 `agents.json` 拉起全部智能体子进程（已运行的跳过，单个失败不阻塞其余）。配套 `GET /api/v1/scenarios/{id}/status`（各智能体运行状态）与 `POST /api/v1/scenarios/{id}/stop`（停止全部）。
 
+**场景 Portal 一键部署 / Per-scenario portal stack**：`python scripts/deploy_scenario_portal.py [--scenario <id>]` 按配置文件 `deploy/scenarios-portal.json` 为每个场景独立拉起完整门户栈——mockagent 实例（场景初始化）→ 场景注册中心（仓库副本 + 独立 venv + 端口/HTTP/签名开关改写 + 中文名校验补丁 + AgentCard 导入）→ 场景编排中心后台（仓库副本，`agent_registry_url` 指向场景注册中心）→ Portal 门户网关（静态托管 openan-portal/dist + `/api/orchestrate/`、`/api/registry-center/` 反代并剥离前缀，nginx 的轻量等价物）。配套 `--status` / `--stop [id|all]`；状态与 pid 记录在 `data/scenario-deploy/<id>/deploy-state.json`。
+
 **Agent 目录内容 / What's inside an agent directory**：`agent.json` 声明该 Agent 的名称、端口、提示词变体（stubVariants）、数据集模板范围（datasetTemplates）、LLM 与工作流配置；共享基线在 `agents/_defaults.json`。
 **Agent 代码 / Agent code**：`agent.py` 定义继承引擎基类 `mockagent_engine.agent.base.StubAgentBase` 的子类，承载差异化能力（如域内意图→模板推断）。引擎在桩选择链路调用钩子 `transform_request` / `transform_reply` / `build_runtime` / `capabilities`，默认实现恒等透传；目录不含 `agent.py` 的纯配置 Agent 行为与旧版一致。
 
