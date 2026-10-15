@@ -66,6 +66,8 @@ mockagent/                                # 独立项目根 / standalone project
 
 **场景目录 / Scenario directories**：每个场景一个目录（`scenarios/<id>/`），打包三类配置，缺一不可——`scenario.json` 故事线描述（背景/角色/阶段/预期结果，中英名称）、`workflow.json` 本场景的 PSOP 工作流、`agents.json` 场景需要的智能体清单（引用 `agents/<id>/` 定义并声明角色 workflow-host/participant，引用不存在的 Agent 会被拒绝）。工作流按 id 两级查找：全局 `workflows/` → 场景目录；场景接口：`GET /api/v1/scenarios`（列表）、`GET /api/v1/scenarios/{id}`（详情含故事线与智能体）。
 
+**场景初始化 / Scenario initialization**：`POST /api/v1/scenarios/{id}/init` 一键就绪场景——① 校验三类配置；② 把 PSOP 工作流写入运行时注册表（全局 `workflows/<id>.json` + 宿主 workDir 副本，`workflows/` 为运行时产物不入库）；③ 按 `agents.json` 拉起全部智能体子进程（已运行的跳过，单个失败不阻塞其余）。配套 `GET /api/v1/scenarios/{id}/status`（各智能体运行状态）与 `POST /api/v1/scenarios/{id}/stop`（停止全部）。
+
 **Agent 目录内容 / What's inside an agent directory**：`agent.json` 声明该 Agent 的名称、端口、提示词变体（stubVariants）、数据集模板范围（datasetTemplates）、LLM 与工作流配置；共享基线在 `agents/_defaults.json`。
 **Agent 代码 / Agent code**：`agent.py` 定义继承引擎基类 `mockagent_engine.agent.base.StubAgentBase` 的子类，承载差异化能力（如域内意图→模板推断）。引擎在桩选择链路调用钩子 `transform_request` / `transform_reply` / `build_runtime` / `capabilities`，默认实现恒等透传；目录不含 `agent.py` 的纯配置 Agent 行为与旧版一致。
 

@@ -157,51 +157,87 @@ def _log_tail(instance: dict, lines: int) -> str:
     return "\n".join(log_file.read_text(encoding="utf-8", errors="replace").splitlines()[-lines:])
 
 
+def _project_root() -> Path:
+    """mockagent 项目根（本文件位于 <root>/mockagent_engine/routers/，向上三层）。"""
+    return Path(__file__).resolve().parents[2]
+
+
+def _spawn_locked(instance: dict) -> subprocess.Popen:
+    """拉起实例子进程并登记到 _PROCESSES（调用方需持有 _LOCK 且已确认实例未在运行）。"""
+    work_dir = _work_dir(instance)
+    work_dir.mkdir(parents=True, exist_ok=True)
+    log_file = open(work_dir / "instance.log", "ab")
+    try:
+        proc = subprocess.Popen(
+            [
+                sys.executable, "-m", "mockagent_engine.standalone_agent",
+                "--agent", instance["id"],
+            ],
+            cwd=str(_project_root()),
+            env=os.environ.copy(),
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+        )
+    except Exception:
+        log_file.close()
+        raise
+    _PROCESSES[instance["id"]] = proc
+    return proc
+
+
+def ensure_instance_running(instance: dict, timeout: float = 15.0) -> dict:
+    """确保单个实例在运行（场景初始化等批量场景用；不抛 HTTP 异常，返回状态字典）。
+
+    - already-running：本服务托管（reason=managed）或端口已被健康实例占用（reason=external）
+    - running：本次拉起成功且健康
+    - failed：拉起异常/进程退出/健康超时（附日志尾部）
+    """
+    instance_id = instance["id"]
+    port = int(instance.get("port", 9300))
+    with _LOCK:
+        if _managed_running(instance_id):
+            return {"id": instance_id, "port": port, "status": "already-running",
+                    "reason": "managed", "pid": _PROCESSES[instance_id].pid}
+        if _health_probe(port):
+            return {"id": instance_id, "port": port, "status": "already-running", "reason": "external"}
+        try:
+            proc = _spawn_locked(instance)
+        except Exception as exc:
+            return {"id": instance_id, "port": port, "status": "failed", "error": f"进程拉起失败：{exc}"}
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if proc.poll() is not None:
+            _PROCESSES.pop(instance_id, None)
+            return {"id": instance_id, "port": port, "status": "failed",
+                    "error": f"实例进程退出（code={proc.returncode}）", "logTail": _log_tail(instance, 40)}
+        if _health_probe(port):
+            return {"id": instance_id, "port": port, "status": "running", "pid": proc.pid}
+        time.sleep(0.5)
+    _PROCESSES.pop(instance_id, None)
+    return {"id": instance_id, "port": port, "status": "failed",
+            "error": f"健康检查超时（{int(timeout)}s）", "logTail": _log_tail(instance, 40)}
+
+
 @router.post("/{instance_id}/start")
 def start_instance(instance_id: str, request: Request, _: dict = Depends(require_admin)):
     define = _load_define()
     instance = _instance_by_id(define, instance_id)
-    port = int(instance.get("port", 9300))
-    with _LOCK:
-        if _managed_running(instance_id):
-            raise HTTPException(status_code=409, detail="实例已在本服务中运行")
-        if _health_probe(port):
-            raise HTTPException(status_code=409, detail=f"端口 {port} 已有实例在运行（可能是外部启动）")
-        work_dir = _work_dir(instance)
-        work_dir.mkdir(parents=True, exist_ok=True)
-        log_file = open(work_dir / "instance.log", "ab")
-        try:
-            proc = subprocess.Popen(
-                [
-                    sys.executable, "-m", "mockagent_engine.standalone_agent",
-                    "--agent", instance_id,
-                ],
-                cwd=str(Path(__file__).resolve().parents[1]),
-                env=os.environ.copy(),
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
-            )
-        except Exception as exc:
-            log_file.close()
-            raise HTTPException(status_code=500, detail=f"进程拉起失败：{exc}")
-        _PROCESSES[instance_id] = proc
-    deadline = time.time() + 20
-    while time.time() < deadline:
-        if proc.poll() is not None:
-            _PROCESSES.pop(instance_id, None)
-            tail = _log_tail(instance, 40)
-            raise HTTPException(status_code=500, detail=f"实例进程退出（code={proc.returncode}）：\n{tail}")
-        if _health_probe(port):
-            return {"status": "running", "id": instance_id, "pid": proc.pid, "port": port}
-        time.sleep(0.5)
-    tail = _log_tail(instance, 40)
-    raise HTTPException(status_code=504, detail=f"健康检查超时（20s）：\n{tail}")
+    result = ensure_instance_running(instance, timeout=20)
+    if result["status"] == "already-running":
+        detail = (
+            "实例已在本服务中运行"
+            if result.get("reason") == "managed"
+            else f"端口 {result['port']} 已有实例在运行（可能是外部启动）"
+        )
+        raise HTTPException(status_code=409, detail=detail)
+    if result["status"] == "failed":
+        raise HTTPException(status_code=500, detail=result.get("error", "实例拉起失败"))
+    return {"status": "running", "id": instance_id, "pid": result["pid"], "port": result["port"]}
 
 
-@router.post("/{instance_id}/stop")
-def stop_instance(instance_id: str, request: Request, _: dict = Depends(require_admin)):
-    define = _load_define()
-    instance = _instance_by_id(define, instance_id)
+def terminate_instance(instance: dict) -> dict:
+    """停止单个实例（本服务托管进程 + 孤儿进程清理），供 stop 端点与场景停止复用。"""
+    instance_id = instance["id"]
     stopped = False
     with _LOCK:
         proc = _PROCESSES.pop(instance_id, None)
@@ -236,6 +272,13 @@ def stop_instance(instance_id: str, request: Request, _: dict = Depends(require_
     if not stopped and not _health_probe(int(instance.get("port", 9300)), timeout=0.5):
         return {"status": "stopped", "id": instance_id, "note": "实例本就未在运行"}
     return {"status": "stopped", "id": instance_id}
+
+
+@router.post("/{instance_id}/stop")
+def stop_instance(instance_id: str, request: Request, _: dict = Depends(require_admin)):
+    define = _load_define()
+    instance = _instance_by_id(define, instance_id)
+    return terminate_instance(instance)
 
 
 @router.get("/{instance_id}/logs", response_class=PlainTextResponse)
@@ -289,20 +332,7 @@ def autostart_instances() -> None:
                 with _LOCK:
                     if _managed_running(instance_id) or _health_probe(int(instance.get("port", 9300))):
                         continue
-                    work_dir = Path(instance["workDir"])
-                    work_dir.mkdir(parents=True, exist_ok=True)
-                    log_file = open(work_dir / "instance.log", "ab")
-                    proc = subprocess.Popen(
-                        [
-                            sys.executable, "-m", "mockagent_engine.standalone_agent",
-                            "--agent", instance_id,
-                        ],
-                        cwd=str(Path(__file__).resolve().parents[1]),
-                        env=os.environ.copy(),
-                        stdout=log_file,
-                        stderr=subprocess.STDOUT,
-                    )
-                    _PROCESSES[instance_id] = proc
+                    proc = _spawn_locked(instance)
                 deadline = time.time() + 20
                 while time.time() < deadline and proc.poll() is None and not _health_probe(int(instance.get("port", 9300))):
                     time.sleep(0.5)

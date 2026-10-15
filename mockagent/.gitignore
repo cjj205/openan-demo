@@ -9,6 +9,7 @@ __pycache__/
 data/
 instance.pid
 instance.log
+workflows/
 
 # Node
 node_modules/

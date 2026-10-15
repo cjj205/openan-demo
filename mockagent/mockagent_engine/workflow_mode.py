@@ -47,9 +47,21 @@ AGENT_TEMPLATE_MAP = {
 _WF_CACHE: dict[str, dict] = {}
 
 
-def _workflows_dir() -> Path:
-    """项目根 workflows/ 目录（全局内置 PSOP 工作流，可缺省）。"""
+def workflows_dir() -> Path:
+    """全局工作流注册表目录（运行时可写入；场景工作流经场景初始化落位到此）。"""
     return Path(__file__).resolve().parents[1] / "workflows"
+
+
+def _workflows_dir() -> Path:
+    return workflows_dir()
+
+
+def clear_builtin_cache(workflow_id: str | None = None) -> None:
+    """清除工作流定义缓存（全量或指定 id），供运行时写入新定义后刷新。"""
+    if workflow_id is None:
+        _WF_CACHE.clear()
+    else:
+        _WF_CACHE.pop(workflow_id, None)
 
 
 def _iter_scenario_workflows():
