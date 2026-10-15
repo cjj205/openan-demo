@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "description": "场景一键部署配置：每个场景独立拉起 注册中心 + 编排中心后台 + Portal 门户（含网关）。/ One config file to one-click deploy a per-scenario portal stack (registry + orchestration-center backend + portal gateway).",
+  "defaults": {
+    "orchestrationCenterRepo": "../../orchestration-center",
+    "registryCenterRepo": "../../registry-center",
+    "portalDist": "../../openan-portal/portal/dist",
+    "runtimeRoot": "data/scenario-deploy",
+    "pythonExe": "",
+    "spawnTimeoutSeconds": 40,
+    "orch": {
+      "enableHttps": false,
+      "env": {}
+    },
+    "registry": {
+      "enableHttps": false
+    },
+    "gateway": {
+      "routes": [
+        { "prefix": "/api/orchestrate/", "target": "orch", "stripPrefix": "/api/orchestrate" },
+        { "prefix": "/rest/v1/orchestrate/", "target": "orch" },
+        { "prefix": "/api/registry-center/", "target": "registry", "stripPrefix": "/api/registry-center" },
+        { "prefix": "/api/registry/", "target": "registry", "stripPrefix": "/api/registry" }
+      ]
+    }
+  },
+  "scenarios": [
+    {
+      "scenarioId": "live-assurance-demo",
+      "registryPort": 9100,
+      "orchPort": 9101,
+      "portalPort": 9103
+    }
+  ],
+  "_说明": {
+    "相对路径基准": "mockagent/ 项目根（部署脚本解析）；也可写绝对路径或用环境变量 OC_REPO / REGISTRY_REPO / PORTAL_DIST 覆盖",
+    "端口规划": "mockagent 实例 9005-9010；场景栈从 9100 起每场景预留 9100-9103（registry/orch/portal/预留），后续场景依次 +10",
+    "target": "gateway.routes[].target=orch|registry，指向同场景拉起的后台端口",
+    "orch.env": "透传给编排中心进程的环境变量（如 A2AT_LLM_API_KEY）",
+    "启动": "python scripts/deploy_scenario_portal.py --scenario live-assurance-demo；全部场景省略 --scenario",
+    "查看状态": "python scripts/deploy_scenario_portal.py --status",
+    "停止": "python scripts/deploy_scenario_portal.py --stop [scenarioId|all]"
+  }
+}
