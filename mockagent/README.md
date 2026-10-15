@@ -7,7 +7,7 @@
 
 **中文**：MockAgent 是基于 A2A-T SDK 的智能体打桩与调测服务。它提供三类能力：
 
-1. **打桩实例**：每个 Agent 是 `agents/<id>/` 下的一个独立目录（`agent.json`），共 6 个实例（故障诊断 / 业务抢通 / 节能降碳 / 无线域 / 直播 / 业务保障），每个实例挂载标准 A2A-T 端点（AgentCard、message:send、tasks:subscribe 等），可被编排中心或其它智能体真实调用。
+1. **打桩实例**：每个 Agent 是 `agents/<id>/` 下的一个独立目录（`agent.json` 配置 + `agent.py` 差异化代码），共 6 个实例（故障诊断 / 业务抢通 / 节能降碳 / 无线域 / 直播 / 业务保障），每个实例挂载标准 A2A-T 端点（AgentCard、message:send、tasks:subscribe 等），可被编排中心或其它智能体真实调用。
 2. **数据集关联与检索**：16 个 Task-T/Notification-T 模板、6060 组「请求-响应」成对样本（`expanded_dataset.json`）；每个实例按 `datasetTemplates` 绑定模板范围，请求按模板过滤 + 相似度评分（标识回填）命中唯一数据对，保证**请求-响应成对匹配**，并在响应 metadata 中携带匹配溯源（`openan.datasetMatch`）。
 3. **三种回包模式**（优先级从高到低）：
    - **工作流编排模式**（`workflow.enabled`）：实例作为工作流宿主，基于 [workflow-engine-sdk-python](https://github.com/project-openan/workflow-engine-sdk-python) 执行内置 PSOP；SELF_LOOP 步骤本地生成，普通步骤经 A2ATransport 派发到其它打桩实例（远端实例按数据集检索回包），执行事件全程留痕。
@@ -16,7 +16,7 @@
 
 **English**: MockAgent is a stubbing & debugging service for A2A-T agents. It provides:
 
-1. **Stub instances**: 6 standalone FastAPI agents (fault diagnosis / service recovery / energy saving / wireless domain / live stream / service assurance), one directory per agent under `agents/<id>/agent.json`, each mounting standard A2A-T endpoints (AgentCard, message:send, tasks:subscribe, ...).
+1. **Stub instances**: 6 standalone FastAPI agents (fault diagnosis / service recovery / energy saving / wireless domain / live stream / service assurance), one directory per agent under `agents/<id>/` (`agent.json` config + `agent.py` code extending the engine base class), each mounting standard A2A-T endpoints (AgentCard, message:send, tasks:subscribe, ...).
 2. **Dataset binding & retrieval**: 16 Task-T/Notification-T templates with 6060 request-response pairs (`expanded_dataset.json`); each instance is scoped by `datasetTemplates`, requests are matched per template with similarity scoring (identifier backfill), guaranteeing **paired request-response matching** with provenance metadata (`openan.datasetMatch`).
 3. **Three reply modes** (priority high → low):
    - **Workflow mode** (`workflow.enabled`): the instance hosts a built-in PSOP workflow via [workflow-engine-sdk-python](https://github.com/project-openan/workflow-engine-sdk-python); SELF_LOOP steps run locally, normal steps are dispatched over A2ATransport to sibling stub instances (which reply via dataset retrieval), with full event tracing.
@@ -27,24 +27,29 @@
 
 ```
 mockagent/                                # 独立项目根 / standalone project root
-├── agents/                               # 每个 Agent 一个独立目录 / one directory per agent
+├── agents/                               # 每个 Agent 一个独立目录（配置 + 代码）/ one directory per agent (config + code)
 │   ├── _defaults.json                    # 共享基线（llm 默认、12 模板变体池、workDirRoot）
-│   ├── fault-diagnosis-stub/agent.json   # 故障诊断 Agent（9005）
-│   ├── recovery-stub/agent.json          # 业务抢通 Agent（9006）
-│   ├── energy-saving-stub/agent.json     # 节能降碳 Agent（9007）
-│   ├── wireless-domain-stub/agent.json   # 无线域 Agent（9008）
-│   ├── livestream-stub/agent.json        # 直播 Agent（9009）
-│   └── service-assurance-stub/agent.json # 业务保障 Agent（9009+1，工作流宿主）
+│   ├── fault-diagnosis-stub/             # 故障诊断 Agent（9005）：agent.json + agent.py
+│   ├── recovery-stub/                    # 业务抢通 Agent（9006）：agent.json + agent.py
+│   ├── energy-saving-stub/               # 节能降碳 Agent（9007）：agent.json + agent.py
+│   ├── wireless-domain-stub/             # 无线域 Agent（9008）：agent.json + agent.py
+│   ├── livestream-stub/                  # 直播 Agent（9009）：agent.json + agent.py
+│   └── service-assurance-stub/           # 业务保障 Agent（9010，工作流宿主）：agent.json + agent.py
 ├── datasets/                             # 请求-响应成对数据集
 │   ├── expanded_dataset.json             # 16 模板 6060 组
 │   ├── demo_dataset.json                 # 种子数据集
 │   └── trace_examples.json               # 调用链示例
-├── workflows/                            # 内置 PSOP 工作流（live_assurance_demo.json）
+├── scenarios/                              # 场景目录：一个场景一个目录（故事线 + PSOP + 智能体清单）
+│   └── live-assurance-demo/
+│       ├── scenario.json                   # 故事线描述（背景/角色/阶段/预期结果）
+│       ├── workflow.json                   # 本场景的 PSOP 工作流文件
+│       └── agents.json                     # 场景需要的智能体清单（引用 agents/<id>/，含角色）
 ├── requirements.txt                      # Python 依赖（a2a-sdk / a2a-t-sdk / workflow-exec-engine ...）
 ├── pyproject.toml / .env.example
 ├── mockagent_engine/                       # 引擎包 / engine package（服务运行时，Agent 定义在 agents/）
 │   ├── main.py                           # 调测台后端入口（REST + JWT）
 │   ├── agent_registry.py                 # agents/ 目录扫描与聚合
+│   ├── scenario_registry.py              # scenarios/ 场景加载（故事线 + 工作流 + 智能体清单）
 │   ├── standalone_agent.py               # 独立打桩实例入口（python -m mockagent_engine.standalone_agent --agent <id>）
 │   ├── protocol_flow.py                  # A2A-T 协议流（意图/授权/协商/任务）
 │   ├── dataset_retrieval.py              # 数据集检索（模板过滤 + 评分 + 标识回填）
@@ -59,7 +64,14 @@ mockagent/                                # 独立项目根 / standalone project
 > 命名说明 / Naming：`mockagent/` 是项目根，`mockagent_engine/` 是引擎代码包（Python 导入名不含连字符），`agents/` 是 Agent 定义目录——三者职责互不重叠。
 > `mockagent/` is the project root, `mockagent_engine/` is the engine package (Python imports cannot contain hyphens), and `agents/` holds the agent definitions.
 
+**场景目录 / Scenario directories**：每个场景一个目录（`scenarios/<id>/`），打包三类配置，缺一不可——`scenario.json` 故事线描述（背景/角色/阶段/预期结果，中英名称）、`workflow.json` 本场景的 PSOP 工作流、`agents.json` 场景需要的智能体清单（引用 `agents/<id>/` 定义并声明角色 workflow-host/participant，引用不存在的 Agent 会被拒绝）。工作流按 id 两级查找：全局 `workflows/` → 场景目录；场景接口：`GET /api/v1/scenarios`（列表）、`GET /api/v1/scenarios/{id}`（详情含故事线与智能体）。
+
+**场景初始化 / Scenario initialization**：`POST /api/v1/scenarios/{id}/init` 一键就绪场景——① 校验三类配置；② 把 PSOP 工作流写入运行时注册表（全局 `workflows/<id>.json` + 宿主 workDir 副本，`workflows/` 为运行时产物不入库）；③ 按 `agents.json` 拉起全部智能体子进程（已运行的跳过，单个失败不阻塞其余）。配套 `GET /api/v1/scenarios/{id}/status`（各智能体运行状态）与 `POST /api/v1/scenarios/{id}/stop`（停止全部）。
+
+**场景 Portal 一键部署 / Per-scenario portal stack**：`python scripts/deploy_scenario_portal.py [--scenario <id>]` 按配置文件 `deploy/scenarios-portal.json` 为每个场景独立拉起完整门户栈——mockagent 实例（场景初始化）→ 场景注册中心（仓库副本 + 独立 venv + 端口/HTTP/签名开关改写 + 中文名校验补丁 + AgentCard 导入）→ 场景编排中心后台（仓库副本，`agent_registry_url` 指向场景注册中心）→ Portal 门户网关（静态托管 openan-portal/dist + `/api/orchestrate/`、`/api/registry-center/` 反代并剥离前缀，nginx 的轻量等价物）。配套 `--status` / `--stop [id|all]`；状态与 pid 记录在 `data/scenario-deploy/<id>/deploy-state.json`。
+
 **Agent 目录内容 / What's inside an agent directory**：`agent.json` 声明该 Agent 的名称、端口、提示词变体（stubVariants）、数据集模板范围（datasetTemplates）、LLM 与工作流配置；共享基线在 `agents/_defaults.json`。
+**Agent 代码 / Agent code**：`agent.py` 定义继承引擎基类 `mockagent_engine.agent.base.StubAgentBase` 的子类，承载差异化能力（如域内意图→模板推断）。引擎在桩选择链路调用钩子 `transform_request` / `transform_reply` / `build_runtime` / `capabilities`，默认实现恒等透传；目录不含 `agent.py` 的纯配置 Agent 行为与旧版一致。
 
 ## 三、快速开始 / Quick Start
 
@@ -79,7 +91,7 @@ npm install && npm run dev
 
 - 实例管理：`POST /api/v1/mock-instances/{id}/start`（后端以 `python -m mockagent_engine.standalone_agent --agent <id>` 拉起，定义读取 `agents/<id>/agent.json`，端口 9005-9010）。
 - Instance management: `POST /api/v1/mock-instances/{id}/start` spawns each agent on ports 9005-9010 (definitions read from `agents/<id>/agent.json`).
-- 工作流模式：给实例配置 `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` 后，向该实例发送意图请求即可触发端到端编排（详见 `workflows/`）。
+- 工作流模式：给实例配置 `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` 后，向该实例发送意图请求即可触发端到端编排（工作流文件见 `scenarios/live-assurance-demo/workflow.json`）。
 - Workflow mode: enable `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` on an instance, then send an intent request to trigger end-to-end orchestration.
 - LLM 模式：配置 OpenAI 兼容 `baseUrl`/`model`，密钥经环境变量 `MOCK_AGENT_LLM_API_KEY` 注入。
 - LLM mode: configure an OpenAI-compatible `baseUrl`/`model`; the key is read from env `MOCK_AGENT_LLM_API_KEY`.
