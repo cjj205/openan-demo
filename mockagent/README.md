@@ -78,5 +78,5 @@ npm install && npm run dev
 
 ## 五、后续跟踪 / Follow-ups
 
-需求统一在本仓库 Issue 跟踪：跟踪 issue。后续计划（部署脚本脱敏移植、真实 LLM 端点联调、实例端口对外暴露、密钥轮换）见 issue 列表。
-Requirements are tracked in this repository's issues. Planned follow-ups (portable deploy scripts, live LLM endpoint integration, exposing instance ports, secret rotation) are listed there.
+需求统一在 [Issue #4](https://github.com/project-openan/openan-demo/issues/4) 跟踪。后续计划（部署脚本脱敏移植、真实 LLM 端点联调、实例端口对外暴露、密钥轮换）见该 issue。
+Requirements are tracked in [Issue #4](https://github.com/project-openan/openan-demo/issues/4). Planned follow-ups (portable deploy scripts, live LLM endpoint integration, exposing instance ports, secret rotation) are listed there.
