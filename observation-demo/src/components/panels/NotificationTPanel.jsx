@@ -10,14 +10,14 @@ import { NOTIF_WEIGHTS } from '../../storyline/panel-timing.js'
 
 const ROWS_BEFORE = [
   { label: '隧道状态', value: 'down', color: '#e7434a' },
-  { label: '时延', value: '1000000us', color: '#e7434a' },
-  { label: '带宽', value: '20bps', color: '#e7434a' },
+  { label: '时延', value: '28ms', color: '#e7434a' },
+  { label: '丢包率', value: '0.9%', color: '#e7434a' },
 ]
 
 const ROWS_AFTER = [
   { label: '隧道状态', value: 'up', color: '#36c18d' },
-  { label: '时延', value: '500000us', color: '#36c18d' },
-  { label: '带宽', value: '25bps', color: '#36c18d' },
+  { label: '时延', value: '5ms', color: '#36c18d' },
+  { label: '丢包率', value: '0.01%', color: '#36c18d' },
 ]
 
 function CompareCard({ x, title, titleColor, headClass, cardClass, rows }) {
@@ -58,7 +58,7 @@ export default function NotificationTPanel(props) {
       </div>
 
       <TBubble width={320} height={181} tail="right" style={{ left: 16, top: 41 }}>
-        {/* ① 消息行 + 抢通前（V4：粤西隧道调优——调优前 down/1000000ms/20bps → 调优后 up/500000ms/25bps）；
+        {/* ① 消息行 + 抢通前（V4：粤西隧道调优；V5.26 用户规格：调优前 down/28ms/丢包0.9% → 调优后 up/5ms/丢包0.01%，带宽行删除）；
             V5.22（用户规格）：气泡内容整体左移 5px——tail=right 气泡主体右缘 x=310（顶部尾巴凸至 319），
             左卡 11..147 / 右卡 163..299，距左右气泡边沿均 11px */}
         <div className={'p-abs ir-reveal' + on(1)} style={{ left: 11, top: 12, fontSize: 12, lineHeight: '20px', color: '#fff', whiteSpace: 'nowrap' }}>
