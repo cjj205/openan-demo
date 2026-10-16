@@ -74,6 +74,18 @@
 /* 连线下方 A2A-T 消息（V2.13：随胶囊淡入，超宽以 …… 截断见 ConnectionFlow fitMsg） */
 .st-flow-msg { animation: stPillIn 0.3s ease-out; }
 
+/* ---- V5.33（用户规格）：房间条竖线分隔——位于相邻子步骤指示器（标签+时长/圆点）间隙
+   中点，纵向与房间胶囊对齐（y126..158 高 32，不贯穿整条），白色半透明 ---- */
+.st-roomsep {
+  position: absolute;
+  top: 7.875rem;
+  width: 0.0625rem;
+  height: 2rem;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 12;
+  pointer-events: none;
+}
+
 /* ---- 迷你步骤图标（SVG）：颜色/线宽/字体走 presentation attributes（见 MiniCircles.jsx，防样式表缺失回落黑色）----
    此处仅保留动画（transform 旋转需 keyframes，无法用属性表达） */
 .st-mc-spin {

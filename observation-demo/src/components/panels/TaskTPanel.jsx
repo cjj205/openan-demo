@@ -80,7 +80,7 @@ export default function TaskTPanel(props) {
               className={'p-abs ir-reveal' + on(2)}
               style={{ left: 22, top: 70, fontSize: 12, lineHeight: '20px', color: '#fff', whiteSpace: 'nowrap' }}
             >
-              基于意图，精准匹配Prompt模板。
+              1、基于意图，精准匹配Prompt模板。
             </div>
             <div
               className={'p-abs ir-reveal' + on(2)}
@@ -102,7 +102,8 @@ export default function TaskTPanel(props) {
               <div className="radio-option radio-option--plain" style={{ left: 162, top: 2, width: 88, height: 28, justifyContent: 'center' }}>
                 故障处理场景
               </div>
-              <div className="radio-option radio-option--plain" style={{ left: 254, top: 2, width: 34, height: 28, justifyContent: 'center' }}>
+              {/* V5.33（用户规格）：省略号缩小（12px → 9px） */}
+              <div className="radio-option radio-option--plain" style={{ left: 254, top: 2, width: 34, height: 28, justifyContent: 'center', fontSize: 9 }}>
                 ···
               </div>
             </div>
@@ -112,7 +113,7 @@ export default function TaskTPanel(props) {
               className={'p-abs ir-reveal' + on(4)}
               style={{ left: 22, top: 172, fontSize: 12, lineHeight: '20px', color: '#fff', whiteSpace: 'nowrap' }}
             >
-              自然语言 → 确定性任务
+              2、自然语言 → 确定性任务
             </div>
 
             {/* 时间轴：空心圆点 + 虚线（圆点与各卡片垂直居中，随对应卡片渐入） */}

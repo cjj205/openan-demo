@@ -72,6 +72,12 @@ export default function StorylineOverlays() {
       <style>{GLIDE_CSS}</style>
       <div className="st-zoomwrap" style={zoomStyle}>
         <div className="st-zoomz" style={zoomZ}>
+          {/* V5.33（用户规格，三次修订）：房间条竖线分隔——位于相邻子步骤指示器
+              （标签+时长标签 / 圆点）间隙的**中点**：客服|监控室 = 受理组（标签+1分钟）尾
+              507.7 与 识别圆点 609.94 中点 = 558.8；监控室|传输室 = 定界组（标签+8分钟）尾
+              950.3 与 根因圆点 1048.5 中点 = 999.39；白色半透明（.st-roomsep），随 F∘Z 同步 */}
+          <div className="st-roomsep" style={{ left: 558.8 }} />
+          <div className="st-roomsep" style={{ left: 999.39 }} />
           {lineWorld ? <ConnectionLines world={lineWorld} pub={pub} /> : null}
           {live ? (
             <>

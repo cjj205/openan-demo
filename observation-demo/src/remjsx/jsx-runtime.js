@@ -3,10 +3,14 @@
 // 故经相对路径引真实运行时（node_modules 子路径不受包 exports 限制、亦不命中 bare-specifier alias）；
 // 构建（production）走本文件，开发走 jsx-dev-runtime.js。
 import { Fragment, jsx as _jsx, jsxs as _jsxs } from '../../node_modules/react/jsx-runtime.js';
-import { remStyleFor } from './convert.js';
-const wrap = (f) => (type, props, key) => (
-  props && props.style ? f(type, { ...props, style: remStyleFor(type, props.style) }, key) : f(type, props, key)
-);
+import { remStyleFor, remSvgAttrs } from './convert.js';
+const wrap = (f) => (type, props, key) => {
+  if (!props) return f(type, props, key);
+  let p = props;
+  if (p.style) p = { ...p, style: remStyleFor(type, p.style) };
+  if (type === 'svg' && (p.width != null || p.height != null)) p = remSvgAttrs(type, p);
+  return p === props ? f(type, props, key) : f(type, p, key);
+};
 export const jsx = wrap(_jsx);
 export const jsxs = wrap(_jsxs);
 export { Fragment };

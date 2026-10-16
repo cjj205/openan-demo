@@ -32,6 +32,26 @@ export function remStyleFor(type, style) {
   if (typeof type === 'string' && SVG_TAGS.has(type)) return style;
   return remStyle(style);
 }
+// svg 根元素（含嵌套 svg，如 TBubble 描边/授权箭头/调度光束）的 width/height **属性**定义其
+// CSS 盒（视口系设计 px）——须随 rem 缩放，否则 k≠1 时描边环与气泡底/文字尺寸失配
+// （k>1 文字超出描边环、k<1 环大于底，用户反馈"文字超出气泡宽高"根因）；纯数字或无单位
+// 字符串转 rem，带单位/百分比不动。svg 内部子元素（g/circle/path…）不经此处（viewBox 单位）
+const NUM_RE = /^-?[\d.]+$/;
+export function remSvgAttrs(type, props) {
+  if (type !== 'svg' || !props) return props;
+  let out = null;
+  for (const k of ['width', 'height']) {
+    const v = props[k];
+    let nv = v;
+    if (typeof v === 'number') nv = v / 16 + 'rem';
+    else if (typeof v === 'string' && NUM_RE.test(v)) nv = parseFloat(v) / 16 + 'rem';
+    if (nv !== v) {
+      if (!out) out = { ...props };
+      out[k] = nv;
+    }
+  }
+  return out || props;
+}
 export function remStyle(style) {
   if (!style || typeof style !== 'object') return style;
   let out = null;
