@@ -455,6 +455,11 @@ export function buildUiPatches(ctx) {
   // 点阵背景：V5.20（用户规格）整层去除——不再铺点（原 V2.24..V2.25：浅灰 16px 平铺；
   // V3.4 颜色 #C9C9C9、V3.6 透明度 0.25——均随去除废止）
   P.set(DOT_BG_ID, { hide: true });
+  // 缩放工具条图标（V5.28 用户规格）：设计版＋/－子树隐藏——放大图标 path5 为 12.8×12.8
+  // 白色实心圆（子序最后、盖住＋字形 sprite → 放大按钮呈白圆点）；ZoomToolbar 以 CSS 重建
+  // 白色＋/－（background:#FFF、border:0.05rem(1px) solid #FFF）；适应图标与百分比文字保留设计渲染
+  P.set('23:135660', { hide: true });
+  P.set('23:135668', { hide: true });
   // 回放按钮组图标水平对齐（V2.16）：单步/倍速/停止按钮的 1px 边框使内部绝对定位的图标/
   // 文字整体下移 1px（回放按钮为实底无边框）→ 改 inset box-shadow 描边（视觉等效、不占布局）
   for (const id of ['23:137029', '23:137058', '23:137063']) {
@@ -564,6 +569,9 @@ export function buildPatches(world, ctx) {
       P.set(LOGS.scrollbarId, { hide: true });
       set(LOGS.countTextId, { text: CASES[ctx.caseId].logs.length + '条' });
     }
+    // V5.29（用户规格）：组间连线光点（滑块）改为"仅登场动效"——登场窗口外一律隐藏，
+    // 快照态亦不呈现（原设计静态滑块随之隐藏；V5.12"回放中常动/其余静止于中点"废止）
+    ROOMS.glides.forEach((g) => hide(g.id));
     return P;
   }
 
@@ -585,11 +593,26 @@ export function buildPatches(world, ctx) {
     width: rect.width + 'px',
     transition: 'left 0.5s ease, width 0.5s ease',
   } });
-  // 组间连线（客服—监控室—传输室）滑块动效；监控室—传输室段（连线 sprite+滑块）随传输室登场
+  // 组间连线（客服—监控室—传输室）光点动效（V5.29 用户规格）：只在对应房间首次登场时
+  // 动效、之后整点消失——①客服—监控室段：监控室进入（首个监控室步骤激活，两案 t=12，
+  // 白色高亮底同时移入该室）；②监控室—传输室段：传输室整组登场（ZX appear，两案 t=144，
+  // 与 csOn 同源）。窗口 = 滑块行程 1 周的业务时长（dur×4×speed 业务秒——1x 恰一周、
+  // 倍速按比例展宽保实长）；窗口内回放中施加动画类（暂停/seek 静止呈现）、窗口外与
+  // 登场前隐藏；监控室—传输室段登场前仍随传输室整组隐藏（原逻辑）
+  let tRoom1 = Infinity; let tRoom2 = Infinity;
+  const stepRooms = CASES[ctx.caseId].stepRooms;
+  for (const e of CASES[ctx.caseId].events) {
+    if (tRoom1 === Infinity && e.type === 'step' && e.st === 'active' && stepRooms[e.i] === 1) tRoom1 = e.t;
+    else if (tRoom2 === Infinity && e.type === 'appear' && e.k === 'ZX') tRoom2 = e.t;
+    if (tRoom1 < Infinity && tRoom2 < Infinity) break;
+  }
+  const tb = ctx.t != null ? ctx.t : 0;
+  const spd = ctx.speed || 1;
   ROOMS.glides.forEach((g, i) => {
     if (!csOn && i === csRoomIdx - 1) { hide(g.id); return; }
-    // V5.12（用户规格）：光束滑块仅在回放中移动——其余时刻（暂停/完成/快照）不施加
-    // 动画类、静止呈现于连线中点
+    const T = i === 0 ? tRoom1 : tRoom2;
+    const win = Math.ceil(g.dur * 4 * spd);
+    if (tb < T || tb >= T + win) { hide(g.id); return; }
     if (ctx.mode === 'playing') set(g.id, { c: 'st-glide' + i });
   });
   if (!csOn) { hide(CS_TAB_ID); hide(CS_LINK_ID); }

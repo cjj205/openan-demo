@@ -1,15 +1,15 @@
 * { box-sizing: border-box; }
 html, body, #root { margin: 0; padding: 0; height: 100%; background: rgb(2, 10, 57); overflow: hidden; }
-/* V2.14：整页铺满（G=scale(vw/1920, vh/1080) 非等比）——文字/图标经 uiPatches 反向缩放保比例 */
-.screen-scaler { position: fixed; inset: 0; }
+/* V5.27：整页等比适配改 zoom 方案——.screen-scaler flex 居中，.screen-canvas 以 zoom:k 呈现
+   （父布局占用 1920k×1080k，不足方向留白融入 body 底色）。zoom 为重排版式缩放，按最终尺寸
+   重栅格化文字/矢量，任意视口（含非整数 k，如 1920×958 → k≈0.887）均清晰；
+   原 V2.14/V2.17 transform: scale 方案（整层纹理缩放，非整数 k 时发虚）已废止 */
+.screen-scaler { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
 .screen-canvas {
-  position: absolute;
-  left: 0;
-  top: 0;
+  position: relative;
+  flex-shrink: 0;
   width: 1920px;
   height: 1080px;
   overflow: hidden;
   background: #161618;
-  transform-origin: top left;
-  flex-shrink: 0;
 }

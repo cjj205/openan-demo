@@ -41,7 +41,7 @@ function makeInteractions(apiRef) {
 
 function makePub(mode, caseId, t, speed, zoom, logLive, logHidden, ordersHidden, vscale, api, interactions, search, status) {
   const world = mode === 'snapshot' ? null : foldWorld(CASES[caseId], t);
-  const ctx = { mode, caseId, speed, zoom, logLive, logHidden, ordersHidden, vscale, orderInfo: world ? !!world.orderInfo : false, search, status };
+  const ctx = { mode, caseId, t, speed, zoom, logLive, logHidden, ordersHidden, vscale, orderInfo: world ? !!world.orderInfo : false, search, status };
   return {
     mode, caseId, t, speed, zoom, logLive, logHidden, ordersHidden, vscale, world, api, interactions, search, status,
     patches: buildPatches(world, ctx),

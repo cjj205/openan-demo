@@ -1,19 +1,18 @@
 import { useStory } from '../storyline/StorylineContext';
 
-// 整页等比缩放（V2.17，rem 语义：1rem ≡ 16·k px）：
-// k = min(vw/1920, vh/1080) —— 画布 1920×1080 等比适配视口并居中（不足方向留白融入 body 底色），
-// 文字/图标/圆形/间距全部等比随屏幕大小改变（16:9 视口 k=sx=sy 与铺满一致）。
-// V2.21：用户缩放 z 移回画布区域层（.fc-zoom / .st-zoomz，绕画布中心，见 FlowChartRegion/roles）——
-// 工单列表/成效/A2A-T 日志/工具条不随缩放改变；整页层只承担视口适配（screen(x) = off + k·x）
+// 整页等比缩放（V2.17 rem 语义：1rem ≡ 16·k px）：
+// k = min(vw/1920, vh/1080) —— 画布 1920×1080 等比适配视口并居中（flex 居中，不足方向留白融入 body 底色）。
+// V5.27：transform → zoom 根治缩放模糊——transform 是"先按 1920×1080 光栅化成纹理、再由合成器
+// 缩放贴图"，k 非整数（如最大化窗口 innerHeight=958 → k≈0.887）时纹理经双线性重采样+半像素
+// 偏移导致整页发虚；zoom 为"重新排版"式缩放，Chrome 按最终尺寸重排版并重栅格化文字/矢量，
+// 任意 k 均清晰（vscale 消费方仅此处；V2.21 用户缩放 z 仍在画布区域层，不受影响）。
 export default function ScreenCanvas({ children }) {
   const pub = useStory();
   const v = pub && pub.vscale ? pub.vscale : { x: 1, y: 1 };
   const k = Math.min(v.x, v.y);
-  const offx = 960 * (v.x - k);
-  const offy = 540 * (v.y - k);
   return (
     <div className="screen-scaler">
-      <div className="screen-canvas" style={{ transform: 'translate(' + (offx + 960 * k) + 'px, ' + (offy + 540 * k) + 'px) scale(' + k + ') translate(-960px, -540px)' }}>
+      <div className="screen-canvas" style={{ zoom: String(k) }}>
         {children}
       </div>
     </div>
