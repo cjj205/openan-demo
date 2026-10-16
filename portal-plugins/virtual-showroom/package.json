@@ -1,0 +1,19 @@
+{
+  "name": "openan-plugin-virtual-showroom",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "OpenAN Portal 虚拟展厅插件 — 卡片式 Demo 展厅（cards.json 配置驱动）",
+  "scripts": {
+    "dev": "vite --host",
+    "build:plugin": "vite build --config vite.bundle.config.js"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}
