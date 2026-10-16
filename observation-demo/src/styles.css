@@ -1,15 +1,16 @@
 * { box-sizing: border-box; }
+/* V5.30 rem 缩放（用户规格）：根字号由 ScreenCanvas 按视口设置（16k，k=min(vw/1920,vh/1080)，
+   此处 16px 为 k=1 兜底）；画布 .screen-canvas 120rem×67.5rem（1rem≡16k px → 呈现 1920k×1080k）；
+   画布内组件内联 px 经 remjsx 包装器、CSS px 经 rem 换算（见各 css），随根字号等比重排版——
+   任意视口/DPR 清晰（V5.27 zoom 方案废止）；.screen-scaler flex 居中，不足方向留白融入 body 底色 */
+html { font-size: 16px; }
 html, body, #root { margin: 0; padding: 0; height: 100%; background: rgb(2, 10, 57); overflow: hidden; }
-/* V5.27：整页等比适配改 zoom 方案——.screen-scaler flex 居中，.screen-canvas 以 zoom:k 呈现
-   （父布局占用 1920k×1080k，不足方向留白融入 body 底色）。zoom 为重排版式缩放，按最终尺寸
-   重栅格化文字/矢量，任意视口（含非整数 k，如 1920×958 → k≈0.887）均清晰；
-   原 V2.14/V2.17 transform: scale 方案（整层纹理缩放，非整数 k 时发虚）已废止 */
 .screen-scaler { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
 .screen-canvas {
   position: relative;
   flex-shrink: 0;
-  width: 1920px;
-  height: 1080px;
+  width: 120rem;
+  height: 67.5rem;
   overflow: hidden;
   background: #161618;
 }

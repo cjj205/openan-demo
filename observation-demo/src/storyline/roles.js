@@ -575,24 +575,15 @@ export function buildPatches(world, ctx) {
     return P;
   }
 
-  // ---- 传输室延迟登场：投诉定界完成、检索命中专线投诉处置智能体（ZX appear，两案例均在
+  // ---- 传输室延迟登场：投诉定界完成、检索命中专线投诉处理智能体（ZX appear，两案例均在
   // 定界步骤结束后的检索窗口末尾）之前，传输室整组不呈现——房间标签、监控室—传输室连线
   // 与滑块、该室 4 个步骤条（根因定位/方案生成/修复验证/投诉报结），均随专线卡同时出现 ----
   const csRoomIdx = ROOMS.rooms.findIndex((r) => r.key === '传输室');
   const csOn = world.visible.ZX;
 
-  // ---- 房间白色高亮底：跟随当前步骤所在房间（客服/监控室/传输室）平移 ----
-  const steps = world.steps;
-  let ai = steps.lastIndexOf('active');
-  if (ai === -1) ai = steps.length - 1; // 全部完成 → 最后一步所在房间（传输室）
-  // 传输室未登场时：当前步骤已推进到该室（定界完成→检索命中的空窗），高亮底回落到最近的已登场房间
-  if (!csOn) { while (ai > 0 && CASES[ctx.caseId].stepRooms[ai] === csRoomIdx) ai--; }
-  const rect = ROOMS.rooms[CASES[ctx.caseId].stepRooms[ai]] || ROOMS.rooms[ROOMS.rooms.length - 1];
-  set(ROOMS.bgId, { s: {
-    left: rect.left + 'px',
-    width: rect.width + 'px',
-    transition: 'left 0.5s ease, width 0.5s ease',
-  } });
+  // 房间白色高亮底（V5.31 用户规格）：整块移除——不再随当前步骤所在房间平移展示
+  // （原"跟随当前房间（客服/监控室/传输室）平移 + 0.5s 过渡"逻辑废止；快照态原有隐藏一致）
+  hide(ROOMS.bgId);
   // 组间连线（客服—监控室—传输室）光点动效（V5.29 用户规格）：只在对应房间首次登场时
   // 动效、之后整点消失——①客服—监控室段：监控室进入（首个监控室步骤激活，两案 t=12，
   // 白色高亮底同时移入该室）；②监控室—传输室段：传输室整组登场（ZX appear，两案 t=144，
@@ -740,7 +731,7 @@ export function buildPatches(world, ctx) {
   // ---- 步骤条 ----
   let lastVisChev = -1;
   CHEVRONS.forEach((ch, i) => {
-    // 传输室步骤（根因定位/方案生成/修复验证/投诉报结）：随专线投诉处置智能体登场，此前整组隐藏
+    // 传输室步骤（根因定位/方案生成/修复验证/投诉报结）：随专线投诉处理智能体登场，此前整组隐藏
     if (!csOn && CASES[ctx.caseId].stepRooms[i] === csRoomIdx) {
       [ch.chipId, ch.iconId, ch.nameId, ch.durId].forEach(hide);
       return;
@@ -789,9 +780,10 @@ export function buildPatches(world, ctx) {
   set(uns.id, { s: { border: '1px solid rgba(119,119,119,1)' } });
   ORDERS.checkIds.forEach(hide); // 静态对勾隐藏，覆盖层浮动对勾替代
   if (!world.caseDone) {
-    // 回放/单步进行中：选中工单卡状态显示「回放中」（案例本身已完成，非业务进行中）
-    set(sel.pillId, { s: { backgroundColor: 'rgba(246,158,57,0.15)' } });
-    set(sel.pillTextId, { text: '回放中', s: { color: 'rgba(246,158,57,1)' } });
+    // 回放/单步进行中：选中工单卡状态显示「回放中」（案例本身已完成，非业务进行中）；
+    // V5.32（用户规格）：改蓝色系（原橙色 rgba(246,158,57) 废止）——取房间胶囊同系 #5CACFF
+    set(sel.pillId, { s: { backgroundColor: 'rgba(92,172,255,0.15)' } });
+    set(sel.pillTextId, { text: '回放中', s: { color: 'rgba(92,172,255,1)' } });
   }
 
   return P;

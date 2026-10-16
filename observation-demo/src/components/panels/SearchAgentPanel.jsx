@@ -3,7 +3,7 @@ import useStageClock from './useStageClock.js'
 
 /* SearchAgentPanel — 检索智能体面板（源自 react-panels）
    V3.15：selected 属性控制选中项（glass 高亮）——
-   WAIMO 检索（reg-waimo-search）命中 专线投诉处置智能体 → ['zx']（默认，原版式）；
+   WAIMO 检索（reg-waimo-search）命中 专线投诉处理智能体 → ['zx']（默认，原版式）；
    专线检索（reg-zx-search）命中 粤东/粤西 → ['yd','yx']（案例二粤西不登场 → ['yd']）
    V3.22 动态选中（相位驱动，与意图/Task-T 面板同一分步时钟）：窗口前半（相位<50%）
    全未选（plain），后半目标项高亮渐显（--glass 过渡：边框/文字色 + 渐变垫层透明度，
@@ -11,7 +11,7 @@ import useStageClock from './useStageClock.js'
 const OPTIONS = [
   { key: 'yd', label: '粤东SPN网络内生智能', top: 8, pad: 19 },
   { key: 'yx', label: '粤西SPN网络内生智能', top: 40, pad: 19 },
-  { key: 'zx', label: '专线投诉处置智能体', top: 72, pad: 20 },
+  { key: 'zx', label: '专线投诉处理智能体', top: 72, pad: 20 },
 ]
 
 export default function SearchAgentPanel({ selected = ['zx'], ...clock }) {

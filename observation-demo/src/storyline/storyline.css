@@ -22,14 +22,14 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transform-origin: 975px 470.5px;
+  transform-origin: 60.9375rem 29.40625rem;
   transition: transform 0.25s ease;
 }
 .st-zoomz {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transform-origin: 1112.5px 470.5px;
+  transform-origin: 69.53125rem 29.40625rem;
 }
 
 /* ---- 透明点击层通用（工具栏/缩放条）---- */
@@ -41,7 +41,7 @@
   margin: 0;
   cursor: pointer;
   pointer-events: auto;
-  border-radius: 4px;
+  border-radius: 0.25rem;
 }
 .st-tbtn:hover, .st-zoombar button:hover:not(:disabled) {
   background: rgba(92, 172, 255, 0.14);
@@ -82,6 +82,8 @@
   animation: stSpin 0.75s linear infinite;
 }
 /* 执行中 loading 辉光：亮环拖影增强可见性（V2.21：原生 SVG 弧段/底圆，原 <image> 选择器同步扩展） */
+/* 执行中 loading 辉光：投影增强可见性（V2.21，原 SVG 滤镜/双圆与原 <image> 视觉同步保留）。
+   V5.30 rem 缩放注意：本选择器作用于 SVG 内部元素——长度为用户单位（viewBox 系），保持 px 不转 rem */
 .st-mc-spin > * {
   filter: drop-shadow(0 0 3px rgba(120, 185, 255, 0.95)) brightness(1.2);
 }
@@ -91,9 +93,9 @@
 .st-desclayer { z-index: 13; }
 .st-desc {
   position: absolute;
-  font-size: 11px; /* V2.20：12→11px 略缩小（V2.17 曾 10→12px；整页等比缩放下随屏幕放大） */
+  font-size: 0.6875rem; /* V2.20：12→0.6875rem 略缩小（V2.17 曾 10→0.75rem；整页等比缩放下随屏幕放大） */
   font-weight: 400;
-  line-height: 17px; /* V5.6：18→17px——两行 34px 恰好容纳于各卡描述区（不超出卡底） */
+  line-height: 1.0625rem; /* V5.6：18→1.0625rem——两行 2.125rem 恰好容纳于各卡描述区（不超出卡底） */
   /* V5.4：超出卡片宽度的描述换行展示（悬浮 title 保留全文）；
      V5.6（用户规格）：卡片高度固定、不随描述动态增减——描述至多两行且不超出卡片区域
      （-webkit-line-clamp 截断+省略号，全文悬浮 title 可见）；文字水平居中 */
@@ -128,70 +130,70 @@
   box-sizing: border-box;
   font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
 }
-.st-logtable::-webkit-scrollbar { width: 14px; }
+.st-logtable::-webkit-scrollbar { width: 0.875rem; }
 .st-logtable::-webkit-scrollbar-track { background: transparent; }
 .st-logtable::-webkit-scrollbar-thumb {
   background: rgba(89, 89, 89, 1);
-  border: 4px solid transparent;
-  border-radius: 3px;
+  border: 0.25rem solid transparent;
+  border-radius: 0.1875rem;
   background-clip: padding-box;
 }
 .st-logtable::-webkit-scrollbar-thumb:hover { background: rgba(119, 119, 119, 1); background-clip: padding-box; }
 .st-lrow {
   width: 100%; /* V2.13：随表体展宽真实重排（出滚动条时 = 可视宽，与原固定 1308 等效） */
-  border-bottom: 1px solid rgba(243, 243, 243, 0.1);
+  border-bottom: 0.0625rem solid rgba(243, 243, 243, 0.1);
   cursor: pointer;
   animation: stDescIn 0.3s ease-out;
 }
-@keyframes stDescIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-.st-lrow:first-child { border-top: 1px solid rgba(243, 243, 243, 0.1); }
+@keyframes stDescIn { from { opacity: 0; transform: translateY(0.375rem); } to { opacity: 1; transform: translateY(0); } }
+.st-lrow:first-child { border-top: 0.0625rem solid rgba(243, 243, 243, 0.1); }
 /* 斑马纹（对齐设计稿表格 zebra 样式） */
 .st-lrow:nth-child(even) { background: rgba(119, 119, 119, 0.15); }
 .st-lmain {
   display: flex;
   align-items: center;
-  height: 40px;
-  padding-left: 16px;
+  height: 2.5rem;
+  padding-left: 1.0rem;
   box-sizing: border-box;
   white-space: nowrap;
   overflow: hidden;
 }
 .st-lrow:hover .st-lmain { background: rgba(243, 243, 243, 0.05); }
-.st-lchev { color: rgba(147, 147, 147, 1); font-size: 10px; margin-right: 16px; transition: transform 0.2s; }
+.st-lchev { color: rgba(147, 147, 147, 1); font-size: 0.625rem; margin-right: 1.0rem; transition: transform 0.2s; }
 .st-lchev-open { transform: rotate(180deg); }
-.st-lbadge { flex: none; height: 24px; line-height: 24px; padding: 0 8px; border-radius: 4px; font-size: 12px; margin-right: 22px; }
-.st-ltime { flex: none; color: rgba(201, 201, 201, 1); font-size: 12px; margin-right: 24px; }
-.st-lroute { flex: none; color: rgba(255, 255, 255, 1); font-size: 12px; font-weight: 500; margin-right: 32px; }
+.st-lbadge { flex: none; height: 1.5rem; line-height: 1.5rem; padding: 0 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; margin-right: 1.375rem; }
+.st-ltime { flex: none; color: rgba(201, 201, 201, 1); font-size: 0.75rem; margin-right: 1.5rem; }
+.st-lroute { flex: none; color: rgba(255, 255, 255, 1); font-size: 0.75rem; font-weight: 500; margin-right: 2.0rem; }
 .st-lroute i { color: rgba(201, 201, 201, 1); font-style: normal; font-weight: 400; }
 /* 内部子流程标签（智能体名称后）：细边框小胶囊，蓝系对齐执行中文字 */
 .st-ltag {
   display: inline-block;
-  height: 17px;
-  line-height: 17px;
-  padding: 0 5px;
-  margin-left: 8px;
-  border: 1px solid rgba(92, 162, 233, 0.5);
-  border-radius: 3px;
+  height: 1.0625rem;
+  line-height: 1.0625rem;
+  padding: 0 0.3125rem;
+  margin-left: 0.5rem;
+  border: 0.0625rem solid rgba(92, 162, 233, 0.5);
+  border-radius: 0.1875rem;
   background: rgba(92, 162, 233, 0.12);
   color: rgba(140, 190, 255, 1);
-  font-size: 10px;
+  font-size: 0.625rem;
   font-style: normal;
   font-weight: 400;
-  vertical-align: 1px;
+  vertical-align: 0.0625rem;
 }
 .st-lsum {
   flex: 1;
   min-width: 0; /* 允许收缩，超宽摘要省略号截断（防横向溢出） */
   color: rgba(255, 255, 255, 1);
-  font-size: 12px;
+  font-size: 0.75rem;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .st-lprompt {
-  padding: 8px 16px 12px 56px;
+  padding: 0.5rem 1.0rem 0.75rem 3.5rem;
   color: rgba(201, 201, 201, 1);
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
   word-break: break-all;
   white-space: pre-wrap;
   background: rgba(243, 243, 243, 0.04);
@@ -205,7 +207,7 @@
   justify-content: center;
   padding: 0;
   background: rgba(2, 12, 69, 1);
-  border: 1px solid rgba(57, 57, 57, 1);
+  border: 0.0625rem solid rgba(57, 57, 57, 1);
   cursor: pointer;
   pointer-events: auto;
   z-index: 22;
@@ -215,32 +217,32 @@
 /* ---- 工具栏 ---- */
 .st-pauseicon {
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 0.75rem;
+  height: 0.75rem;
   background: rgba(0, 103, 209, 1);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2px;
+  padding: 0 0.125rem;
   box-sizing: border-box;
   pointer-events: none;
 }
-.st-pauseicon span { width: 3px; height: 8px; background: #fff; }
+.st-pauseicon span { width: 0.1875rem; height: 0.5rem; background: #fff; }
 .st-speedmenu {
   position: absolute;
-  width: 72px;
+  width: 4.5rem;
   background: rgba(2, 12, 69, 0.95);
-  border: 1px solid rgba(119, 119, 119, 1);
-  border-radius: 4px;
-  padding: 4px 0;
+  border: 0.0625rem solid rgba(119, 119, 119, 1);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0;
   z-index: 30;
 }
 .st-speeditem {
-  height: 28px;
-  line-height: 28px;
+  height: 1.75rem;
+  line-height: 1.75rem;
   text-align: center;
   color: rgba(255, 255, 255, 1);
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   pointer-events: auto;
 }
@@ -251,14 +253,14 @@
 .st-ocard {
   cursor: pointer;
   user-select: text;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 .st-ocard * { user-select: text; }
 .st-ocard:hover { background: rgba(92, 172, 255, 0.14); }
 .st-check {
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: 2.0rem;
+  height: 2.0rem;
   pointer-events: none;
   animation: stDescIn 0.3s ease-out;
 }
@@ -276,19 +278,19 @@
 }
 .st-search__input {
   position: absolute;
-  left: 12px;
-  top: 5px;
-  width: 214px;
-  height: 22px;
+  left: 0.75rem;
+  top: 0.3125rem;
+  width: 13.375rem;
+  height: 1.375rem;
   margin: 0;
   padding: 0;
   border: none;
   outline: none;
   background: transparent;
   font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 400;
-  line-height: 22px;
+  line-height: 1.375rem;
   color: #fff;
   caret-color: #5cacff;
 }
@@ -309,18 +311,18 @@
 }
 .st-ofilter-menu {
   position: absolute;
-  width: 82px;
+  width: 5.125rem;
   background: rgba(2, 12, 69, 0.95);
-  border: 1px solid rgba(119, 119, 119, 1);
-  border-radius: 4px;
-  padding: 4px 0;
+  border: 0.0625rem solid rgba(119, 119, 119, 1);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0;
   z-index: 30;
   font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
 }
 .st-oempty {
   color: #939393;
-  font-size: 14px;
-  line-height: 22px;
+  font-size: 0.875rem;
+  line-height: 1.375rem;
   text-align: center;
   pointer-events: none;
 }

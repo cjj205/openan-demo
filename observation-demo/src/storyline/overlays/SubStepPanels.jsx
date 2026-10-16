@@ -39,7 +39,7 @@ const belowLine = (key, w, h) => {
 };
 
 // 子步骤详情面板（回放态，执行到对应子步骤/连线激活期时呈现）
-// V3.15：检索面板拆分两处——WAIMO 检索（reg-waimo-search）在平台卡右侧、选中「专线投诉处置智能体」；
+// V3.15：检索面板拆分两处——WAIMO 检索（reg-waimo-search）在平台卡右侧、选中「专线投诉处理智能体」；
 // 专线检索（reg-zx-search）在专线卡正下方、选中「粤东/粤西」（V4：两案例均双登场均选中两个）
 // V4：意图识别/Task-T/调度处置/Notification-T 面板注入 caseId——文案随案例切换（工单1/工单2）
 const PANEL_DEFS = [

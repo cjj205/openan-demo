@@ -94,6 +94,6 @@ export default function MiniCircles({ world, pub }) {
   }
   if (!els.length) return null;
   return (
-    <svg className="st-layer st-mc-svg" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true">{els}</svg>
+    <svg className="st-layer st-mc-svg" viewBox="0 0 1920 1080" style={{ width: '120rem', height: '67.5rem' }} aria-hidden="true">{els}</svg>
   );
 }

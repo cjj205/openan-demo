@@ -72,7 +72,7 @@ export default function ConnectionLines({ world, pub }) {
   if (!seen.length) return null;
   const colors = [...new Set(seen.map((k) => FLOWS[k].color))];
   return (
-    <svg className="st-clines" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true">
+    <svg className="st-clines" viewBox="0 0 1920 1080" style={{ width: '120rem', height: '67.5rem' }} aria-hidden="true">
       <defs>
         {colors.map((c) => (
           <marker key={c} id={MARKER + c.replace('#', '')} viewBox="0 0 9 9"

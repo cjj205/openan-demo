@@ -129,9 +129,9 @@ const c1 = {
     { t: 108, type: 'desc', k: 'WAIMO', desc: DJ1[3] },
     { t: 120, type: 'mini', k: 'WAIMO', i: 1, st: 'done' },
     { t: 120, type: 'step', i: 2, st: 'done' }, { t: 120, type: 'step', i: 3, st: 'active' },
-    // 定界完成 → 检索注册中心命中专线投诉处置智能体（连线 120..138，检索面板驻留至 144）
+    // 定界完成 → 检索注册中心命中专线投诉处理智能体（连线 120..138，检索面板驻留至 144）
     // V5.10（用户规格）：检索面板在场（120..144）时卡底不显示子步骤描述
-    { t: 120, type: 'flow', line: 'reg-waimo-search', on: true, result: '命中：专线投诉处置智能体' },
+    { t: 120, type: 'flow', line: 'reg-waimo-search', on: true, result: '命中：专线投诉处理智能体' },
     { t: 126, type: 'log', i: 0 },
     { t: 138, type: 'flow', line: 'reg-waimo-search', on: false },
     { t: 144, type: 'appear', k: 'ZX' },
@@ -139,20 +139,21 @@ const c1 = {
     { t: 150, type: 'log', i: 1 },
     { t: 156, type: 'flow', line: 'waimo-zx-task', on: false },
     // Task-T 交互详情面板 144..240（8 段 × 12s）——面板消失后专线内部子步骤才开始执行：
-    // 数据关联 240..252、动态编排 252..288、任务诊断 288..396（含检索 288..312）
+    // V5.31（用户规格）检索前移——数据关联 240..252 → 检索智能体 252..276（先检索到粤东/粤西，
+    // 再编排/诊断）→ 动态编排 276..312 → 任务诊断 312..396
     { t: 240, type: 'node', k: 'ZX', st: 'running' },
     { t: 240, type: 'mini', k: 'ZX', i: 0, st: 'active', desc: D1.sj },
-    { t: 252, type: 'mini', k: 'ZX', i: 0, st: 'done' }, { t: 252, type: 'mini', k: 'ZX', i: 1, st: 'active', desc: D1.bd },
-    // 动态编排面板 252..288（3 段 × 12s）——分步在任务诊断开始前完成
-    { t: 288, type: 'mini', k: 'ZX', i: 1, st: 'done' }, { t: 288, type: 'mini', k: 'ZX', i: 2, st: 'active', desc: D1.rw },
-    // 任务诊断起点：检索注册中心命中粤东/粤西（连线 288..306，检索面板驻留至 312）
-    { t: 288, type: 'flow', line: 'reg-zx-search', on: true, result: '命中：粤东、粤西SPN网络内生智能' },
-    // V5.10（用户规格）：检索面板在场（288..312）时卡底不显示子步骤描述——面板退场后恢复
-    { t: 289, type: 'desc', k: 'ZX' },
-    { t: 294, type: 'log', i: 2 },
-    { t: 306, type: 'flow', line: 'reg-zx-search', on: false },
-    { t: 312, type: 'desc', k: 'ZX', desc: D1.rw },
-    { t: 312, type: 'appear', k: 'YD' }, { t: 312, type: 'appear', k: 'YX' },
+    { t: 252, type: 'mini', k: 'ZX', i: 0, st: 'done' },
+    // 数据关联完成 → 检索注册中心命中粤东/粤西（连线 252..270，检索面板驻留至 276）；
+    // 面板在场期间无激活子步骤——卡底描述自然为空（原 V5.10 面板在场遮挡描述事件废止）
+    { t: 252, type: 'flow', line: 'reg-zx-search', on: true, result: '命中：粤东、粤西SPN网络内生智能' },
+    { t: 258, type: 'log', i: 2 },
+    { t: 270, type: 'flow', line: 'reg-zx-search', on: false },
+    // 检索命中 → 粤东/粤西登场 → 动态编排 276..312（面板 3 段 × 12s）
+    { t: 276, type: 'appear', k: 'YD' }, { t: 276, type: 'appear', k: 'YX' },
+    { t: 276, type: 'mini', k: 'ZX', i: 1, st: 'active', desc: D1.bd },
+    // 动态编排面板 276..312——分步完成后任务诊断开始（双侧任务下发 312..324）
+    { t: 312, type: 'mini', k: 'ZX', i: 1, st: 'done' }, { t: 312, type: 'mini', k: 'ZX', i: 2, st: 'active', desc: D1.rw },
     { t: 312, type: 'flow', line: 'zx-yx-task', on: true }, { t: 312, type: 'flow', line: 'zx-yd-task', on: true },
     { t: 316, type: 'log', i: 3 },
     { t: 318, type: 'log', i: 4 },
@@ -257,9 +258,9 @@ const c2 = {
     { t: 108, type: 'desc', k: 'WAIMO', desc: DJ2[3] },
     { t: 120, type: 'mini', k: 'WAIMO', i: 1, st: 'done' },
     { t: 120, type: 'step', i: 2, st: 'done' }, { t: 120, type: 'step', i: 3, st: 'active' },
-    // 定界完成 → 检索注册中心命中专线投诉处置智能体（连线 120..138，检索面板驻留至 144）
+    // 定界完成 → 检索注册中心命中专线投诉处理智能体（连线 120..138，检索面板驻留至 144）
     // V5.10（用户规格）：检索面板在场（120..144）时卡底不显示子步骤描述
-    { t: 120, type: 'flow', line: 'reg-waimo-search', on: true, result: '命中：专线投诉处置智能体' },
+    { t: 120, type: 'flow', line: 'reg-waimo-search', on: true, result: '命中：专线投诉处理智能体' },
     { t: 126, type: 'log', i: 0 },
     { t: 138, type: 'flow', line: 'reg-waimo-search', on: false },
     { t: 144, type: 'appear', k: 'ZX' },
@@ -267,21 +268,21 @@ const c2 = {
     { t: 150, type: 'log', i: 1 },
     { t: 156, type: 'flow', line: 'waimo-zx-task', on: false },
     // Task-T 面板 144..240（8 段 × 12s）——专线内部子步骤待面板消失后开始执行：
-    // 数据关联 240..252、动态编排 252..288、任务诊断 288..360（本例无协商）
+    // V5.31（用户规格）检索前移——数据关联 240..252 → 检索智能体 252..276（先检索到粤东/粤西，
+    // 再编排/诊断）→ 动态编排 276..312 → 任务诊断 312..360（本例无协商）
     { t: 240, type: 'node', k: 'ZX', st: 'running' },
     { t: 240, type: 'mini', k: 'ZX', i: 0, st: 'active', desc: D2.sj },
-    { t: 252, type: 'mini', k: 'ZX', i: 0, st: 'done' }, { t: 252, type: 'mini', k: 'ZX', i: 1, st: 'active', desc: D2.bd },
-    // 动态编排面板 252..288（3 段 × 12s）
-    { t: 288, type: 'mini', k: 'ZX', i: 1, st: 'done' }, { t: 288, type: 'mini', k: 'ZX', i: 2, st: 'active', desc: D2.rw },
-    // 任务诊断起点：检索注册中心命中粤东/粤西（连线 288..306，检索面板驻留至 312）
-    { t: 288, type: 'flow', line: 'reg-zx-search', on: true, result: '命中：粤东、粤西SPN网络内生智能' },
-    // V5.10（用户规格）：检索面板在场（288..312）时卡底不显示子步骤描述——面板退场后恢复
-    { t: 289, type: 'desc', k: 'ZX' },
-    { t: 294, type: 'log', i: 2 },
-    { t: 306, type: 'flow', line: 'reg-zx-search', on: false },
-    { t: 312, type: 'desc', k: 'ZX', desc: D2.rw },
-    // 粤东+粤西并行登场，双侧任务下发 312..324
-    { t: 312, type: 'appear', k: 'YD' }, { t: 312, type: 'appear', k: 'YX' },
+    { t: 252, type: 'mini', k: 'ZX', i: 0, st: 'done' },
+    // 数据关联完成 → 检索注册中心命中粤东/粤西（连线 252..270，检索面板驻留至 276）；
+    // 面板在场期间无激活子步骤——卡底描述自然为空（原 V5.10 面板在场遮挡描述事件废止）
+    { t: 252, type: 'flow', line: 'reg-zx-search', on: true, result: '命中：粤东、粤西SPN网络内生智能' },
+    { t: 258, type: 'log', i: 2 },
+    { t: 270, type: 'flow', line: 'reg-zx-search', on: false },
+    // 检索命中 → 粤东/粤西登场 → 动态编排 276..312（面板 3 段 × 12s）
+    { t: 276, type: 'appear', k: 'YD' }, { t: 276, type: 'appear', k: 'YX' },
+    { t: 276, type: 'mini', k: 'ZX', i: 1, st: 'active', desc: D2.bd },
+    // 动态编排面板 276..312——分步完成后任务诊断开始（双侧任务下发 312..324）
+    { t: 312, type: 'mini', k: 'ZX', i: 1, st: 'done' }, { t: 312, type: 'mini', k: 'ZX', i: 2, st: 'active', desc: D2.rw },
     { t: 312, type: 'flow', line: 'zx-yd-task', on: true }, { t: 312, type: 'flow', line: 'zx-yx-task', on: true },
     { t: 316, type: 'log', i: 3 },
     { t: 318, type: 'log', i: 4 },

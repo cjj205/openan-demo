@@ -99,7 +99,7 @@ export default function ConnectionFlow({ world, pub }) {
   if (world.negotiation && !world.flows['zx-yx-neg']) held.push('zx-yx-neg');
   if (!active.length && !held.length) return null;
   return (
-    <svg className="st-flow" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true">
+    <svg className="st-flow" viewBox="0 0 1920 1080" style={{ width: '120rem', height: '67.5rem' }} aria-hidden="true">
       {active.map((key) => {
         const f = FLOWS[key];
         if (!f) return null;

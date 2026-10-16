@@ -23,7 +23,8 @@ import PanelHandles from './PanelHandles';
 // 组间连线（客服—监控室—传输室）滑块动效：渐变短条沿线从左端滑到右端、首尾淡入淡出
 // 关键帧由导出的连线/滑块几何生成（roles-data.js ROOMS.glides）；
 // V5.12（用户规格）：行程收窄至连线两端以内（连线 175.64..435.58 宽 259.94 / 515.58..1099.43
-// 宽 583.85，滑块 80 → 行程 ±89.97 / ±251.93）——滑块不再越至矩形胶囊上
+// 宽 583.85，滑块 80 → 行程 ±89.97 / ±251.93）——滑块不再越至矩形胶囊上；
+// V5.30 rem 缩放：translateX 改 rem（<style> 文本不经 remjsx 包装器，手工换算）
 const GLIDE_LIM = [89.97, 251.93];
 const GLIDE_CSS = ROOMS.glides.map((g, i) => {
   const lim = GLIDE_LIM[i] != null ? GLIDE_LIM[i] : Math.max(Math.abs(g.from), Math.abs(g.to));
@@ -31,10 +32,10 @@ const GLIDE_CSS = ROOMS.glides.map((g, i) => {
   const to = Math.min(g.to, lim);
   return '.st-glide' + i + '{animation:stGlide' + i + ' ' + g.dur + 's linear infinite}' +
     '@keyframes stGlide' + i + '{' +
-      '0%{transform:translateX(' + from + 'px);opacity:0}' +
+      '0%{transform:translateX(' + from / 16 + 'rem);opacity:0}' +
       '15%{opacity:.8}' +
       '85%{opacity:.8}' +
-      '100%{transform:translateX(' + to + 'px);opacity:0}' +
+      '100%{transform:translateX(' + to / 16 + 'rem);opacity:0}' +
     '}';
 }).join('');
 
