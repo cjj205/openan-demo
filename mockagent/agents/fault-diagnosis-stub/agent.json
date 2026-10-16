@@ -57,5 +57,6 @@
     "Task-T/network-layer/complaint-diagnosis/v1",
     "Task-T/private-line-complaint/v1",
     "Negotiation-T/information-negotiation/propose/v1"
-  ]
+  ],
+  "cardName": "mockagent_fault-diagnosis-stub"
 }

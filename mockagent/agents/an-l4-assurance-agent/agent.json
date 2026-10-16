@@ -1,0 +1,37 @@
+{
+  "id": "an-l4-assurance-agent",
+  "agentName": "Assurance Agent",
+  "name": "Assurance Agent",
+  "cardName": "mockagent_an-l4-assurance-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责保障策略及其恢复策略的生成。",
+  "layer": "service",
+  "port": 9102,
+  "workDir": "data/mock_agents/an-l4-assurance-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "strategy-generation",
+      "name": "Strategy Generation",
+      "description": "将赛事保障需求转换为网络需求，包含带宽上下行要求等",
+      "tags": [
+        "assurance",
+        "strategy"
+      ]
+    },
+    {
+      "id": "recovery-delivery",
+      "name": "Recovery Delivery",
+      "description": "恢复保障前网络配置",
+      "tags": [
+        "assurance",
+        "recovery"
+      ]
+    }
+  ]
+}

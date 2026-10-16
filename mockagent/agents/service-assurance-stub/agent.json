@@ -46,5 +46,6 @@
   "workflow": {
     "enabled": true,
     "workflowId": "live-assurance-demo"
-  }
+  },
+  "cardName": "mockagent_service-assurance-stub"
 }

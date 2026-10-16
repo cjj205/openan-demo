@@ -9,8 +9,20 @@ from a2a_t.core.metadata import (
 )
 
 
+DEFAULT_STUB_SKILL = {
+    "id": "stub-responder",
+    "name": "Stub responder",
+    "description": "Returns stubbed business data for configured A2A-T templates",
+    "tags": ["stub", "mock", "debug"],
+}
+
+
 def build_agent_card_payload(
-    public_url: str, *, name: str | None = None, description: str | None = None
+    public_url: str,
+    *,
+    name: str | None = None,
+    description: str | None = None,
+    skills: list | None = None,
 ) -> dict:
     return {
         "name": name or "OpenAN Debug Mock Agent",
@@ -20,14 +32,8 @@ def build_agent_card_payload(
         "defaultInputModes": ["application/json", "text/plain"],
         "defaultOutputModes": ["application/json", "text/plain"],
         "provider": {"organization": "OpenAN", "url": "https://github.com/project-openan"},
-        "skills": [
-            {
-                "id": "stub-responder",
-                "name": "Stub responder",
-                "description": "Returns stubbed business data for configured A2A-T templates",
-                "tags": ["stub", "mock", "debug"],
-            }
-        ],
+        # Agent 定义可声明真实技能清单（如 AN L4 打桩实例）；未声明时回落到通用打桩技能。
+        "skills": skills or [dict(DEFAULT_STUB_SKILL)],
         "capabilities": {
             "streaming": True,
             "pushNotifications": False,
@@ -45,6 +51,13 @@ def build_agent_card_payload(
 
 
 def build_agent_card(
-    public_url: str, *, name: str | None = None, description: str | None = None
+    public_url: str,
+    *,
+    name: str | None = None,
+    description: str | None = None,
+    skills: list | None = None,
 ) -> AgentCard:
-    return ParseDict(build_agent_card_payload(public_url, name=name, description=description), AgentCard())
+    return ParseDict(
+        build_agent_card_payload(public_url, name=name, description=description, skills=skills),
+        AgentCard(),
+    )

@@ -1,0 +1,80 @@
+{
+  "name": "mockagent_an-l4-network-change-management-agent",
+  "description": "负责核心网等网域的变更管理：变更评估、变更方案执行、变更验证与回退。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "change-assessment",
+      "name": "Change Assessment and Approval",
+      "description": "执行变更影响评估、风险分析与变更方案审批流转。",
+      "tags": [
+        "change-management",
+        "assessment"
+      ]
+    },
+    {
+      "id": "change-implementation",
+      "name": "Change Implementation",
+      "description": "按变更方案执行配置实施与变更窗口控制。",
+      "tags": [
+        "change-management",
+        "implementation"
+      ]
+    },
+    {
+      "id": "change-verification",
+      "name": "Change Verification and Rollback",
+      "description": "变更后业务验证与KPI观察，异常时执行变更回退。",
+      "tags": [
+        "change-management",
+        "verification"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-network-change-management-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9112"
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "name": "mockagent_an-l4-computing-network-fault-management-agent",
+  "description": "负责算力网络域内故障的自动识别、诊断与处理，覆盖云化网元与算力基础设施。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "computing-network-fault-identification",
+      "name": "Computing Network Fault Identification",
+      "description": "自动识别算力网络域内的网元与基础设施故障。",
+      "tags": [
+        "fault-management",
+        "computing-network"
+      ]
+    },
+    {
+      "id": "computing-network-fault-diagnosis",
+      "name": "Computing Network Fault Diagnosis",
+      "description": "对算力网络故障执行根因分析与诊断。",
+      "tags": [
+        "fault-management",
+        "computing-network",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "computing-network-fault-handling",
+      "name": "Computing Network Fault Handling",
+      "description": "执行算力网络故障的自动修复与资源调度调整。",
+      "tags": [
+        "fault-management",
+        "computing-network",
+        "repair"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-computing-network-fault-management-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9104"
+    }
+  ]
+}

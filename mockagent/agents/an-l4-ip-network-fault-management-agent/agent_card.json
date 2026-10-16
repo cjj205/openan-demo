@@ -1,0 +1,82 @@
+{
+  "name": "mockagent_an-l4-ip-network-fault-management-agent",
+  "description": "负责IP网络（数据通信网）域内故障的自动识别、诊断与处理。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "ip-network-fault-identification",
+      "name": "IP Network Fault Identification",
+      "description": "基于链路状态与告警数据自动识别IP网络域内故障。",
+      "tags": [
+        "fault-management",
+        "ip-network"
+      ]
+    },
+    {
+      "id": "ip-network-fault-diagnosis",
+      "name": "IP Network Fault Diagnosis",
+      "description": "对IP网络故障执行路径分析与根因诊断，输出诊断信息。",
+      "tags": [
+        "fault-management",
+        "ip-network",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "ip-network-fault-handling",
+      "name": "IP Network Fault Handling",
+      "description": "执行IP网络故障的自动处理与流量倒换验证。",
+      "tags": [
+        "fault-management",
+        "ip-network",
+        "repair"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-ip-network-fault-management-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9109"
+    }
+  ]
+}

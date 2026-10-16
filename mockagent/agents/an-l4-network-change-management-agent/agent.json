@@ -1,0 +1,46 @@
+{
+  "id": "an-l4-network-change-management-agent",
+  "agentName": "Network Change Management Agent",
+  "name": "Network Change Management Agent",
+  "cardName": "mockagent_an-l4-network-change-management-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责核心网等网域的变更管理：变更评估、变更方案执行、变更验证与回退。",
+  "layer": "service",
+  "port": 9112,
+  "workDir": "data/mock_agents/an-l4-network-change-management-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "change-assessment",
+      "name": "Change Assessment and Approval",
+      "description": "执行变更影响评估、风险分析与变更方案审批流转。",
+      "tags": [
+        "change-management",
+        "assessment"
+      ]
+    },
+    {
+      "id": "change-implementation",
+      "name": "Change Implementation",
+      "description": "按变更方案执行配置实施与变更窗口控制。",
+      "tags": [
+        "change-management",
+        "implementation"
+      ]
+    },
+    {
+      "id": "change-verification",
+      "name": "Change Verification and Rollback",
+      "description": "变更后业务验证与KPI观察，异常时执行变更回退。",
+      "tags": [
+        "change-management",
+        "verification"
+      ]
+    }
+  ]
+}

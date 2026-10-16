@@ -34,5 +34,6 @@
   ],
   "datasetTemplates": [
     "Task-T/network-layer/live-stream-quality/v1"
-  ]
+  ],
+  "cardName": "mockagent_livestream-stub"
 }

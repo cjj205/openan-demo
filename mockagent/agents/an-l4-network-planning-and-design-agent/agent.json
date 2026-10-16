@@ -1,0 +1,46 @@
+{
+  "id": "an-l4-network-planning-and-design-agent",
+  "agentName": "Network Planning and Design Agent",
+  "name": "Network Planning and Design Agent",
+  "cardName": "mockagent_an-l4-network-planning-and-design-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责固网接入等网络的规划与设计：需求分析、覆盖与容量规划、方案设计与评审。",
+  "layer": "service",
+  "port": 9114,
+  "workDir": "data/mock_agents/an-l4-network-planning-and-design-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "network-planning-requirements",
+      "name": "Network Planning Requirements Analysis",
+      "description": "分析业务发展需求与现状数据，输出规划需求与目标。",
+      "tags": [
+        "planning-design",
+        "requirements"
+      ]
+    },
+    {
+      "id": "fixed-access-network-planning",
+      "name": "Fixed Access Network Planning and Design",
+      "description": "执行固网接入网的覆盖、容量与拓扑规划设计，输出设计方案。",
+      "tags": [
+        "planning-design",
+        "fixed-access"
+      ]
+    },
+    {
+      "id": "network-design-review",
+      "name": "Network Design Review and Evaluation",
+      "description": "对网络设计方案进行评审与投资效益评估。",
+      "tags": [
+        "planning-design",
+        "review"
+      ]
+    }
+  ]
+}

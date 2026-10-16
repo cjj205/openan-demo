@@ -141,12 +141,26 @@ def ensure_stub_variants(session: Session, agent_id: int, stub_variants: list | 
     return created
 
 
-def build_runner_app(instance: dict, define: dict, settings, agent=None) -> FastAPI:
+def build_runner_app(
+    instance: dict,
+    define: dict,
+    settings,
+    agent=None,
+    *,
+    engine=None,
+    public_url: str | None = None,
+) -> FastAPI:
+    """构建单个打桩实例的 FastAPI app。
+
+    engine/public_url 供网关模式复用：engine 传共享 SQLAlchemy engine，
+    public_url 覆盖卡片对外地址（如 http://host:9300/agents/<id> 前缀形式）。
+    """
     work_dir = Path(instance["workDir"])
     work_dir.mkdir(parents=True, exist_ok=True)
     llm_env = write_llm_env(instance, define, work_dir)
 
-    engine = make_engine(settings)
+    if engine is None:
+        engine = make_engine(settings)
     init_db(engine, settings)
     with engine.connect() as conn:
         conn.execute(text("PRAGMA journal_mode=WAL"))
@@ -182,9 +196,21 @@ def build_runner_app(instance: dict, define: dict, settings, agent=None) -> Fast
     executor = MockAgentExecutor(flow_env, runtime, log_sink=lambda entry: _log_sink(engine, entry))
 
     name = instance.get("agentName") or instance["name"]
+    # AgentCard 对外名称：cardName（mockagent_ 前缀）优先；业务名保留给
+    # 数据库 Agent 行 / 工作流派发匹配（agentName），两者职责不同。
+    card_name = instance.get("cardName") or name
     port = int(instance.get("port", 9300))
-    public_url = instance.get("publicUrl") or f"{define.get('defaults', {}).get('publicUrlBase', 'http://127.0.0.1')}:{port}"
-    a2a_app = build_a2a_app(public_url, executor, agent_name=name, agent_description=instance.get("description"))
+    if public_url is None:
+        public_url = instance.get("publicUrl") or (
+            f"{define.get('defaults', {}).get('publicUrlBase', 'http://127.0.0.1')}:{port}"
+        )
+    a2a_app = build_a2a_app(
+        public_url,
+        executor,
+        agent_name=card_name,
+        agent_description=instance.get("description"),
+        skills=instance.get("skills"),
+    )
 
     app = FastAPI(title=f"Mock Agent · {name}")
 

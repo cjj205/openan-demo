@@ -8,6 +8,8 @@ export const NETWORK_DOMAINS = [
   { key: 'datacom', label: '数通' },
   { key: 'optical', label: '光' },
   { key: 'cloudcore', label: '云核' },
+  { key: 'fixedaccess', label: '固定接入' },
+  { key: 'computing', label: '算网' },
 ]
 
 const DOMAIN_LABELS = Object.fromEntries(NETWORK_DOMAINS.map((item) => [item.key, item.label]))
@@ -38,6 +40,8 @@ export function groupAgents(agents) {
     'network-datacom': [],
     'network-optical': [],
     'network-cloudcore': [],
+    'network-fixedaccess': [],
+    'network-computing': [],
   }
   for (const agent of agents) {
     if (agent.layer === 'service') {
@@ -52,6 +56,8 @@ export function groupAgents(agents) {
     'network-datacom': '网络层 · 数通',
     'network-optical': '网络层 · 光',
     'network-cloudcore': '网络层 · 云核',
+    'network-fixedaccess': '网络层 · 固定接入',
+    'network-computing': '网络层 · 算网',
   }
   return Object.entries(buckets)
     .filter(([, list]) => list.length > 0)

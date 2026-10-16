@@ -1,0 +1,82 @@
+{
+  "name": "mockagent_an-l4-fixed-access-network-fault-management-agent",
+  "description": "负责固网接入（FTTH/xDSL）域内故障的自动识别、诊断与处理。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "fixed-access-fault-identification",
+      "name": "Fixed Access Network Fault Identification",
+      "description": "基于ONU/OLT告警与拨测数据自动识别固网接入域内故障。",
+      "tags": [
+        "fault-management",
+        "fixed-access"
+      ]
+    },
+    {
+      "id": "fixed-access-fault-diagnosis",
+      "name": "Fixed Access Network Fault Diagnosis",
+      "description": "对固网接入故障执行线路诊断与根因定位。",
+      "tags": [
+        "fault-management",
+        "fixed-access",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "fixed-access-fault-handling",
+      "name": "Fixed Access Network Fault Handling",
+      "description": "执行固网接入故障的自动处理与远程重启修复。",
+      "tags": [
+        "fault-management",
+        "fixed-access",
+        "repair"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-fixed-access-network-fault-management-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9108"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "name": "mockagent_an-l4-network-planning-and-design-agent",
+  "description": "负责固网接入等网络的规划与设计：需求分析、覆盖与容量规划、方案设计与评审。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "network-planning-requirements",
+      "name": "Network Planning Requirements Analysis",
+      "description": "分析业务发展需求与现状数据，输出规划需求与目标。",
+      "tags": [
+        "planning-design",
+        "requirements"
+      ]
+    },
+    {
+      "id": "fixed-access-network-planning",
+      "name": "Fixed Access Network Planning and Design",
+      "description": "执行固网接入网的覆盖、容量与拓扑规划设计，输出设计方案。",
+      "tags": [
+        "planning-design",
+        "fixed-access"
+      ]
+    },
+    {
+      "id": "network-design-review",
+      "name": "Network Design Review and Evaluation",
+      "description": "对网络设计方案进行评审与投资效益评估。",
+      "tags": [
+        "planning-design",
+        "review"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-network-planning-and-design-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9114"
+    }
+  ]
+}
