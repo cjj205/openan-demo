@@ -64,7 +64,7 @@ export default function IntentRecognitionPanel(props) {
       </ul>
 
       {/* ② Reasoning（上）→ ③ Action（右）→ ④ Observation（下）：绕光轮顺时针依次渐入 */}
-      <div className={'p-pill-caption ir-reveal' + on(2)} style={{ left: 121, top: 50, width: 120 }}>自主推理，总思考怎么做。</div>
+      <div className={'p-pill-caption ir-reveal' + on(2)} style={{ left: 121, top: 50, width: 120 }}>自主推理，思考怎么做。</div>
       <div className={'p-pill ir-reveal' + on(2)} style={{ left: 168, top: 64, width: 73 }}>Reasoning</div>
 
       <div className={'p-pill-caption ir-reveal' + on(3)} style={{ left: 323, top: 68, width: 116 }}>
