@@ -1,0 +1,49 @@
+{
+  "id": "an-l4-computing-network-fault-management-agent",
+  "agentName": "Computing Network Fault Management Agent",
+  "name": "Computing Network Fault Management Agent",
+  "cardName": "mockagent_an-l4-computing-network-fault-management-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责算力网络域内故障的自动识别、诊断与处理，覆盖云化网元与算力基础设施。",
+  "layer": "network",
+  "port": 9104,
+  "workDir": "data/mock_agents/an-l4-computing-network-fault-management-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "computing-network-fault-identification",
+      "name": "Computing Network Fault Identification",
+      "description": "自动识别算力网络域内的网元与基础设施故障。",
+      "tags": [
+        "fault-management",
+        "computing-network"
+      ]
+    },
+    {
+      "id": "computing-network-fault-diagnosis",
+      "name": "Computing Network Fault Diagnosis",
+      "description": "对算力网络故障执行根因分析与诊断。",
+      "tags": [
+        "fault-management",
+        "computing-network",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "computing-network-fault-handling",
+      "name": "Computing Network Fault Handling",
+      "description": "执行算力网络故障的自动修复与资源调度调整。",
+      "tags": [
+        "fault-management",
+        "computing-network",
+        "repair"
+      ]
+    }
+  ],
+  "networkDomain": "computing"
+}

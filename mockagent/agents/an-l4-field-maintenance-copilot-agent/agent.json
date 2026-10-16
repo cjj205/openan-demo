@@ -1,0 +1,59 @@
+{
+  "id": "an-l4-field-maintenance-copilot-agent",
+  "agentName": "Field Maintenance Copilot Agent",
+  "name": "Field Maintenance Copilot Agent",
+  "cardName": "mockagent_an-l4-field-maintenance-copilot-agent",
+  "organization": "OpenAN-Stub",
+  "description": "面向现场维护（FME）的Copilot能力：设备信息查询、故障知识检索与自然语言作业指导。",
+  "layer": "service",
+  "port": 9107,
+  "workDir": "data/mock_agents/an-l4-field-maintenance-copilot-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "device-information-query",
+      "name": "Device Information Query",
+      "description": "查询故障设备的资产信息、板卡状态与历史告警。",
+      "tags": [
+        "copilot",
+        "fme",
+        "query"
+      ]
+    },
+    {
+      "id": "fault-knowledge-retrieval",
+      "name": "Fault Knowledge Retrieval",
+      "description": "检索故障案例库与知识库，输出处理建议与参考案例。",
+      "tags": [
+        "copilot",
+        "fme",
+        "knowledge"
+      ]
+    },
+    {
+      "id": "copilot-collaboration",
+      "name": "Copilot Collaboration",
+      "description": "作为服务层或资源层FME Copilot与其他层Copilot协同工作，转发上下文、交换查询结果并汇总双方输出。",
+      "tags": [
+        "copilot",
+        "fme",
+        "collaboration"
+      ]
+    },
+    {
+      "id": "operational-guidance",
+      "name": "Natural Language Operational Guidance",
+      "description": "以自然语言为现场维护人员提供故障修复作业指导。",
+      "tags": [
+        "copilot",
+        "fme",
+        "guidance"
+      ]
+    }
+  ]
+}

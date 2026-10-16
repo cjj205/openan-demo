@@ -1,0 +1,93 @@
+{
+  "name": "mockagent_an-l4-field-maintenance-copilot-agent",
+  "description": "面向现场维护（FME）的Copilot能力：设备信息查询、故障知识检索与自然语言作业指导。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "device-information-query",
+      "name": "Device Information Query",
+      "description": "查询故障设备的资产信息、板卡状态与历史告警。",
+      "tags": [
+        "copilot",
+        "fme",
+        "query"
+      ]
+    },
+    {
+      "id": "fault-knowledge-retrieval",
+      "name": "Fault Knowledge Retrieval",
+      "description": "检索故障案例库与知识库，输出处理建议与参考案例。",
+      "tags": [
+        "copilot",
+        "fme",
+        "knowledge"
+      ]
+    },
+    {
+      "id": "copilot-collaboration",
+      "name": "Copilot Collaboration",
+      "description": "作为服务层或资源层FME Copilot与其他层Copilot协同工作，转发上下文、交换查询结果并汇总双方输出。",
+      "tags": [
+        "copilot",
+        "fme",
+        "collaboration"
+      ]
+    },
+    {
+      "id": "operational-guidance",
+      "name": "Natural Language Operational Guidance",
+      "description": "以自然语言为现场维护人员提供故障修复作业指导。",
+      "tags": [
+        "copilot",
+        "fme",
+        "guidance"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-field-maintenance-copilot-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9107"
+    }
+  ]
+}

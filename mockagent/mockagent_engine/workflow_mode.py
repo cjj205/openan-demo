@@ -137,14 +137,16 @@ def agent_cards_for(workflow_dict: dict, define: dict) -> list[dict]:
     for inst in define.get("instances", []):
         name = inst.get("agentName") or inst.get("name") or ""
         if name in needed:
-            port = int(inst.get("port", 9300))
+            # 网关模式：实例声明 publicUrl（含 /agents/<id> 前缀）时优先使用，
+            # 保证工作流派发与 AgentCard 的对外地址一致。
+            url = inst.get("publicUrl") or f"http://127.0.0.1:{int(inst.get('port', 9300))}/"
             cards.append({
                 "name": name,
                 "description": inst.get("description", ""),
                 "version": "1.0.0",
                 "capabilities": {"streaming": False},
                 "supportedInterfaces": [{
-                    "url": f"http://127.0.0.1:{port}/",
+                    "url": url,
                     "protocolBinding": "HTTP+JSON",
                     "protocolVersion": "1.1",
                 }],

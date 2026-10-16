@@ -1,0 +1,2068 @@
+[
+  {
+    "name": "mockagent_an-l4-assurance-agent",
+    "description": "负责保障策略及其恢复策略的生成。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "strategy-generation",
+        "name": "Strategy Generation",
+        "description": "将赛事保障需求转换为网络需求，包含带宽上下行要求等",
+        "tags": [
+          "assurance",
+          "strategy"
+        ]
+      },
+      {
+        "id": "recovery-delivery",
+        "name": "Recovery Delivery",
+        "description": "恢复保障前网络配置",
+        "tags": [
+          "assurance",
+          "recovery"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-assurance-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9102"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-complaint-handling-agent",
+    "description": "面向个人/家庭宽带投诉的端到端处理：投诉受理、智能定界、根因分析、处理闭环与回访。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "complaint-intake",
+        "name": "Complaint Intake and Classification",
+        "description": "受理用户投诉，进行投诉分类、工单化与优先级评估。",
+        "tags": [
+          "complaint-handling",
+          "intake"
+        ]
+      },
+      {
+        "id": "complaint-root-cause-analysis",
+        "name": "Complaint Root Cause Analysis",
+        "description": "结合用户画像与网络数据执行投诉根因分析与智能定界。",
+        "tags": [
+          "complaint-handling",
+          "analysis"
+        ]
+      },
+      {
+        "id": "complaint-resolution",
+        "name": "Complaint Resolution and Closure",
+        "description": "执行投诉处理方案并验证恢复效果，完成投诉闭环与回复。",
+        "tags": [
+          "complaint-handling",
+          "resolution"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-complaint-handling-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9103"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-computing-network-fault-management-agent",
+    "description": "负责算力网络域内故障的自动识别、诊断与处理，覆盖云化网元与算力基础设施。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "computing-network-fault-identification",
+        "name": "Computing Network Fault Identification",
+        "description": "自动识别算力网络域内的网元与基础设施故障。",
+        "tags": [
+          "fault-management",
+          "computing-network"
+        ]
+      },
+      {
+        "id": "computing-network-fault-diagnosis",
+        "name": "Computing Network Fault Diagnosis",
+        "description": "对算力网络故障执行根因分析与诊断。",
+        "tags": [
+          "fault-management",
+          "computing-network",
+          "diagnosis"
+        ]
+      },
+      {
+        "id": "computing-network-fault-handling",
+        "name": "Computing Network Fault Handling",
+        "description": "执行算力网络故障的自动修复与资源调度调整。",
+        "tags": [
+          "fault-management",
+          "computing-network",
+          "repair"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-computing-network-fault-management-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9104"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-core-network-fault-management-agent",
+    "description": "负责核心网域内故障的自动识别、诊断与处理，支持变更期间的故障监控与跨域协同。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "core-network-fault-identification",
+        "name": "Core Network Fault Identification",
+        "description": "基于告警、信令与KPI数据自动识别核心网域内故障。",
+        "tags": [
+          "fault-management",
+          "core-network"
+        ]
+      },
+      {
+        "id": "core-network-fault-diagnosis",
+        "name": "Core Network Fault Diagnosis",
+        "description": "对核心网故障执行根因定位与自动诊断，输出诊断报告。",
+        "tags": [
+          "fault-management",
+          "core-network",
+          "diagnosis"
+        ]
+      },
+      {
+        "id": "core-network-fault-handling",
+        "name": "Core Network Fault Handling",
+        "description": "执行核心网故障自动处理，必要时协同变更管理或派发人工工单。",
+        "tags": [
+          "fault-management",
+          "core-network",
+          "repair"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-core-network-fault-management-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9105"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-cross-domain-fault-management-agent",
+    "description": "负责跨域故障管理的自治闭环：接收单域Agent上报的事件，执行跨域关联分析、故障定界定位、协同修复与结果汇总。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "an-l4-fault-incident-receiving",
+        "name": "Fault Incident Receiving and Distribution",
+        "description": "接收单域Agent主动上报的故障事件或用户投诉，进行事件登记、去重与分发。",
+        "tags": [
+          "fault-management",
+          "cross-domain",
+          "incident"
+        ]
+      },
+      {
+        "id": "an-l4-cross-domain-correlation",
+        "name": "Cross-Domain Fault Correlation Analysis",
+        "description": "对来自多个单域Agent的事件与告警执行跨域关联分析，识别跨域故障并确定故障场景。",
+        "tags": [
+          "fault-management",
+          "cross-domain",
+          "correlation"
+        ]
+      },
+      {
+        "id": "an-l4-cross-domain-demarcation",
+        "name": "Cross-Domain Fault Demarcation and Location",
+        "description": "跨域故障定界定位，确定故障发生的站点、网元与链路，并返回定位结果。",
+        "tags": [
+          "fault-management",
+          "cross-domain",
+          "diagnosis"
+        ]
+      },
+      {
+        "id": "an-l4-cross-domain-repair",
+        "name": "Cross-Domain Fault Coordination and Repair",
+        "description": "协同资源层单域Agent执行故障自动修复，跟踪修复进展并汇总修复结果。",
+        "tags": [
+          "fault-management",
+          "cross-domain",
+          "repair"
+        ]
+      },
+      {
+        "id": "an-l4-fault-summary-report",
+        "name": "Fault Management Summary Report",
+        "description": "输出故障处理报告与效果评估，反馈故障管理闭环结果。",
+        "tags": [
+          "fault-management",
+          "reporting"
+        ]
+      },
+      {
+        "id": "general-orchestration-support",
+        "name": "General Orchestration Support",
+        "description": "通用编排支撑：承接流程中难以归入具体专业能力的辅助性任务，如事件驱动触发、跨Agent消息中转、辅助执行与结果传递。",
+        "tags": [
+          "orchestration",
+          "support",
+          "generic"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-cross-domain-fault-management-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9101"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-energy-saving-intent-agent",
+    "description": "负责设置节能意图，与RAN能效优化智能体交互，进行意图预评估、意图生成与交付，并对节能效果进行评估与调整。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "intent-exploration-request",
+        "name": "Intent Exploration Request",
+        "description": "发起RAN ES意图探索请求，并获取指定意图目标的最佳可能值。",
+        "tags": [
+          "wireless",
+          "energy-saving",
+          "intent"
+        ]
+      },
+      {
+        "id": "intent-generation",
+        "name": "Intent Generation",
+        "description": "根据探索报告和业务需求生成RAN节能意图内容，包括不同时段、不同RAT的吞吐量和节能目标。",
+        "tags": [
+          "wireless",
+          "energy-saving",
+          "intent"
+        ]
+      },
+      {
+        "id": "intent-delivery",
+        "name": "Intent Delivery",
+        "description": "将生成的节能意图交付给RAN能效优化智能体，并管理意图生命周期（调用意图生命周期管理接口）。",
+        "tags": [
+          "wireless",
+          "energy-saving",
+          "intent"
+        ]
+      },
+      {
+        "id": "effect-evaluation",
+        "name": "Effect Evaluation",
+        "description": "评估不同RAN域的节能效果，根据效果调整意图。",
+        "tags": [
+          "wireless",
+          "energy-saving",
+          "evaluation"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-energy-saving-intent-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9106"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-field-maintenance-copilot-agent",
+    "description": "面向现场维护（FME）的Copilot能力：设备信息查询、故障知识检索与自然语言作业指导。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "device-information-query",
+        "name": "Device Information Query",
+        "description": "查询故障设备的资产信息、板卡状态与历史告警。",
+        "tags": [
+          "copilot",
+          "fme",
+          "query"
+        ]
+      },
+      {
+        "id": "fault-knowledge-retrieval",
+        "name": "Fault Knowledge Retrieval",
+        "description": "检索故障案例库与知识库，输出处理建议与参考案例。",
+        "tags": [
+          "copilot",
+          "fme",
+          "knowledge"
+        ]
+      },
+      {
+        "id": "copilot-collaboration",
+        "name": "Copilot Collaboration",
+        "description": "作为服务层或资源层FME Copilot与其他层Copilot协同工作，转发上下文、交换查询结果并汇总双方输出。",
+        "tags": [
+          "copilot",
+          "fme",
+          "collaboration"
+        ]
+      },
+      {
+        "id": "operational-guidance",
+        "name": "Natural Language Operational Guidance",
+        "description": "以自然语言为现场维护人员提供故障修复作业指导。",
+        "tags": [
+          "copilot",
+          "fme",
+          "guidance"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-field-maintenance-copilot-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9107"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-fixed-access-network-fault-management-agent",
+    "description": "负责固网接入（FTTH/xDSL）域内故障的自动识别、诊断与处理。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "fixed-access-fault-identification",
+        "name": "Fixed Access Network Fault Identification",
+        "description": "基于ONU/OLT告警与拨测数据自动识别固网接入域内故障。",
+        "tags": [
+          "fault-management",
+          "fixed-access"
+        ]
+      },
+      {
+        "id": "fixed-access-fault-diagnosis",
+        "name": "Fixed Access Network Fault Diagnosis",
+        "description": "对固网接入故障执行线路诊断与根因定位。",
+        "tags": [
+          "fault-management",
+          "fixed-access",
+          "diagnosis"
+        ]
+      },
+      {
+        "id": "fixed-access-fault-handling",
+        "name": "Fixed Access Network Fault Handling",
+        "description": "执行固网接入故障的自动处理与远程重启修复。",
+        "tags": [
+          "fault-management",
+          "fixed-access",
+          "repair"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-fixed-access-network-fault-management-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9108"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-ip-network-fault-management-agent",
+    "description": "负责IP网络（数据通信网）域内故障的自动识别、诊断与处理。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "ip-network-fault-identification",
+        "name": "IP Network Fault Identification",
+        "description": "基于链路状态与告警数据自动识别IP网络域内故障。",
+        "tags": [
+          "fault-management",
+          "ip-network"
+        ]
+      },
+      {
+        "id": "ip-network-fault-diagnosis",
+        "name": "IP Network Fault Diagnosis",
+        "description": "对IP网络故障执行路径分析与根因诊断，输出诊断信息。",
+        "tags": [
+          "fault-management",
+          "ip-network",
+          "diagnosis"
+        ]
+      },
+      {
+        "id": "ip-network-fault-handling",
+        "name": "IP Network Fault Handling",
+        "description": "执行IP网络故障的自动处理与流量倒换验证。",
+        "tags": [
+          "fault-management",
+          "ip-network",
+          "repair"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-ip-network-fault-management-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9109"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-live-streaming-agent",
+    "description": "负责赛事需求的解析与监控。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "info-parsing",
+        "name": "Event Info Parsing",
+        "description": "提取赛事的路线与业务需求",
+        "tags": [
+          "live",
+          "info"
+        ]
+      },
+      {
+        "id": "kqi-monitoring",
+        "name": "KQI Monitoring",
+        "description": "实时反馈保障任务关键质量指标及任务状态",
+        "tags": [
+          "live",
+          "monitoring"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-live-streaming-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9110"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-mobile-network-fault-management-agent",
+    "description": "负责移动网络（无线接入网）域内故障的自动识别、诊断与处理，支持与跨域故障管理Agent协同。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "mobile-network-fault-identification",
+        "name": "Mobile Network Fault Identification",
+        "description": "基于告警与性能数据自动识别移动网络（无线网络）域内故障。",
+        "tags": [
+          "fault-management",
+          "mobile-network",
+          "wireless"
+        ]
+      },
+      {
+        "id": "mobile-network-fault-diagnosis",
+        "name": "Mobile Network Fault Diagnosis",
+        "description": "对移动网络故障执行根因分析与自动诊断，输出诊断信息与处理建议。",
+        "tags": [
+          "fault-management",
+          "mobile-network",
+          "diagnosis"
+        ]
+      },
+      {
+        "id": "mobile-network-fault-handling",
+        "name": "Mobile Network Fault Handling",
+        "description": "执行移动网络故障的自动处理与修复，无法自动修复时上报跨域Agent或派发工单。",
+        "tags": [
+          "fault-management",
+          "mobile-network",
+          "repair"
+        ]
+      },
+      {
+        "id": "wireless-network-fault-management",
+        "name": "Wireless Network Fault Management",
+        "description": "无线网络专项故障管理，覆盖基站、小区与无线链路类故障。",
+        "tags": [
+          "fault-management",
+          "wireless"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-mobile-network-fault-management-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9111"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-network-change-management-agent",
+    "description": "负责核心网等网域的变更管理：变更评估、变更方案执行、变更验证与回退。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "change-assessment",
+        "name": "Change Assessment and Approval",
+        "description": "执行变更影响评估、风险分析与变更方案审批流转。",
+        "tags": [
+          "change-management",
+          "assessment"
+        ]
+      },
+      {
+        "id": "change-implementation",
+        "name": "Change Implementation",
+        "description": "按变更方案执行配置实施与变更窗口控制。",
+        "tags": [
+          "change-management",
+          "implementation"
+        ]
+      },
+      {
+        "id": "change-verification",
+        "name": "Change Verification and Rollback",
+        "description": "变更后业务验证与KPI观察，异常时执行变更回退。",
+        "tags": [
+          "change-management",
+          "verification"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-network-change-management-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9112"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-network-optimization-agent",
+    "description": "负责网络质量优化与节能优化：IP网络质量优化、无线网络节能与效能评估。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "ip-network-quality-optimization",
+        "name": "IP Network Quality Optimization",
+        "description": "执行IP网络质量分析、优化策略生成与下发及效果验证。",
+        "tags": [
+          "optimization",
+          "ip-network",
+          "quality"
+        ]
+      },
+      {
+        "id": "wireless-energy-efficiency-optimization",
+        "name": "Wireless Energy Efficiency Optimization",
+        "description": "执行无线网络节能策略生成与下发，平衡能耗与KPI。",
+        "tags": [
+          "optimization",
+          "wireless",
+          "energy-saving"
+        ]
+      },
+      {
+        "id": "energy-efficiency-evaluation",
+        "name": "Energy Efficiency Evaluation and Reporting",
+        "description": "评估节能效果，输出能耗报告与优化建议。",
+        "tags": [
+          "optimization",
+          "energy-saving",
+          "reporting"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-network-optimization-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9113"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-network-planning-and-design-agent",
+    "description": "负责固网接入等网络的规划与设计：需求分析、覆盖与容量规划、方案设计与评审。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "network-planning-requirements",
+        "name": "Network Planning Requirements Analysis",
+        "description": "分析业务发展需求与现状数据，输出规划需求与目标。",
+        "tags": [
+          "planning-design",
+          "requirements"
+        ]
+      },
+      {
+        "id": "fixed-access-network-planning",
+        "name": "Fixed Access Network Planning and Design",
+        "description": "执行固网接入网的覆盖、容量与拓扑规划设计，输出设计方案。",
+        "tags": [
+          "planning-design",
+          "fixed-access"
+        ]
+      },
+      {
+        "id": "network-design-review",
+        "name": "Network Design Review and Evaluation",
+        "description": "对网络设计方案进行评审与投资效益评估。",
+        "tags": [
+          "planning-design",
+          "review"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-network-planning-and-design-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9114"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-ran-agent",
+    "description": "负责无线网络的分析、规划与策略执行。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "analysis-eval",
+        "name": "Analysis and Evaluation",
+        "description": "分析网络负载现状",
+        "tags": [
+          "ran",
+          "analysis"
+        ]
+      },
+      {
+        "id": "plan-design",
+        "name": "Plan Design",
+        "description": "根据网络负载现状及网络保障需求规划网络策略方案",
+        "tags": [
+          "ran",
+          "plan"
+        ]
+      },
+      {
+        "id": "net-exec",
+        "name": "Network Policy Execution",
+        "description": "执行或恢复网络策略",
+        "tags": [
+          "ran",
+          "exec"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-ran-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9115"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-ran-energy-saving-agent",
+    "description": "负责RAN能效优化的自主闭环运行，包括意图探索、意图实现、效果评估与报告。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "ran-es-intent-exploration",
+        "name": "RAN ES Intent Exploration",
+        "description": "评估并确定指定RAN ES意图目标的最佳可能性，考虑当前资源状况和系统能力。",
+        "tags": [
+          "wireless",
+          "energy-saving",
+          "intent"
+        ]
+      },
+      {
+        "id": "ran-es-intent-lifecycle-management",
+        "name": "RAN ES Intent Lifecycle Management",
+        "description": "管理RAN节能意图的生命周期，包括创建、修改、删除、激活、去激活意图，并执行数据采集、分析、解决方案制定与配置。",
+        "tags": [
+          "wireless",
+          "energy-saving",
+          "intent"
+        ]
+      },
+      {
+        "id": "ran-es-intent-reporting",
+        "name": "RAN ES Intent Reporting",
+        "description": "提供意图报告查询、订阅、通知功能，报告意图实现状态、达成值、推荐值及配置修改信息。",
+        "tags": [
+          "wireless",
+          "energy-saving",
+          "reporting"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-ran-energy-saving-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9116"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-service-assurance-agent",
+    "description": "面向个人/家庭/政企服务的端到端质量保障：质差感知、根因分析、保障策略执行与报告。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "service-quality-monitoring",
+        "name": "Service Quality Monitoring",
+        "description": "持续监控用户级与业务级服务质量指标，发现质差用户与质差业务。",
+        "tags": [
+          "service-assurance",
+          "monitoring"
+        ]
+      },
+      {
+        "id": "service-assurance-analysis",
+        "name": "Service Assurance Root Cause Analysis",
+        "description": "对质差服务执行端到端根因分析，定位影响服务的网络环节。",
+        "tags": [
+          "service-assurance",
+          "analysis"
+        ]
+      },
+      {
+        "id": "service-assurance-remediation",
+        "name": "Service Assurance Remediation",
+        "description": "执行服务保障策略（加速、调度、修复）并验证保障效果。",
+        "tags": [
+          "service-assurance",
+          "remediation"
+        ]
+      },
+      {
+        "id": "service-assurance-reporting",
+        "name": "Service Assurance Reporting",
+        "description": "输出服务保障报告、达成率评估与优化建议。",
+        "tags": [
+          "service-assurance",
+          "reporting"
+        ]
+      },
+      {
+        "id": "enterprise-private-line-assurance",
+        "name": "Enterprise Private Line Assurance",
+        "description": "政企专线业务保障：专线SLA监控、故障发现与保障处理。",
+        "tags": [
+          "service-assurance",
+          "private-line",
+          "enterprise"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-service-assurance-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9117"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-service-delivery-agent",
+    "description": "面向个人移动业务的自动开通与交付：业务订单受理、开通编排、交付验证与激活。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "service-order-intake",
+        "name": "Service Order Intake",
+        "description": "受理个人移动业务开通订单，进行订单解析与合法性校验。",
+        "tags": [
+          "service-delivery",
+          "order"
+        ]
+      },
+      {
+        "id": "service-provisioning-orchestration",
+        "name": "Service Provisioning Orchestration",
+        "description": "编排各网域执行业务开通配置与参数下发。",
+        "tags": [
+          "service-delivery",
+          "provisioning"
+        ]
+      },
+      {
+        "id": "service-delivery-verification",
+        "name": "Service Delivery Verification and Activation",
+        "description": "执行业务交付验证（拨测/签约核查）并完成业务激活。",
+        "tags": [
+          "service-delivery",
+          "verification"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-service-delivery-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9118"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-transport-network-fault-management-agent",
+    "description": "负责承载网（SPN/OTN/传输网）域内故障的自动识别、诊断与处理。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "transport-network-fault-identification",
+        "name": "Transport Network Fault Identification",
+        "description": "基于波长/隧道/链路告警自动识别承载网域内故障。",
+        "tags": [
+          "fault-management",
+          "transport-network",
+          "spn"
+        ]
+      },
+      {
+        "id": "transport-network-fault-diagnosis",
+        "name": "Transport Network Fault Diagnosis",
+        "description": "对承载网故障执行端到端路径分析与根因定位。",
+        "tags": [
+          "fault-management",
+          "transport-network",
+          "diagnosis"
+        ]
+      },
+      {
+        "id": "transport-network-fault-handling",
+        "name": "Transport Network Fault Handling",
+        "description": "执行承载网故障的自动倒换与修复处理。",
+        "tags": [
+          "fault-management",
+          "transport-network",
+          "repair"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-transport-network-fault-management-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9119"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_an-l4-work-order-management-agent",
+    "description": "负责工单全生命周期管理：工单创建、派发、跟踪与关闭，支撑无法自动修复场景的人工处置。",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "work-order-creation",
+        "name": "Work Order Creation",
+        "description": "根据故障或投诉处理需要创建人工处置工单。",
+        "tags": [
+          "work-order",
+          "creation"
+        ]
+      },
+      {
+        "id": "work-order-dispatch",
+        "name": "Work Order Dispatch",
+        "description": "将工单派发到对应作业班组（如FME）并跟踪接单。",
+        "tags": [
+          "work-order",
+          "dispatch"
+        ]
+      },
+      {
+        "id": "work-order-tracking",
+        "name": "Work Order Tracking and Closure",
+        "description": "跟踪工单处理进展并在处理完成后关闭工单、归档结果。",
+        "tags": [
+          "work-order",
+          "tracking"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/an-l4-work-order-management-agent"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9120"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_energy-saving-stub",
+    "description": "基站节能打桩：Task-T 无线层节能模板，返回节能策略桩数据",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "stub-responder",
+        "name": "Stub responder",
+        "description": "Returns stubbed business data for configured A2A-T templates",
+        "tags": [
+          "stub",
+          "mock",
+          "debug"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/energy-saving-stub"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9007"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_fault-diagnosis-stub",
+    "description": "私线投诉诊断打桩：Task-T 私线投诉模板，返回确定性工单桩数据",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "stub-responder",
+        "name": "Stub responder",
+        "description": "Returns stubbed business data for configured A2A-T templates",
+        "tags": [
+          "stub",
+          "mock",
+          "debug"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/fault-diagnosis-stub"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9005"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_livestream-stub",
+    "description": "直播智能体打桩：直播业务质量诊断（卡顿/花屏/延迟/断流）；优先检索数据集返回最接近的成对响应",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "stub-responder",
+        "name": "Stub responder",
+        "description": "Returns stubbed business data for configured A2A-T templates",
+        "tags": [
+          "stub",
+          "mock",
+          "debug"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/livestream-stub"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9009"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_recovery-stub",
+    "description": "业务抢通/严重故障通知打桩：Notification-T 服务恢复与故障订阅模板（与工作台实采报文场景对齐）",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "stub-responder",
+        "name": "Stub responder",
+        "description": "Returns stubbed business data for configured A2A-T templates",
+        "tags": [
+          "stub",
+          "mock",
+          "debug"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/recovery-stub"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9006"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_service-assurance-stub",
+    "description": "业务保障智能体打桩：专线投诉诊断、业务抢通事件与故障订阅；优先检索数据集返回最接近的成对响应",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "stub-responder",
+        "name": "Stub responder",
+        "description": "Returns stubbed business data for configured A2A-T templates",
+        "tags": [
+          "stub",
+          "mock",
+          "debug"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/service-assurance-stub"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9010"
+      }
+    ]
+  },
+  {
+    "name": "mockagent_wireless-domain-stub",
+    "description": "无线域智能体打桩：无线小区故障诊断、无线节能与无线故障订阅；优先检索数据集返回最接近的成对响应",
+    "version": "1.0.0",
+    "defaultInputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "application/json",
+      "text/plain"
+    ],
+    "provider": {
+      "organization": "OpenAN-Stub",
+      "url": "https://github.com/project-openan"
+    },
+    "skills": [
+      {
+        "id": "stub-responder",
+        "name": "Stub responder",
+        "description": "Returns stubbed business data for configured A2A-T templates",
+        "tags": [
+          "stub",
+          "mock",
+          "debug"
+        ]
+      }
+    ],
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": false,
+      "extensions": [
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+          "description": "Task-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+          "description": "Notification-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+          "description": "Authorization-T structured prompt requests"
+        },
+        {
+          "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+          "description": "Negotiation-T structured prompt messages"
+        }
+      ]
+    },
+    "supportedInterfaces": [
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9300/agents/wireless-domain-stub"
+      },
+      {
+        "protocolBinding": "HTTP+JSON",
+        "protocolVersion": "1.0.0",
+        "url": "http://127.0.0.1:9008"
+      }
+    ]
+  }
+]

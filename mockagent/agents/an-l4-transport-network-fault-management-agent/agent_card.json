@@ -1,0 +1,83 @@
+{
+  "name": "mockagent_an-l4-transport-network-fault-management-agent",
+  "description": "负责承载网（SPN/OTN/传输网）域内故障的自动识别、诊断与处理。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "transport-network-fault-identification",
+      "name": "Transport Network Fault Identification",
+      "description": "基于波长/隧道/链路告警自动识别承载网域内故障。",
+      "tags": [
+        "fault-management",
+        "transport-network",
+        "spn"
+      ]
+    },
+    {
+      "id": "transport-network-fault-diagnosis",
+      "name": "Transport Network Fault Diagnosis",
+      "description": "对承载网故障执行端到端路径分析与根因定位。",
+      "tags": [
+        "fault-management",
+        "transport-network",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "transport-network-fault-handling",
+      "name": "Transport Network Fault Handling",
+      "description": "执行承载网故障的自动倒换与修复处理。",
+      "tags": [
+        "fault-management",
+        "transport-network",
+        "repair"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-transport-network-fault-management-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9119"
+    }
+  ]
+}

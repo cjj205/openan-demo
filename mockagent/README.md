@@ -73,6 +73,16 @@ mockagent/                                # 独立项目根 / standalone project
 **Agent 目录内容 / What's inside an agent directory**：`agent.json` 声明该 Agent 的名称、端口、提示词变体（stubVariants）、数据集模板范围（datasetTemplates）、LLM 与工作流配置；共享基线在 `agents/_defaults.json`。
 **Agent 代码 / Agent code**：`agent.py` 定义继承引擎基类 `mockagent_engine.agent.base.StubAgentBase` 的子类，承载差异化能力（如域内意图→模板推断）。引擎在桩选择链路调用钩子 `transform_request` / `transform_reply` / `build_runtime` / `capabilities`，默认实现恒等透传；目录不含 `agent.py` 的纯配置 Agent 行为与旧版一致。
 
+**AgentCard 命名 / Card naming**：每个实例的 AgentCard `name` 以 `mockagent_` 开头（`agent.json` 的 `cardName` 字段，如 `mockagent_an-l4-ran-agent`），业务名（`agentName`）保留给工作流派发与数据匹配；卡片静态文件在 `agents/<id>/agent_card.json`（双 supportedInterfaces：网关前缀 + 独立端口，可直接导入注册中心）。
+
+**AN L4 打桩实例 / AN L4 stub fleet**：`tools/generate_an_l4_agents.py` 从编排中心的 AgentCard 清单（`spg_an_l4_agents.yaml` + `registry_only/*.json`）生成 20 个 AN L4 Agent 实例（`an-l4-*`，端口 9101-9120），覆盖 19 个 SPG 解决方案包引用的全部 (Agent, Skill) 组合（46 对），卡片名与技能名与 PSOP 编排完全一致：
+- 服务层（service）：AN L4 Cross-Domain Fault Management / Work Order Management / Field Maintenance Copilot / Service Assurance / Assurance / Complaint Handling / Network Change Management / Network Planning and Design / Network Optimization / Service Delivery / Live Streaming / Energy Saving Intent
+- 网络层（network）：Mobile(无线) / Core Network(云核) / IP Network(数通) / Transport Network(光) / Fixed Access Network(固定接入) / Computing Network(算网) Fault Management + RAN / RAN Energy Saving(无线)
+
+**注册中心初始化 / Registry center init data**：全部 26 个 MockAgent 卡片默认作为注册中心（registry-center）的初始化数据注册：`tools/build_registry_seed.py` 聚合 `agents/*/agent_card.json` 为 `registry_seed/agentcard.json`；服务器端经 `tools/install_registry_seed.py` 落盘到注册中心文件后端（自动备份/去重/停启服务），或用 `tools/register_mockagents.py` 在线幂等注册。卡片以 `provider.organization=OpenAN-Stub`、`name=mockagent_*` 注册（published），`GET /rest/v1/registry-center/agent-cards?organization=OpenAN-Stub` 可查。
+
+重新生成 / Regenerate：`python tools/generate_an_l4_agents.py`（需编排中心仓库 `samples/agentcard/` 源文件）；legacy stub 补丁：`python tools/patch_legacy_card_names.py`；覆盖率验收：`python tools/verify_an_l4_coverage.py`（19 个 PSOP 的全部 (agent, skill) 引用必须可解析）。
+
 ## 三、快速开始 / Quick Start
 
 ```bash
@@ -85,11 +95,18 @@ uvicorn mockagent_engine.main:app --host 0.0.0.0 --port 9100
 # Run a single agent standalone (equivalent to the management API start)
 python -m mockagent_engine.standalone_agent --agent wireless-domain-stub
 
+# 网关模式（推荐）：单进程单端口承载全部实例，路径前缀区分 /agents/<id>/
+# Gateway mode (recommended): one process, one port for ALL instances
+python -m mockagent_engine.gateway --port 9300
+# 卡片地址形如 http://127.0.0.1:9300/agents/an-l4-ran-agent
+# 跨机/反代时公布真实地址：--public-url-base http://<外部地址>:9300
+# 只挂载部分实例：--agents an-l4-ran-agent,fault-diagnosis-stub
+
 # 前端 Frontend (Node 18+, from frontend/)
 npm install && npm run dev
 ```
 
-- 实例管理：`POST /api/v1/mock-instances/{id}/start`（后端以 `python -m mockagent_engine.standalone_agent --agent <id>` 拉起，定义读取 `agents/<id>/agent.json`，端口 9005-9010）。
+- 实例管理：`POST /api/v1/mock-instances/{id}/start`（后端以 `python -m mockagent_engine.standalone_agent --agent <id>` 拉起，定义读取 `agents/<id>/agent.json`；内置 6 个 SPN 打桩实例端口 9005-9010，20 个 AN L4 打桩实例端口 9101-9120；网关模式则全部实例共用单端口，见快速开始）。
 - Instance management: `POST /api/v1/mock-instances/{id}/start` spawns each agent on ports 9005-9010 (definitions read from `agents/<id>/agent.json`).
 - 工作流模式：给实例配置 `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` 后，向该实例发送意图请求即可触发端到端编排（工作流文件见 `scenarios/live-assurance-demo/workflow.json`）。
 - Workflow mode: enable `"workflow": {"enabled": true, "workflowId": "live-assurance-demo"}` on an instance, then send an intent request to trigger end-to-end orchestration.

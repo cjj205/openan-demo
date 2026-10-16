@@ -37,5 +37,6 @@
   ],
   "datasetTemplates": [
     "Task-T/network-layer/ran-energy-saving/v1"
-  ]
+  ],
+  "cardName": "mockagent_energy-saving-stub"
 }

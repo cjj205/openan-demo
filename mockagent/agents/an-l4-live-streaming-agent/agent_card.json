@@ -1,0 +1,71 @@
+{
+  "name": "mockagent_an-l4-live-streaming-agent",
+  "description": "负责赛事需求的解析与监控。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "info-parsing",
+      "name": "Event Info Parsing",
+      "description": "提取赛事的路线与业务需求",
+      "tags": [
+        "live",
+        "info"
+      ]
+    },
+    {
+      "id": "kqi-monitoring",
+      "name": "KQI Monitoring",
+      "description": "实时反馈保障任务关键质量指标及任务状态",
+      "tags": [
+        "live",
+        "monitoring"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-live-streaming-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9110"
+    }
+  ]
+}

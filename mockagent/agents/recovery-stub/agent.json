@@ -48,5 +48,6 @@
     "Notification-T/network-layer/service-recovery/v1",
     "Notification-T/network-layer/recovery-event-subscription/v1",
     "Notification-T/network-layer/subscribe-incident/v1"
-  ]
+  ],
+  "cardName": "mockagent_recovery-stub"
 }

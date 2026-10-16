@@ -1,0 +1,46 @@
+{
+  "id": "an-l4-complaint-handling-agent",
+  "agentName": "Complaint Handling Agent",
+  "name": "Complaint Handling Agent",
+  "cardName": "mockagent_an-l4-complaint-handling-agent",
+  "organization": "OpenAN-Stub",
+  "description": "面向个人/家庭宽带投诉的端到端处理：投诉受理、智能定界、根因分析、处理闭环与回访。",
+  "layer": "service",
+  "port": 9103,
+  "workDir": "data/mock_agents/an-l4-complaint-handling-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "complaint-intake",
+      "name": "Complaint Intake and Classification",
+      "description": "受理用户投诉，进行投诉分类、工单化与优先级评估。",
+      "tags": [
+        "complaint-handling",
+        "intake"
+      ]
+    },
+    {
+      "id": "complaint-root-cause-analysis",
+      "name": "Complaint Root Cause Analysis",
+      "description": "结合用户画像与网络数据执行投诉根因分析与智能定界。",
+      "tags": [
+        "complaint-handling",
+        "analysis"
+      ]
+    },
+    {
+      "id": "complaint-resolution",
+      "name": "Complaint Resolution and Closure",
+      "description": "执行投诉处理方案并验证恢复效果，完成投诉闭环与回复。",
+      "tags": [
+        "complaint-handling",
+        "resolution"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "name": "mockagent_an-l4-core-network-fault-management-agent",
+  "description": "负责核心网域内故障的自动识别、诊断与处理，支持变更期间的故障监控与跨域协同。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "core-network-fault-identification",
+      "name": "Core Network Fault Identification",
+      "description": "基于告警、信令与KPI数据自动识别核心网域内故障。",
+      "tags": [
+        "fault-management",
+        "core-network"
+      ]
+    },
+    {
+      "id": "core-network-fault-diagnosis",
+      "name": "Core Network Fault Diagnosis",
+      "description": "对核心网故障执行根因定位与自动诊断，输出诊断报告。",
+      "tags": [
+        "fault-management",
+        "core-network",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "core-network-fault-handling",
+      "name": "Core Network Fault Handling",
+      "description": "执行核心网故障自动处理，必要时协同变更管理或派发人工工单。",
+      "tags": [
+        "fault-management",
+        "core-network",
+        "repair"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-core-network-fault-management-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9105"
+    }
+  ]
+}

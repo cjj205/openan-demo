@@ -1,0 +1,65 @@
+{
+  "id": "an-l4-service-assurance-agent",
+  "agentName": "Service Assurance Agent",
+  "name": "Service Assurance Agent",
+  "cardName": "mockagent_an-l4-service-assurance-agent",
+  "organization": "OpenAN-Stub",
+  "description": "面向个人/家庭/政企服务的端到端质量保障：质差感知、根因分析、保障策略执行与报告。",
+  "layer": "service",
+  "port": 9117,
+  "workDir": "data/mock_agents/an-l4-service-assurance-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "service-quality-monitoring",
+      "name": "Service Quality Monitoring",
+      "description": "持续监控用户级与业务级服务质量指标，发现质差用户与质差业务。",
+      "tags": [
+        "service-assurance",
+        "monitoring"
+      ]
+    },
+    {
+      "id": "service-assurance-analysis",
+      "name": "Service Assurance Root Cause Analysis",
+      "description": "对质差服务执行端到端根因分析，定位影响服务的网络环节。",
+      "tags": [
+        "service-assurance",
+        "analysis"
+      ]
+    },
+    {
+      "id": "service-assurance-remediation",
+      "name": "Service Assurance Remediation",
+      "description": "执行服务保障策略（加速、调度、修复）并验证保障效果。",
+      "tags": [
+        "service-assurance",
+        "remediation"
+      ]
+    },
+    {
+      "id": "service-assurance-reporting",
+      "name": "Service Assurance Reporting",
+      "description": "输出服务保障报告、达成率评估与优化建议。",
+      "tags": [
+        "service-assurance",
+        "reporting"
+      ]
+    },
+    {
+      "id": "enterprise-private-line-assurance",
+      "name": "Enterprise Private Line Assurance",
+      "description": "政企专线业务保障：专线SLA监控、故障发现与保障处理。",
+      "tags": [
+        "service-assurance",
+        "private-line",
+        "enterprise"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "an-l4-network-optimization-agent",
+  "agentName": "Network Optimization Agent",
+  "name": "Network Optimization Agent",
+  "cardName": "mockagent_an-l4-network-optimization-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责网络质量优化与节能优化：IP网络质量优化、无线网络节能与效能评估。",
+  "layer": "service",
+  "port": 9113,
+  "workDir": "data/mock_agents/an-l4-network-optimization-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "ip-network-quality-optimization",
+      "name": "IP Network Quality Optimization",
+      "description": "执行IP网络质量分析、优化策略生成与下发及效果验证。",
+      "tags": [
+        "optimization",
+        "ip-network",
+        "quality"
+      ]
+    },
+    {
+      "id": "wireless-energy-efficiency-optimization",
+      "name": "Wireless Energy Efficiency Optimization",
+      "description": "执行无线网络节能策略生成与下发，平衡能耗与KPI。",
+      "tags": [
+        "optimization",
+        "wireless",
+        "energy-saving"
+      ]
+    },
+    {
+      "id": "energy-efficiency-evaluation",
+      "name": "Energy Efficiency Evaluation and Reporting",
+      "description": "评估节能效果，输出能耗报告与优化建议。",
+      "tags": [
+        "optimization",
+        "energy-saving",
+        "reporting"
+      ]
+    }
+  ]
+}

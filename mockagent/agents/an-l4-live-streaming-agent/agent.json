@@ -1,0 +1,37 @@
+{
+  "id": "an-l4-live-streaming-agent",
+  "agentName": "Live Streaming Agent",
+  "name": "Live Streaming Agent",
+  "cardName": "mockagent_an-l4-live-streaming-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责赛事需求的解析与监控。",
+  "layer": "service",
+  "port": 9110,
+  "workDir": "data/mock_agents/an-l4-live-streaming-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "info-parsing",
+      "name": "Event Info Parsing",
+      "description": "提取赛事的路线与业务需求",
+      "tags": [
+        "live",
+        "info"
+      ]
+    },
+    {
+      "id": "kqi-monitoring",
+      "name": "KQI Monitoring",
+      "description": "实时反馈保障任务关键质量指标及任务状态",
+      "tags": [
+        "live",
+        "monitoring"
+      ]
+    }
+  ]
+}

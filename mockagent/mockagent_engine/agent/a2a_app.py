@@ -34,8 +34,11 @@ def build_a2a_app(
     *,
     agent_name: str | None = None,
     agent_description: str | None = None,
+    skills: list | None = None,
 ):
-    agent_card = build_agent_card(public_url, name=agent_name, description=agent_description)
+    agent_card = build_agent_card(
+        public_url, name=agent_name, description=agent_description, skills=skills
+    )
     handler = DefaultRequestHandler(
         agent_executor=executor, task_store=InMemoryTaskStore(), agent_card=agent_card
     )

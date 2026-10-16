@@ -1,0 +1,71 @@
+{
+  "name": "mockagent_an-l4-assurance-agent",
+  "description": "负责保障策略及其恢复策略的生成。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "strategy-generation",
+      "name": "Strategy Generation",
+      "description": "将赛事保障需求转换为网络需求，包含带宽上下行要求等",
+      "tags": [
+        "assurance",
+        "strategy"
+      ]
+    },
+    {
+      "id": "recovery-delivery",
+      "name": "Recovery Delivery",
+      "description": "恢复保障前网络配置",
+      "tags": [
+        "assurance",
+        "recovery"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-assurance-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9102"
+    }
+  ]
+}

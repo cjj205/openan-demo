@@ -1,0 +1,46 @@
+{
+  "id": "an-l4-work-order-management-agent",
+  "agentName": "Work Order Management Agent",
+  "name": "Work Order Management Agent",
+  "cardName": "mockagent_an-l4-work-order-management-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责工单全生命周期管理：工单创建、派发、跟踪与关闭，支撑无法自动修复场景的人工处置。",
+  "layer": "service",
+  "port": 9120,
+  "workDir": "data/mock_agents/an-l4-work-order-management-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "work-order-creation",
+      "name": "Work Order Creation",
+      "description": "根据故障或投诉处理需要创建人工处置工单。",
+      "tags": [
+        "work-order",
+        "creation"
+      ]
+    },
+    {
+      "id": "work-order-dispatch",
+      "name": "Work Order Dispatch",
+      "description": "将工单派发到对应作业班组（如FME）并跟踪接单。",
+      "tags": [
+        "work-order",
+        "dispatch"
+      ]
+    },
+    {
+      "id": "work-order-tracking",
+      "name": "Work Order Tracking and Closure",
+      "description": "跟踪工单处理进展并在处理完成后关闭工单、归档结果。",
+      "tags": [
+        "work-order",
+        "tracking"
+      ]
+    }
+  ]
+}
