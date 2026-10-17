@@ -52,10 +52,13 @@ export default function StepDesc({ world, pub }) {
         //（left box.x+16、width 卡宽−32；原 left+13/旧宽−32 废止）
         const left = c.box.x + 16, top = c.descTop + (CARD_DESC_DY[it.k] || -8);
         const width = c.box.w + (it.k !== 'ZX' ? CARD_WIDE : 0) - 32;
-        // V2.13：外层容器锚定卡集群（保比例、随卡刚体平移），内层保留入场动画（transform 不冲突）
+        // V2.13：外层容器锚定卡集群（保比例、随卡刚体平移），内层保留入场动画（transform 不冲突）；
+        // V5.62（用户规格）：描述区（子步骤下方的子步骤详情）文字**垂直居中**——容器固定
+        // 区域高 51 + flex 列布局垂直居中（原文字顶端对齐：单行贴区顶、下方留空）
         const anchor = { x: c.box.x + c.box.w / 2, y: c.box.y + c.box.h / 2 };
         return (
-          <div key={it.k} style={{ position: 'absolute', left, top, width,
+          <div key={it.k} style={{ position: 'absolute', left, top, width, height: 51,
+            display: 'flex', flexDirection: 'column', justifyContent: 'center',
             ...satCssStyle(pub, { x: left, y: top, w: width, h: 51 }, anchor) }}>
             <div className={'st-desc' + (it.out ? ' st-desc-out' : '')} title={it.text}>
               {it.text}

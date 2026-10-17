@@ -1,7 +1,7 @@
 // ConnectionFlow.jsx — 连线激光脉冲 + 协议胶囊（回放态，仅激活连线）
-// 激光对齐设计稿 Negotiation-T 连线上的静态脉冲：短条渐变彗星（亮头 ~28px + 拖尾至 ~150px），
-// 三层不同长度/透明度叠加以近似渐变，以 stroke-dashoffset 沿整条连线 path 滑动（SMIL）——
-// 严格贴线、过肘弯、端点处自然进出（超界部分不绘制）；
+// 激光为贴线滑动的渐变短条（六层不同尾长/透明度叠加以近似连续渐变，以
+// stroke-dashoffset 沿整条连线 path 滑动（SMIL））——严格贴线、过肘弯、端点处
+// 自然进出（超界部分不绘制）；
 // 协议胶囊 = 激活期间按设计稿位置/文案/配色呈现（SVG 绘制，替代隐藏的设计节点）：
 //   - rev（响应方向）：沿反向 path 滑动，胶囊呈响应变体（Task-T响应 绿 / Negotiation-T响应 琥珀）
 //   - label（事件覆盖）：如 Accept 后专线以完整参数重发任务 → 专线—粤东 task 线显示「Task-T请求」；
@@ -16,12 +16,18 @@ import { CASES } from '../cases';
 import { taskTWindowOf, notifWindowOf } from '../panel-timing';
 
 const FONT = "'HarmonyOS Sans SC','HarmonyOS Sans','HarmonyHeiTi','Microsoft YaHei','PingFang SC',sans-serif";
-// V5.60→V5.61（用户规格）：连线光束统一为部门科室光束（.st-glidebar）样式——单条
-// 5rem（80）、**恒宽 3**（与滑块一致，V5.60 的锥宽 3→1.6 废止）、头浓尾淡连续渐变
-//（六层前端对齐叠加，叠加后 ≈ linear-gradient(270deg,196,196,196,1→0)/0.8：头 0.84
-// →尾 0.09）、rgba(196,196,196,1)、圆头 round；原三层彗星（28/70/150 灰白）废止
-const COMET = [[10, 0.5, 3], [20, 0.35, 3], [32, 0.25, 3], [46, 0.18, 3], [62, 0.13, 3], [80, 0.09, 3]];
+// V5.61→V5.62（用户规格）：光束总长减半（150→70）、粗细颠倒——**终点（目标卡）
+// 方向粗/亮、起点方向细/暗**（V5.61 亮端在起点侧），流速减半（≈75px/s，对齐科室
+// 滑块速度；原 ≈150px/s）。六层改为「尾隙 + 等长前端」排布：各层 dash **前端对齐**
+//（亮端=前端=终点方向），cfg=[尾隙G, 透明度, 线宽]，dash 长=70−G——最长层（G=0）
+// 最暗（0.09 尾底）、最短层最亮，前端六层叠加 ≈0.84、尾部 0.09（滑块
+// linear-gradient(-90deg,1→0) 亮前暗后的同款轮廓）；dasharray 前置 '0' 空段实现
+// 「先隙后划」（'0 G D 10000'），六层共用 dashoffset 动画 70→−len（前端=70−offset 恒同）
+const COMET_L = 70;
+const COMET = [[0, 0.09, 3], [12, 0.13, 3], [23, 0.18, 3], [35, 0.25, 3], [47, 0.35, 3], [58, 0.5, 3]];
 const COMET_STROKE = 'rgba(196,196,196,1)';
+// V5.62：流速 ≈75px/s（行程 = len+70）；V5.61 及以前 ≈150px/s（len/140+0.9 制）
+const cometDur = (len) => Math.min(8, Math.max(2.2, (len + COMET_L) / 75)).toFixed(2) + 's';
 // V5.57（用户规格）：检索线胶囊（标签）样式——底 #2CB8C926、圆角 0.2rem(3.2)，
 // 文字 #55CCD9、HarmonyOS Sans SC regular 0.6rem(9.6px)/1rem
 const SEARCH_PILL = { bg: '#2CB8C926', fg: '#55CCD9' };
@@ -119,7 +125,7 @@ export default function ConnectionFlow({ world, pub }) {
         const d = rev ? flowPickRev(world, key, pub) : flowPick(world, key, pub);
         // V2.13：重映射后连线变长 → 彗星行程/时长按实际路径长度修正（展开态沿用导出 len）
         const len = pub ? pathLength(d) : f.len;
-        const dur = Math.min(4.5, Math.max(1.6, len / 140 + 0.9)).toFixed(2) + 's';
+        const dur = cometDur(len);
         const base = L && L.label ? L.label : null;
         const resp = rev && base ? RESP_LABEL[base.text] : null;
         // 胶囊文案：事件覆盖（label）> 响应变体（rev）> 设计标签；非设计文案 → 宽度按字宽估算，以原胶囊中心居中
@@ -161,9 +167,9 @@ export default function ConnectionFlow({ world, pub }) {
             {COMET.map((cfg, i) => (
               <path key={i} d={d} fill="none" stroke={COMET_STROKE}
                 strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="round"
-                strokeDasharray={(150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
-                strokeDashoffset="150">
-                <animate attributeName="stroke-dashoffset" from="150" to={-len}
+                strokeDasharray={'0 ' + cfg[0] + ' ' + (COMET_L - cfg[0]) + ' 10000'}
+                strokeDashoffset={COMET_L}>
+                <animate attributeName="stroke-dashoffset" from={COMET_L} to={-len}
                   dur={dur} repeatCount="indefinite" />
               </path>
             ))}
@@ -202,7 +208,7 @@ export default function ConnectionFlow({ world, pub }) {
         const f = FLOWS[key];
         const d = f ? flowPick(world, key, pub) : null;
         const len = pub && d ? pathLength(d) : (f ? f.len : 0);
-        const dur = Math.min(4.5, Math.max(1.6, len / 140 + 0.9)).toFixed(2) + 's';
+        const dur = cometDur(len);
         const ctr = pillCounterTransform(pub, L.pillBox);
         const cx = L.pillBox.x + L.pillBox.w / 2;
         return (
@@ -210,9 +216,9 @@ export default function ConnectionFlow({ world, pub }) {
             {d ? COMET.map((cfg, i) => (
               <path key={i} d={d} fill="none" stroke={COMET_STROKE}
                 strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="round"
-                strokeDasharray={(150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
-                strokeDashoffset="150">
-                <animate attributeName="stroke-dashoffset" from="150" to={-len}
+                strokeDasharray={'0 ' + cfg[0] + ' ' + (COMET_L - cfg[0]) + ' 10000'}
+                strokeDashoffset={COMET_L}>
+                <animate attributeName="stroke-dashoffset" from={COMET_L} to={-len}
                   dur={dur} repeatCount="indefinite" />
               </path>
             )) : null}
