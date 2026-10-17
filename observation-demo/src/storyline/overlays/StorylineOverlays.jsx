@@ -115,6 +115,8 @@ export default function StorylineOverlays() {
   const TB = CASES[pub.caseId].boundaries[stepPill - 1];
   const glideWin = Math.ceil(g2Dur * 4 * (pub.speed || 1));
   const g2on = live && stepOn(stepPill) && pub.t >= TB && pub.t < TB + glideWin;
+  // V5.63（用户规格）：完成态（默认）g2 亦常驻静态展示（线中点、无动画；与 roles g0/g1 同拍）
+  const g2Static = live && pub.world.caseDone;
   return (
     <>
       <style>{glideCss(g1Half, g1Dur, g2Half, g2Dur)}</style>
@@ -136,9 +138,9 @@ export default function StorylineOverlays() {
           {/* V5.35/V5.56/V5.59：传输室—监控室连线登场光点一次（g2，全程滑：
               left=线左端+行程、±行程/38.7px/s；随监控室胶囊对齐步骤；
               暂停/seek 静止呈现，窗口外隐藏；监控室—传输室 g1 见 roles.js 滑块窗口；
-              原监控室—监控室 g3 废止 */}
-          {g2on ? (
-            <div className={'st-glidebar' + (pub.mode === 'playing' ? ' st-glide2' : '')} style={{ left: lineL + g2Half }} />
+              V5.63：完成态（默认）常驻静态展示（线中点、无动画）；原监控室—监控室 g3 废止 */}
+          {g2on || g2Static ? (
+            <div className={'st-glidebar' + (g2on && pub.mode === 'playing' ? ' st-glide2' : '')} style={{ left: lineL + g2Half }} />
           ) : null}
           {lineWorld ? <ConnectionLines world={lineWorld} pub={pub} /> : null}
           {live ? (

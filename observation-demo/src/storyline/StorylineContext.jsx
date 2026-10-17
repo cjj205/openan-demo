@@ -106,8 +106,10 @@ export function StorylineProvider({ children }) {
       if (sig !== lastSig.current) {
         lastSig.current = sig;
         const s2 = st.current;
-        // V2.16 修复：播放循环发布必须携带 vscale（缺失则画布回落 1× → 页面缩小）
-        const ctx = { mode: 'playing', caseId: s2.caseId, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, ordersHidden: s2.ordersHidden, vscale: s2.vscale, orderInfo: !!w.orderInfo, search: s2.search, status: s2.status };
+        // V2.16 修复：播放循环发布必须携带 vscale（缺失则画布回落 1× → 页面缩小）；
+        // V5.63 修复：ctx 必须携带 t——缺失则 roles 组间光点窗口 ctx.t 恒 0（tb=0）：
+        // g1（监控室→传输室）在播放中永不出现、g0 窗口结束不隐藏（seek/暂停路径不受影响）
+        const ctx = { mode: 'playing', caseId: s2.caseId, t, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, ordersHidden: s2.ordersHidden, vscale: s2.vscale, orderInfo: !!w.orderInfo, search: s2.search, status: s2.status };
         setPub({ mode: 'playing', caseId: s2.caseId, t, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, ordersHidden: s2.ordersHidden, vscale: s2.vscale, world: w, api: apiRef.current, interactions, search: s2.search, status: s2.status, patches: buildPatches(w, ctx), uiPatches: buildUiPatches(ctx) });
       }
     };

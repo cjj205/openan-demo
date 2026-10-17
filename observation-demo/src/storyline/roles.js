@@ -832,7 +832,9 @@ export function buildPatches(world, ctx) {
   // V5.36：监控室 g0 随 WAIMO 卡 t=0；V5.54→V5.59：传输室 g1 随 csStep
   //（c1=144 步骤3 / c2=384 步骤4，与传输室胶囊对齐步骤同拍）——V5.57 连线按案缩短
   //（c1 251.92 / c2 473.21），g1 行程/时长/位置随线宽等速（74.9px/s：c1 ±85.96/2.3s、
-  // c2 ±196.61/5.25s，见 StorylineOverlays glideCss）
+  // c2 ±196.61/5.25s，见 StorylineOverlays glideCss）；
+  // V5.63 修复：播放循环 ctx 曾缺 t（tb 恒 0）——播放中 g1 从不登场、g0 窗口结束不隐藏
+  //（V5.63 起 StorylineContext 播放发布携带 t，seek/暂停路径本就正常）
   const tCS = CASES[ctx.caseId].boundaries[csStep - 1];
   const isC1 = ctx.caseId === 'c1';
   const g1Half = isC1 ? 85.96 : 196.61;   // (线宽−80)/2
@@ -840,8 +842,11 @@ export function buildPatches(world, ctx) {
   const g1Left = isC1 ? 601.54 : 712.19;  // 区域本地 = 线左端 515.58 + half
   const tb = ctx.t != null ? ctx.t : 0;
   const spd = ctx.speed || 1;
+  // V5.63（用户规格）：完成态（默认）三条连线光点**常驻静态展示**——各线中点
+  //（g0 设计位/g1 left 补丁位）、无动画类；回放中登场窗口逻辑不变（V5.29）
   ROOMS.glides.forEach((g, i) => {
     if (!csOn && i === 1) { hide(g.id); return; }
+    if (world.caseDone) return;           // 完成态：静态常驻（不 hide、不施加动画类）
     const T = i === 0 ? 0 : tCS;
     const dur = i === 1 ? g1Dur : g.dur;
     const win = Math.ceil(dur * 4 * spd);
