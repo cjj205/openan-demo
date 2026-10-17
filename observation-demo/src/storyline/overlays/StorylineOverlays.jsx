@@ -97,19 +97,24 @@ export default function StorylineOverlays() {
   const pillA = isC1 ? 1072.5 : 1293.79;   // 传输室胶囊（根因定位中心 1112.5 / 问题处置中心 1333.79）
   const pillB = isC1 ? 1514.6 : 1736.36;   // 监控室胶囊（修复验证中心 1554.6 / 投诉报结中心 1776.36）
   const sepB = isC1 ? 1223.14 : 1666.76;   // 传输室|监控室 竖线（根因|处置界 / 验证|报结界）
-  const stepB = isC1 ? 4 : 6;              // 监控室段起始步骤（胶囊/竖线/虚线/光点揭示拍）
+  const stepB = isC1 ? 4 : 6;              // 监控室段起始步骤（竖线揭示拍——科室首步骤）
+  // V5.59（用户规格）：科室元素随「对齐步骤」揭示——未执行到的步骤（即使同属该科室）
+  // 不出现对应胶囊/连线/光点：c1 监控室胶囊对齐修复验证（步骤5）随 5、c2 传输室胶囊
+  // 对齐问题处置（步骤4）随 4；c1 传输室胶囊对齐根因定位随 3、c2 监控室胶囊对齐投诉报结随 6
+  const stepPillA = isC1 ? 3 : 4;          // 传输室胶囊对齐步骤
+  const stepPill = isC1 ? 5 : 6;           // 监控室胶囊对齐步骤（roomline/g2 随右端胶囊同拍）
   // V5.57：roomline 自胶囊右边框外起（胶囊 80+2 边框——原 1152.5 起穿入右 border）
   const lineL = pillA + 82, lineW = pillB - lineL;
-  // V5.56/V5.57：传输室—监控室连线登场光点 g2（一次），随监控室段起始步骤；
-  // 全程滑（left=线左端+行程，行程=(线宽−80)/2，等速 38.7px/s——V5.54 g2 惯例速度）
+  // V5.56/V5.57/V5.59：传输室—监控室连线登场光点 g2（一次），随监控室胶囊对齐步骤；
+  // 全程滑（left=线左端+行程，行程=(线宽−80)/2，等速 38.7px/s）
   const g2Half = (lineW - 80) / 2;
   const g2Dur = (lineW - 80) / 38.7;
   const g1Half = isC1 ? 85.96 : 196.61;    // g1 随 CS_LINK 按案（roles.js 同值）
   const g1Dur = isC1 ? 2.3 : 5.25;
   // 原第二枚监控室胶囊/roomline/g3 光点废止（两案监控室均为单枚）
-  const TB = CASES[pub.caseId].boundaries[stepB - 1];
+  const TB = CASES[pub.caseId].boundaries[stepPill - 1];
   const glideWin = Math.ceil(g2Dur * 4 * (pub.speed || 1));
-  const g2on = live && stepOn(stepB) && pub.t >= TB && pub.t < TB + glideWin;
+  const g2on = live && stepOn(stepPill) && pub.t >= TB && pub.t < TB + glideWin;
   return (
     <>
       <style>{glideCss(g1Half, g1Dur, g2Half, g2Dur)}</style>
@@ -121,16 +126,17 @@ export default function StorylineOverlays() {
           <div className="st-roomsep" style={{ left: 558.8 }} />
           {stepOn(3) ? <div className="st-roomsep" style={{ left: 999.39 }} /> : null}
           {stepOn(stepB) ? <div className="st-roomsep" style={{ left: sepB }} /> : null}
-          {/* V5.34/V5.56（用户规格）：两枚覆盖层胶囊（设计 23:135680 两案均隐藏）——
-              传输室/监控室 各一枚，位置按两案分区（见上 V5.56 注释）；
-              传输室随步骤3（V5.56 与 Task-T 面板同拍 144）、监控室随其段起始步骤揭示 */}
-          {stepOn(3) ? <div className="st-roompill" style={{ left: pillA }}>传输室</div> : null}
-          {stepOn(stepB) ? <div className="st-roompill" style={{ left: pillB }}>监控室</div> : null}
+          {/* V5.34/V5.56/V5.59（用户规格）：两枚覆盖层胶囊（设计 23:135680 两案均隐藏）——
+              位置按两案分区；揭示随各自对齐步骤（V5.59：未执行到的步骤即使同属该科室
+              也不提前出现——c1 传输室随3/监控室随5、c2 传输室随4/监控室随6） */}
+          {stepOn(stepPillA) ? <div className="st-roompill" style={{ left: pillA }}>传输室</div> : null}
+          {stepOn(stepPill) ? <div className="st-roompill" style={{ left: pillB }}>监控室</div> : null}
           {/* 胶囊间虚线（连接相邻胶囊边沿）随监控室胶囊同拍出现 */}
-          {stepOn(stepB) ? <div className="st-roomline" style={{ left: lineL, width: lineW }} /> : null}
-          {/* V5.35/V5.56/V5.57：传输室—监控室连线登场光点一次（g2，全程滑：
-              left=线左端+行程、±行程/38.7px/s；暂停/seek 静止呈现，窗口外隐藏；
-              监控室—传输室 g1 见 roles.js 滑块窗口；原监控室—监控室 g3 废止 */}
+          {stepOn(stepPill) ? <div className="st-roomline" style={{ left: lineL, width: lineW }} /> : null}
+          {/* V5.35/V5.56/V5.59：传输室—监控室连线登场光点一次（g2，全程滑：
+              left=线左端+行程、±行程/38.7px/s；随监控室胶囊对齐步骤；
+              暂停/seek 静止呈现，窗口外隐藏；监控室—传输室 g1 见 roles.js 滑块窗口；
+              原监控室—监控室 g3 废止 */}
           {g2on ? (
             <div className={'st-glidebar' + (pub.mode === 'playing' ? ' st-glide2' : '')} style={{ left: lineL + g2Half }} />
           ) : null}

@@ -796,11 +796,13 @@ export function buildPatches(world, ctx) {
     return P;
   }
 
-  // ---- 传输室随根因定位步骤揭示（V5.54 用户规格；V5.56 起步骤3 与 Task-T 面板同拍
-  // t=144——检索智能体划入定界定位步骤后根因定位自 Task-T 弹窗出现开始）——
-  // 胶囊两枚/竖线/虚线布局见 StorylineOverlays（V5.56 按 caseId 分支），此处只管
-  // 设计连线 CS_LINK 与滑块 g1 的登场窗口 ----
-  const csOn = world.steps[3] !== 'todo';
+  // ---- 传输室科室元素揭示（V5.54→V5.59）：csOn = 传输室胶囊对齐步骤已激活——
+  // V5.59（用户规格）：科室元素随「对齐步骤」——c1 传输室胶囊对齐根因定位（步骤3）、
+  // c2 对齐问题处置（步骤4），CS_LINK 连线与 g1 滑块随胶囊同拍（原两案统一步骤3 废止：
+  // c2 胶囊对齐问题处置却在步骤3 出现——"未执行到的步骤不要出现，即使同科室"）；
+  // 胶囊两枚/竖线/虚线布局见 StorylineOverlays（V5.56 按 caseId 分支） ----
+  const csStep = ctx.caseId === 'c1' ? 3 : 4;
+  const csOn = world.steps[csStep] !== 'todo';
 
   // 房间白色高亮底（V5.31 用户规格）：整块移除——不再随当前步骤所在房间平移展示
   // （原"跟随当前房间（客服/监控室/传输室）平移 + 0.5s 过渡"逻辑废止；快照态原有隐藏一致）
@@ -809,11 +811,11 @@ export function buildPatches(world, ctx) {
   // 动效、之后整点消失。窗口 = 滑块行程 1 周的业务时长（dur×4×speed 业务秒——1x 恰一周、
   // 倍速按比例展宽保实长）；窗口内回放中施加动画类（暂停/seek 静止呈现）、窗口外与
   // 登场前隐藏；监控室—传输室段登场前仍随传输室整组隐藏（原逻辑）。
-  // V5.36：监控室 g0 随 WAIMO 卡 t=0；V5.54/V5.56：传输室 g1 随根因定位步骤
-  //（V5.56 boundaries[2]=144，与 Task-T 面板同拍）——V5.57 连线按案缩短（c1 251.92 /
-  // c2 473.21），g1 行程/时长/位置随线宽等速（74.9px/s：c1 ±85.96/2.3s、c2 ±196.61/5.25s，
-  // 见 StorylineOverlays glideCss）
-  const tRoom2 = CASES[ctx.caseId].boundaries[2];
+  // V5.36：监控室 g0 随 WAIMO 卡 t=0；V5.54→V5.59：传输室 g1 随 csStep
+  //（c1=144 步骤3 / c2=384 步骤4，与传输室胶囊对齐步骤同拍）——V5.57 连线按案缩短
+  //（c1 251.92 / c2 473.21），g1 行程/时长/位置随线宽等速（74.9px/s：c1 ±85.96/2.3s、
+  // c2 ±196.61/5.25s，见 StorylineOverlays glideCss）
+  const tCS = CASES[ctx.caseId].boundaries[csStep - 1];
   const isC1 = ctx.caseId === 'c1';
   const g1Half = isC1 ? 85.96 : 196.61;   // (线宽−80)/2
   const g1Dur = isC1 ? 2.3 : 5.25;        // 2×half / 74.9px/s
@@ -822,7 +824,7 @@ export function buildPatches(world, ctx) {
   const spd = ctx.speed || 1;
   ROOMS.glides.forEach((g, i) => {
     if (!csOn && i === 1) { hide(g.id); return; }
-    const T = i === 0 ? 0 : tRoom2;
+    const T = i === 0 ? 0 : tCS;
     const dur = i === 1 ? g1Dur : g.dur;
     const win = Math.ceil(dur * 4 * spd);
     if (tb < T || tb >= T + win) { hide(g.id); return; }

@@ -18,9 +18,11 @@ import { taskTWindowOf, notifWindowOf } from '../panel-timing';
 const FONT = "'HarmonyOS Sans SC','HarmonyOS Sans','HarmonyHeiTi','Microsoft YaHei','PingFang SC',sans-serif";
 // 彗星三层：[长度, 不透明度, 线宽]，亮头朝运动方向（src → dst）
 const COMET = [[28, 0.95, 3], [70, 0.5, 2.5], [150, 0.2, 2]];
-// V5.57（用户规格）：检索线流光——两层灰渐变条（5rem×0.1875rem 圆角短条近似：
-// 亮头 40@0.8 + 拖尾 80@0.4，rgba(196,196,196,1)，圆头 linecap:round）
-const COMET_SEARCH = [[40, 0.8, 3], [80, 0.4, 3]];
+// V5.57→V5.59（用户规格）：检索线流光——单条 5rem（80）渐变光束：头部宽、尾部细
+//（3→1.6）+ 头浓尾淡（0.9→0.18，即 linear-gradient(270deg,rgba(196,196,196,1)→0)/0.8
+// 的路径运动近似）；三层前端对齐叠加（短层=头部段粗且浓、长层延至 80 尾部细且淡）、
+// rgba(196,196,196,1)、圆头 round；V5.57 两层等宽版（尾 80 过长）废止
+const COMET_SEARCH = [[22, 0.9, 3], [48, 0.45, 2.4], [80, 0.18, 1.6]];
 // V5.57（用户规格）：检索线胶囊（标签）样式——底 #2CB8C926、圆角 0.2rem(3.2)，
 // 文字 #55CCD9、HarmonyOS Sans SC regular 0.6rem(9.6px)/1rem
 const SEARCH_PILL = { bg: '#2CB8C926', fg: '#55CCD9' };
