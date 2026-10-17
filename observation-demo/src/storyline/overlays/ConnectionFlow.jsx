@@ -16,12 +16,11 @@ import { CASES } from '../cases';
 import { taskTWindowOf, notifWindowOf } from '../panel-timing';
 
 const FONT = "'HarmonyOS Sans SC','HarmonyOS Sans','HarmonyHeiTi','Microsoft YaHei','PingFang SC',sans-serif";
-// V5.60（用户规格）：连线光束统一为部门科室光束（.st-glidebar）样式——单条 5rem（80）
-// 渐变光束：头部宽尾部细（3→1.6）+ 头浓尾淡（0.9→0.18，即 linear-gradient
-// (270deg,rgba(196,196,196,1) 0%,rgba(196,196,196,0) 100%)/0.8 的路径运动近似）、
-// 圆头 round；三层前端对齐叠加（短层=头部段粗且浓、长层延至 80 尾部细且淡）；
-// 原三层彗星（28/70/150 灰白 220,220,220）与检索线专属版（V5.57..V5.59 演进）废止
-const COMET = [[22, 0.9, 3], [48, 0.45, 2.4], [80, 0.18, 1.6]];
+// V5.60→V5.61（用户规格）：连线光束统一为部门科室光束（.st-glidebar）样式——单条
+// 5rem（80）、**恒宽 3**（与滑块一致，V5.60 的锥宽 3→1.6 废止）、头浓尾淡连续渐变
+//（六层前端对齐叠加，叠加后 ≈ linear-gradient(270deg,196,196,196,1→0)/0.8：头 0.84
+// →尾 0.09）、rgba(196,196,196,1)、圆头 round；原三层彗星（28/70/150 灰白）废止
+const COMET = [[10, 0.5, 3], [20, 0.35, 3], [32, 0.25, 3], [46, 0.18, 3], [62, 0.13, 3], [80, 0.09, 3]];
 const COMET_STROKE = 'rgba(196,196,196,1)';
 // V5.57（用户规格）：检索线胶囊（标签）样式——底 #2CB8C926、圆角 0.2rem(3.2)，
 // 文字 #55CCD9、HarmonyOS Sans SC regular 0.6rem(9.6px)/1rem

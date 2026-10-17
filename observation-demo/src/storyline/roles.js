@@ -701,6 +701,14 @@ export function buildUiPatches(ctx) {
     else putFit(CARDS[k].bgId, { height: h + 'px', width: (CARDS[k].box.w + CARD_WIDE) + 'px' });
   }
   putFit(CARDS.YX.glowId, { height: CARD_H + 'px', width: (CARDS.YX.box.w + CARD_WIDE) + 'px' });
+  // V5.61（用户规格）：粤东/粤西技能胶囊对**居中**（左右卡片边距一致）——卡 256（内容宽
+  // 254）、胶囊对组宽 168（80+8+80）→ 左右各 43（左胶囊 43、右胶囊 131）；V2.18 的
+  // 27/115 为 224 卡时代居中值，V5.56 加宽后被 CARD_CONTENT left（16/134）覆盖、
+  // 而 V2.10 的 width 80 补丁仍在 → 实测 17/41 不对称；putFit 合并保留 CARD_CONTENT top
+  putFit('23:136672', { left: '43px' });
+  putFit('23:136691', { left: '131px' });
+  putFit('23:136797', { left: '43px' });
+  putFit('23:136816', { left: '131px' });
   // V5.57（用户规格）：缩放工具栏底色 #000000 50%（设计卡 23:135645，原 #F3F3F319）
   P.set(ZOOM.barId, { s: { background: 'rgba(0,0,0,0.5)' } });
   // V5.58：拓扑重排——卡 bg/徽标/粤西发光容器节点 top 随 CARD_SHIFT 平移
