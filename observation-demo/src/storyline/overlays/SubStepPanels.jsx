@@ -25,7 +25,7 @@ const center = (b) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2 });
 
 // 能开平台（快照/回放常驻）；V5.57（用户规格）：平台卡下边沿距注册中心子卡 0.75rem
 //（子卡底 114 + 12 → 高 142→126）
-const PLATFORM = { x: 369, y: 234, w: 144, h: 126 };
+const PLATFORM = { x: 369, y: 270, w: 144, h: 126 };
 
 // WAIMO—专线 两卡中心中点（Task-T / Notification-T 面板锚点，随两侧卡片刚体平移）
 const WZ_MID = (() => {
@@ -55,7 +55,7 @@ const PANEL_DEFS = [
     key: 'intent', Comp: IntentRecognitionPanel,
     props: (pub) => ({ ...intentWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, caseId: pub.caseId }),
     when: (w, pub) => { const { t0, t1 } = intentWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
-    box: { x: 580, y: 729, w: 498, h: 232 }, anchor: () => center(CARDS.WAIMO.box),
+    box: { x: 580, y: 707, w: 498, h: 232 }, anchor: () => center(CARDS.WAIMO.box),
   },
   {
     // V3.30：调度处置面板三段分步（①手机 → ②左侧消息气泡 → ③右侧回复气泡）；
@@ -64,7 +64,7 @@ const PANEL_DEFS = [
     key: 'dispatch', Comp: DispatchPanel,
     props: (pub) => ({ ...dispatchWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, caseId: pub.caseId }),
     when: (w, pub) => { const { t0, t1 } = dispatchWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
-    box: { x: 733, y: 729, w: 192, h: 352 }, anchor: () => center(CARDS.WAIMO.box),
+    box: { x: 733, y: 707, w: 192, h: 352 }, anchor: () => center(CARDS.WAIMO.box),
   },
   {
     // V3.27：动态编排面板三段分步（左侧元素 → 编排引擎 → 右侧元素）；窗口 = mini1 激活
@@ -74,7 +74,7 @@ const PANEL_DEFS = [
     key: 'orchestration', Comp: DynamicOrchestrationPanel,
     props: (pub) => ({ ...orchestrationWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE }),
     when: (w, pub) => { const { t0, t1 } = orchestrationWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
-    box: { x: 1011, y: 701, w: 574, h: 201 }, anchor: () => center(CARDS.ZX.box),
+    box: { x: 1011, y: 703, w: 574, h: 201 }, anchor: () => center(CARDS.ZX.box),
   },
   {
     // V3.22：检索面板动态选中（相位驱动，窗口=连线激活期+4 业务秒）——前半未选，
@@ -82,7 +82,7 @@ const PANEL_DEFS = [
     key: 'search-waimo', Comp: SearchAgentPanel,
     props: (pub) => ({ ...searchWindowOf(CASES[pub.caseId], 'reg-waimo-search'), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, selected: ['zx'] }),
     when: (w, pub) => { const { t0, t1 } = searchWindowOf(CASES[pub.caseId], 'reg-waimo-search'); return pub.t >= t0 && pub.t < t1; },
-    box: { x: 521, y: 234, w: 236, h: 194 }, anchor: () => center(PLATFORM),
+    box: { x: 521, y: 270, w: 236, h: 194 }, anchor: () => center(PLATFORM),
   },
   {
     // V3.19：专线检索面板置于检索结果文字（命中：粤东、粤西SPN…，胶囊右侧 1042..1235 × 280..296）
@@ -124,7 +124,7 @@ const PANEL_DEFS = [
     key: 'authorization-t', Comp: AuthorizationTPanel,
     props: (pub) => ({ ...authorizationWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, caseId: pub.caseId }),
     when: (w, pub) => { const { t0, t1 } = authorizationWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
-    box: { x: 1254, y: 678, w: 336, h: 246 }, anchor: () => center(CARDS.YX.box),
+    box: { x: 1254, y: 674, w: 336, h: 246 }, anchor: () => center(CARDS.YX.box),
   },
 ];
 

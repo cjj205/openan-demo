@@ -1,6 +1,7 @@
 // Toolbar.jsx — 工具栏透明点击层（回放/单步/倍速/停止）+ 倍速下拉 + 播放态暂停图标
-// V5.57（用户规格）：回放按钮显示文字并随状态切换——播放中「暂停」、其余「回放」
-//（原仅悬浮 title + 播放中暂停图标；文字与图标并存：图标左（+14）、文字接其右）
+// V5.57 曾在按钮内叠覆盖层文字（.st-tbtn-text）与设计烤入文字「回放」（23:137028）
+// 重合（用户反馈"2 个重合的"）——V5.58 废止覆盖层，文字切换改由 roles.js 补丁
+// 直接改写设计文字节点（暂停/回放）
 import React, { useState } from 'react';
 import { BUTTONS } from '../roles';
 
@@ -15,9 +16,7 @@ export default function Toolbar({ pub }) {
   return (
     <div className="st-layer st-toolbar">
       <button className="st-tbtn" style={boxStyle(BUTTONS.play.box)} onClick={api.play}
-        title={playing ? '暂停' : '回放'} aria-label={playing ? '暂停' : '回放'}>
-        <span className="st-tbtn-text" style={{ left: playing ? 36 : 22, top: 6 }}>{playing ? '暂停' : '回放'}</span>
-      </button>
+        title={playing ? '暂停' : '回放'} aria-label={playing ? '暂停' : '回放'} />
       <button className="st-tbtn" style={boxStyle(BUTTONS.step.box)} onClick={api.stepOnce}
         title="单步" aria-label="单步" />
       <button className="st-tbtn" style={boxStyle(BUTTONS.speed.box)} onClick={() => setMenu((m) => !m)}

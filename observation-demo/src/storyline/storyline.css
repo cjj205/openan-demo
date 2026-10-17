@@ -51,16 +51,6 @@
 .st-tbtn:hover, .st-zoombar button:hover:not(:disabled) {
   background: rgba(92, 172, 255, 0.14);
 }
-/* V5.57（用户规格）：回放按钮文字（回放↔暂停随状态切换，播放中与暂停图标并存） */
-.st-tbtn-text {
-  position: absolute;
-  font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: #ffffff;
-  white-space: nowrap;
-  pointer-events: none;
-}
 .st-zoombar button:disabled { cursor: default; }
 .st-zoombar button:disabled:hover { background: none; }
 
@@ -174,7 +164,7 @@
 .st-desclayer { z-index: 13; }
 .st-desc {
   position: absolute;
-  font-size: 0.6875rem; /* V2.20：12→0.6875rem 略缩小（V2.17 曾 10→0.75rem；整页等比缩放下随屏幕放大） */
+  font-size: 0.75rem; /* V5.58（用户规格）：11→12px 放大 */
   font-weight: 400;
   line-height: 1.0625rem; /* V5.6：18→1.0625rem——两行 2.125rem 恰好容纳于各卡描述区（不超出卡底） */
   /* V5.4：超出卡片宽度的描述换行展示（悬浮 title 保留全文）；

@@ -160,7 +160,7 @@ export default function ConnectionFlow({ world, pub }) {
             {(searchLine ? COMET_SEARCH : COMET).map((cfg, i) => (
               <path key={i} d={d} fill="none" stroke={searchLine ? 'rgba(196,196,196,1)' : 'rgba(220,220,220,1)'}
                 strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap={searchLine ? 'round' : 'butt'}
-                strokeDasharray={'0 ' + (150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
+                strokeDasharray={(150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
                 strokeDashoffset="150">
                 <animate attributeName="stroke-dashoffset" from="150" to={-len}
                   dur={dur} repeatCount="indefinite" />
@@ -209,7 +209,7 @@ export default function ConnectionFlow({ world, pub }) {
             {d ? COMET.map((cfg, i) => (
               <path key={i} d={d} fill="none" stroke="rgba(220,220,220,1)"
                 strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="butt"
-                strokeDasharray={'0 ' + (150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
+                strokeDasharray={(150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
                 strokeDashoffset="150">
                 <animate attributeName="stroke-dashoffset" from="150" to={-len}
                   dur={dur} repeatCount="indefinite" />

@@ -4,6 +4,7 @@
 // riser 段（dDim）设计稿呈 ~80% 不透明度；目标卡展示步骤描述增高时（dGrow）起点贴新卡底。
 import React from 'react';
 import { FLOWS } from '../paths';
+import { LINES } from '../roles-data';
 import { remapPathEnds } from '../roles';
 
 const MARKER = 'st-chev';
@@ -24,15 +25,23 @@ for (const [k, [re, arc]] of Object.entries(ARCIFY)) {
   }
 }
 
-// V5.55/V5.56（用户规格）：卡尺寸变更——连线端点运行时替换（paths.js 为 codegen 勿手改，
-// 模块加载时一次性替换到当前终值；替换幂等，ConnectionFlow（彗星）共用同一 FLOWS 实例）：
-//   V5.55 四卡增高 10 → zx-yx-task 起点 (1298,694) 贴 ZX 卡底 → 704（ZX 不变保留）
-//   V5.56 YD 卡高 240（底 502） → zx-yd-neg 起点自 YD 卡底 (1713.5,524) → 502（整条 -22）
-//   V5.56 WAIMO 卡加宽 32（右缘 971） → waimo-zx-task 起点 M939→M971（线缩短 32）、
-//     waimo-zx-notif 终点 H941→H973（其余连线均贴卡左缘/卡顶，端点不变）
+// V5.55→V5.58（用户规格）：卡尺寸/拓扑变更——连线端点运行时替换（paths.js 为 codegen
+// 勿手改，模块加载时一次性替换到当前终值；替换幂等，ConnectionFlow（彗星）共用同一
+// FLOWS 实例同步生效）：
+//   V5.55 四卡增高 10 → zx-yx-task 起点贴 ZX 卡底（V5.58 ZX y415→416.5 → 705.5）
+//   V5.58 拓扑重排（YD 270/YX 613/WAIMO·ZX 416.5/平台 270）：
+//     zx-yd-neg 整条重排——起点贴 YD 新卡底 (1713.5,511)、水平段 546.5；
+//     zx-yx-neg 起点 616→612（YX 上移 4）；两线终点关于区域中心 561.5 对称
+//    （546.5/576.5，和 1123）——「粤东/粤西→专线连线终点不对称」修复
+//     reg-waimo-search / reg-zx-search 整条下移 36（能开平台卡 234→270、
+//    WAIMO 顶 439→416.5/ZX 顶 415→416.5）
+//   V5.56 WAIMO 加宽 32 → waimo-zx-task M939→M971、waimo-zx-notif H941→H973
 const CARD_PATCH_D = {
-  'zx-yx-task': [/M1298 694/g, 'M1298 704'],
-  'zx-yd-neg': [/M1713\.5 514V517Q1713\.5 529 1701\.5 529/g, 'M1713.5 502V505Q1713.5 517 1701.5 517'],
+  'zx-yx-task': [/M1298 694/g, 'M1298 705.5'],
+  'zx-yd-neg': [/M1713\.5 514V517Q1713\.5 529 1701\.5 529/g, 'M1713.5 511V534Q1713.5 546.5 1701.5 546.5'],
+  'zx-yx-neg': [/M1713\.5 616V588/g, 'M1713.5 612V588'],
+  'reg-waimo-search': [/M514 304\.5H820Q828\.5 304\.5 828\.5 313V438/g, 'M514 340.5H820Q828.5 340.5 828.5 349V415.5'],
+  'reg-zx-search': [/M514 304\.5H1286\.5Q1297 304\.5 1297 313V414/g, 'M514 340.5H1286.5Q1297 340.5 1297 349V415.5'],
   'waimo-zx-task': [/M939 545\.5/g, 'M971 545.5'],
   'waimo-zx-notif': [/H941/g, 'H973'],
 };
@@ -50,6 +59,13 @@ for (const k of ['reg-waimo-search', 'reg-zx-search']) {
   if (FLOWS[k]) FLOWS[k].color = '#2CB8C9';
 }
 const SEARCH_KEYS = { 'reg-waimo-search': true, 'reg-zx-search': true };
+
+// V5.58：连线胶囊随线随移（LINES 为 codegen 勿手改，运行时 mutate pillBox）：
+//   zx-yd-neg 胶囊 y501→530（新水平段 546.5，中心-16.5）
+//   reg-zx-search 胶囊 y276→312（水平段 304.5→340.5，保持上方 28.5 间距）
+//   其余胶囊位置随线不变
+if (LINES['zx-yd-neg']) LINES['zx-yd-neg'] = { ...LINES['zx-yd-neg'], pillBox: { ...LINES['zx-yd-neg'].pillBox, y: 530 } };
+if (LINES['reg-zx-search']) LINES['reg-zx-search'] = { ...LINES['reg-zx-search'], pillBox: { ...LINES['reg-zx-search'].pillBox, y: 312 } };
 
 // 快照+收起态伪 world：设计连线 sprite 已隐藏（位图无法随集群端点重适配），
 // 以「全部登场、全部连线可见」由 SVG 连线接管呈现

@@ -166,19 +166,23 @@ export const CARD_MINI_DY = { WAIMO: CARD_LIFT, ZX: CARD_LIFT, YD: 18, YX: 18 };
 export const CARD_MINI_DX = { WAIMO: 16, ZX: 0, YD: 16, YX: 16 };          // 迷你圆点行右移（居中）
 // bg 内容分段偏移（k=卡名，y=节点设计 y，bg 本地）；V5.57：WAIMO 卡高改与专线一致（290）
 // ——回退 V5.55 布局（整体 -8：minis 170 距技能标签行底 158 恰 0.75rem），描述区另由
-// CARD_DESC_DY=+21 下移贴新卡底（239..290）
+// CARD_DESC_DY=+21 下移贴新卡底（239..290）；
+// V5.58：ZX 技能标签两行（设计 y180/210）额外上移至 -30（172→150）——距编排中心卡
+//（V5.55 h32 后底 142）恰 0.5rem（用户规格）
 const dyOf = (k, y) => {
-  if (k === 'ZX' || k === 'WAIMO') return -CARD_LIFT;
+  if (k === 'ZX') return y >= 175 && y < 215 ? -30 : -CARD_LIFT;
+  if (k === 'WAIMO') return -CARD_LIFT;
   return y < 50 ? -8 : y < 109 ? -4 : y < 140 ? -6 : y < 160 ? -16 : -18;
 };
 // 发光容器内容分段偏移（glow 本地 y）
 const dyGlow = (y) => (y < 50 ? 0 : y < 109 ? -4 : y < 135 ? -6 : y < 160 ? -8 : y < 218 ? -18 : -29);
-// 水平偏移（V5.57：技能标签行两端对齐——右标签随卡加宽贴新右缘 +32、左标签保持距左 1rem；
+// 水平偏移（V5.57/V5.58：技能标签行两端对齐——右标签随卡加宽贴新右缘（视觉距右 1rem：
+// 内容系宽−16−w，即 +30）、左标签距左 1rem（left=16，显式补丁统一覆盖设计基准）；
 // 其余居中元素 +16）
 const dxOf = (k, it) => {
   if (k === 'ZX') return 0;
   const lo = k === 'WAIMO' ? 116 : 109;
-  if (it.y >= lo && it.y < 140) return it.x > 50 ? CARD_WIDE : 0;
+  if (it.y >= lo && it.y < 140) return it.x > 50 ? CARD_WIDE - 2 : 0;
   return CARD_WIDE / 2;
 };
 const findNode = (id, node) => {
@@ -235,6 +239,29 @@ const ENDPOINT_CENTERS = {
   YD: boxCenter(CARDS.YD.box),
   YX: boxCenter(CARDS.YX.box),
 };
+
+// ---- V5.58（用户规格）：拓扑图区域重排——区域 = 进度区域（23:135644）下边沿（世界 y230）
+// .. 协作日志区域上边沿（fc-zoom 底，世界 y893），中心 561.5：
+//   WAIMO/专线卡垂直居中（y 416.5，两卡同顶同底）；能开平台/粤东卡距上边沿 2.5rem（y 270）；
+//   粤西卡距下边沿 2.5rem（底 853 → y 613）。roles-data 为 codegen 勿手改——CARDS.box/
+//   descTop/mini 槽位/端点中心/集群中心运行时随移（dy 见 CARD_SHIFT），bg/badge/glow 节点
+//   top 补丁见 uiPatches，连线端点/胶囊见 ConnectionLines，面板/平台卡见 SubStepPanels ----
+export const CARD_SHIFT = {};
+const CARD_Y_V58 = { WAIMO: 416.5, ZX: 416.5, YD: 270, YX: 613 };
+for (const k of ['WAIMO', 'ZX', 'YD', 'YX']) {
+  const dy = Math.round((CARD_Y_V58[k] - CARDS[k].box.y) * 2) / 2;
+  CARD_SHIFT[k] = dy;
+  CARDS[k].box = { ...CARDS[k].box, y: CARD_Y_V58[k] };
+  if (CARDS[k].descTop != null) CARDS[k].descTop += dy;
+  if (CARDS[k].mini) CARDS[k].mini.forEach((m) => { m.slotBox = { ...m.slotBox, y: m.slotBox.y + dy }; });
+  ENDPOINT_CENTERS[k] = boxCenter(CARDS[k].box);
+}
+// 卡集群中心随移（CLUSTERS 前 4 条 = 四卡，收起/展开反向缩放锚点）
+['WAIMO', 'ZX', 'YD', 'YX'].forEach((k, i) => {
+  if (CLUSTERS[i]) CLUSTERS[i].center = boxCenter(CARDS[k].box);
+});
+// 粤西发光容器集群（CLUSTERS[4]）与粤西卡同盒随移
+if (CLUSTERS[4]) CLUSTERS[4].center = boxCenter(CARDS.YX.box);
 
 // 画布映射（V2.21）：W = F∘Z（区域收起重适配 F 绕 (1920,48) ∘ 用户缩放 Z 绕画布中心 (1112.5,470.5)）。
 // 两个对角缩放的复合仍为对角缩放：zx=fx·z、zy=fy·z，不动点 o=(a−zx·cz)/(1−zx)，
@@ -656,16 +683,16 @@ export function buildUiPatches(ctx) {
   putFit('23:136490', { height: '32px' });
   putFit('23:136491', { top: '4px', width: '24px', height: '24px' });
   putFit('23:136500', { top: '5px' });
-  // V5.55/V5.56/V5.57（用户规格）：卡内容重排（分段偏移 dyOf/dyGlow/dxOf，见文件头注释）
+  // V5.55/V5.56/V5.57/V5.58（用户规格）：卡内容重排（分段偏移 dyOf/dyGlow/dxOf，见文件头注释）
   // + 底板尺寸——三卡 240 高/加宽 32（bg+glow）、WAIMO 高与专线一致（290）、ZX 保持 290/原宽；
-  // 技能标签行右标签贴新右缘（+32）、左标签保持设计 x=16（距左边沿 1rem）
+  // V5.58：left 补丁一律下发（含 dx=0 的技能标签左标签）——部分设计 div 的渲染基准
+  // 与设计树 x 存在偏移（实测 YD 左标签渲染 28 vs 设计 x16），显式补丁统一覆盖
+  //（技能标签行左右对称：左标签距左 1rem、右标签贴新右缘）
   for (const k of ['WAIMO', 'ZX', 'YD', 'YX']) {
     for (const it of CARD_CONTENT[k]) {
       const dy = it.glow ? dyGlow(it.y) : dyOf(k, it.y);
       const dx = dxOf(k, it);
-      const fit = { top: (it.y + dy) + 'px' };
-      if (dx) fit.left = (it.x + dx) + 'px';
-      putFit(it.id, fit);
+      putFit(it.id, { top: (it.y + dy) + 'px', left: (it.x + dx) + 'px' });
     }
     const h = k === 'ZX' ? CARDS.ZX.box.h + CARD_GROW : (k === 'WAIMO' ? CARDS.ZX.box.h + CARD_GROW : CARD_H);
     if (k === 'ZX') putFit(CARDS[k].bgId, { height: h + 'px' });
@@ -674,6 +701,20 @@ export function buildUiPatches(ctx) {
   putFit(CARDS.YX.glowId, { height: CARD_H + 'px', width: (CARDS.YX.box.w + CARD_WIDE) + 'px' });
   // V5.57（用户规格）：缩放工具栏底色 #000000 50%（设计卡 23:135645，原 #F3F3F319）
   P.set(ZOOM.barId, { s: { background: 'rgba(0,0,0,0.5)' } });
+  // V5.58：拓扑重排——卡 bg/徽标/粤西发光容器节点 top 随 CARD_SHIFT 平移
+  //（bg 子树内容相对 bg 自动跟随；badgeText 相对 badgePill 不动）
+  for (const k of ['WAIMO', 'ZX', 'YD', 'YX']) {
+    const dy = CARD_SHIFT[k];
+    if (!dy) continue;
+    const n1 = findNode(CARDS[k].bgId, FLOW_ROOT);
+    if (n1) putFit(CARDS[k].bgId, { top: (n1.y + dy) + 'px' });
+    const n2 = findNode(CARDS[k].badgePillId, FLOW_ROOT);
+    if (n2) putFit(CARDS[k].badgePillId, { top: (n2.y + dy) + 'px' });
+    if (k === 'YX') {
+      const n3 = findNode(CARDS.YX.glowId, FLOW_ROOT);
+      if (n3) putFit(CARDS.YX.glowId, { top: (n3.y + dy) + 'px' });
+    }
+  }
   if (ctx.speed !== 0.5) P.set(BUTTONS.speed.labelTextId, { text: ctx.speed + 'x' });
   return P;
 }
@@ -699,6 +740,10 @@ export function buildPatches(world, ctx) {
   // 「工单列表」（左栏标题 23:137102，渐变文字）
   set('23:135686', { s: { fontWeight: '700' } });
   set('23:137102', { s: { fontWeight: '700' } });
+  // V5.57/V5.58（用户规格）：回放按钮文字随状态切换——设计烤入文字节点 23:137028
+  //（原「回放」）按 ctx.mode 改写「暂停/回放」；V5.57 曾叠覆盖层文字与设计文字重合
+  //（"2 个重合的"），覆盖层方案废止
+  set('23:137028', { text: ctx.mode === 'playing' ? '暂停' : '回放' });
   // 左侧工单卡描述：真实文案 + 溢出省略 + 悬浮全文；
   // c1 协商补充 vlan 后（orderInfo，t=226 Accept）工单信息更新为补充后的端口专线信息
   // V5.23：描述随 ORDER_SLOT 落位
