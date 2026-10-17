@@ -66,14 +66,18 @@
   color: #eeeeee;
 }
 
-/* ---------- 消息列表（垂直滚动容器）：left:0 使第二条气泡贴左，与第一条贴右对称 ---------- */
+/* ---------- 消息列表（垂直滚动容器）：V5.43 气泡距面板外边框 1rem（左右内缩），
+   第二条气泡贴左、第一条贴右（聊天对称）；
+   V5.56（用户规格）：首气泡距面板标题 0.5rem——padding-top 1rem→0
+   （列表顶 41 − 标题底 33 = 8px）；气泡间距 1rem（.nd-bubble--accept margin-top） ---------- */
 
 .nd-messages {
   position: absolute;
-  left: 0;
+  left: 1.0rem;
   top: 2.5625rem;
-  right: 0;
+  right: 1.0rem;
   bottom: 1.0rem;
+  padding-top: 0;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -147,23 +151,25 @@
   z-index: 2;
 }
 
+/* V5.43（用户规格）：文字距气泡边沿 1rem（上下左右）——propose 文字区宽 219（251−32） */
 .nd-bubble__text--propose {
   left: 1.0rem;
-  top: 0.25rem;
-  width: 12.75rem;
+  top: 1.0rem;
+  width: 13.6875rem;
 }
 
+/* V5.43：accept 文字区宽 272（气泡 304−32） */
 .nd-bubble__text--accept {
-  left: 1.9375rem;
-  top: 0.25rem;
-  width: 15.875rem;
+  left: 1.0rem;
+  top: 1.0rem;
+  width: 17.0rem;
 }
 
-/* ---------- CPE 端口面板（设计稿导出 SVG，266×48） ---------- */
+/* ---------- CPE 端口面板（设计稿导出 SVG，266×48）；V5.43 左缘 1rem ---------- */
 
 .nd-port-grid-svg {
   position: absolute;
-  left: 1.9375rem;
+  left: 1.0rem;
   top: 4.1875rem;
   width: 16.625rem;
   height: 3.0rem;
@@ -175,7 +181,7 @@
 /* 网格下方斜向辉光 */
 .nd-grid-glow {
   position: absolute;
-  left: 1.9375rem;
+  left: 1.0rem;
   top: 5.75rem;
   width: 16.625rem;
   height: 2.75rem;
@@ -188,13 +194,13 @@
   z-index: 1;
 }
 
-/* ---------- 单选按钮组（268 × 32） ---------- */
+/* ---------- 单选按钮组（272 × 32）；V5.43 左缘 1rem、宽 17rem（气泡 304−32） ---------- */
 
 .nd-radio-group {
   position: absolute;
-  left: 1.9375rem;
+  left: 1.0rem;
   top: 8.6875rem;
-  width: 16.75rem;
+  width: 17.0rem;
   height: 2.0rem;
   border-radius: 0.375rem;
   background: rgba(102, 140, 247, 0.15);
@@ -207,7 +213,9 @@
 }
 
 .nd-chip {
-  flex: 0 0 auto;
+  /* V5.53（用户规格）：cvlan 选项容器拉宽——flex:1 等分铺满父容器（原 flex:0 0 auto
+     自然宽），文字居中（参考 Task-T radio-option 版式） */
+  flex: 1 1 0;
   min-width: 0;
   height: 1.75rem;
   padding: 0 0.125rem;
@@ -216,6 +224,7 @@
   background: transparent;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.125rem;
   font-family: inherit;
   font-size: 0.65625rem;
@@ -227,6 +236,13 @@
     background 0.15s ease,
     color 0.15s ease,
     border-color 0.15s ease;
+}
+
+/* V5.53（用户规格）：省略号单元参考 Task-T 模板——定宽 34px、字号 12px，
+   '…'（U+2026）点距自然分散可辨（原 '···' 10.5px 窄单元看不清） */
+.nd-chip--ellipsis {
+  flex: 0 0 2.125rem;
+  font-size: 0.75rem;
 }
 
 .nd-chip__label {

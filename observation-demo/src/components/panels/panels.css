@@ -187,14 +187,16 @@
   left: 1.0rem;
   top: 2.875rem;
   width: 10.5rem;
-  height: 6.0rem;
+  /* V5.43（用户规格）：文字距气泡边沿 1rem（上下左右）；高度随文字折行自适应
+     （原固定 6rem，文字 6 行溢出气泡底）；文字从 padding 起排（原 justify-center 非边距驱动） */
+  height: auto;
   padding: 1.0rem;
   box-sizing: border-box;
   background: #595959;
   border-radius: 0 0.5rem 0.5rem 0.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   font-size: 0.75rem;
   line-height: 1.0rem;
   color: #fff;
@@ -214,8 +216,9 @@
   left: 18.0rem;
   top: 5.375rem;
   width: 3.5rem;
-  height: 2.5rem;
-  padding: 0.75rem 0 0 1.0rem;
+  /* V5.43（用户规格）：文字距气泡边沿 1rem（上下左右；原 0.75rem 0 0 1.0rem）、高 3rem=16+16+16 */
+  height: 3.0rem;
+  padding: 1.0rem;
   box-sizing: border-box;
   background: rgba(0, 103, 209, 0.7);
   border-radius: 0.5rem 0 0.5rem 0.5rem;
@@ -225,10 +228,11 @@
 }
 
 /* ============ 能开平台节点卡片 ============ */
+/* V5.57（用户规格）：平台卡下边沿距注册中心子卡 0.75rem（子卡底 114+12）——高 8.875→7.875rem */
 .platform-card {
   position: relative;
   width: 9.0rem;
-  height: 8.875rem;
+  height: 7.875rem;
   background: rgba(44, 184, 201, 0.4);
   border: 0.0625rem solid #2cb8c9;
   border-radius: 0.5rem;

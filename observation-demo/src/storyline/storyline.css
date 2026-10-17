@@ -18,10 +18,15 @@
   width: 100%;
   height: 100%;
 }
+/* V5.53（用户规格）：z-index 40——本容器因 transform 恒为层叠上下文，原 z-index:auto 时
+   内部 z40 的详情面板/协商弹窗整体仍低于兄弟 .st-layer（工具条 20/日志表 21/把手 22/
+   筛选菜单 30），面板底部被 A2A-T 日志表遮挡；提升后画布覆盖层全页最高（画布内容与
+   各 chrome 无几何重叠，实际仅详情面板/协商弹窗盖过日志表区域） */
 .st-zoomwrap {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 40;
   transform-origin: 60.9375rem 29.40625rem;
   transition: transform 0.25s ease;
 }
@@ -46,6 +51,16 @@
 .st-tbtn:hover, .st-zoombar button:hover:not(:disabled) {
   background: rgba(92, 172, 255, 0.14);
 }
+/* V5.57（用户规格）：回放按钮文字（回放↔暂停随状态切换，播放中与暂停图标并存） */
+.st-tbtn-text {
+  position: absolute;
+  font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: #ffffff;
+  white-space: nowrap;
+  pointer-events: none;
+}
 .st-zoombar button:disabled { cursor: default; }
 .st-zoombar button:disabled:hover { background: none; }
 
@@ -57,8 +72,14 @@
 }
 
 /* ---- 卡片状态 ---- */
-.st-idle { opacity: 0.5; }
-.st-chip-active { animation: stPulse 1.2s ease-in-out infinite; }
+/* V5.40（用户规格）：.st-idle 半透明（opacity:0.5）废止——节点卡登场后至开始执行前
+   （ZX 144..240 / 粤东粤西 276..324）整卡 50% 透明看不清，改直接全不透明展示；
+   st-idle 类保留作状态标记（无样式），idle 徽标隐藏逻辑不变 */
+/* V5.50（用户规格）：进度条（步骤条）执行中动效发光（stPulse 亮度脉冲）删除——
+   执行中仅蓝底呈现；类保留作状态标记。子步骤 .st-mini-active 的 loading 脉冲保留
+   （V5.47 用户规格，另一元素） */
+.st-chip-active { }
+.st-mini-active { animation: stPulse 1.2s ease-in-out infinite; }
 @keyframes stPulse {
   0%, 100% { filter: brightness(1); }
   50% { filter: brightness(1.6); }
@@ -86,6 +107,54 @@
   pointer-events: none;
 }
 
+/* ---- V5.34（用户规格，case1）：覆盖层房间胶囊/连线——传输室胶囊移至根因定位上方、
+   新增监控室胶囊（修复验证上方）；样式按设计胶囊复刻（80×32、#5CACFF 边、渐变底） ---- */
+.st-roompill {
+  position: absolute;
+  top: 7.875rem;
+  width: 5rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+    /* V5.52（用户规格）：胶囊样式定稿回归 V5.11 原版——border-radius 0.2rem +
+       双层填充 + 0.05rem solid #5CACFF；高光/边带/角弧各版全部废止（与设计胶囊补丁同步） */
+    border: 0.0625rem solid rgba(92, 172, 255, 1);
+    border-radius: 0.25rem;
+    background-image:
+      linear-gradient(0deg, rgba(92, 172, 255, 0.24) -50%, rgba(92, 172, 255, 0) 150%),
+      radial-gradient(0.38625rem 0.4925rem at 3.73125rem 0.918125rem, rgba(145, 199, 255, 0.267) 0%, rgba(92, 172, 255, 0) 100%);
+  color: rgba(201, 201, 201, 1);
+  font-size: 1rem;
+  font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  line-height: 1.5rem;
+  z-index: 12;
+  pointer-events: none;
+}
+.st-roomline {
+  position: absolute;
+  top: 8.8125rem;
+  height: 0;
+  border-top: 0.0625rem dashed rgba(255, 255, 255, 1);
+  opacity: 0.2;
+  z-index: 12;
+  pointer-events: none;
+}
+
+/* V5.35（case1）：新增连线（传输室—监控室#2）上的光点——按设计滑块样式复刻
+   （80×3 渐变短条，y140）；动画 .st-glide2 由 StorylineOverlays glideCss 生成 */
+.st-glidebar {
+  position: absolute;
+  top: 8.75rem;
+  width: 5rem;
+  height: 0.1875rem;
+  background-image: linear-gradient(-90deg, rgba(196, 196, 196, 1) 0%, rgba(196, 196, 196, 0) 100%);
+  border-radius: 0.25rem;
+  opacity: 0.8;
+  z-index: 13;
+  pointer-events: none;
+}
+
 /* ---- 迷你步骤图标（SVG）：颜色/线宽/字体走 presentation attributes（见 MiniCircles.jsx，防样式表缺失回落黑色）----
    此处仅保留动画（transform 旋转需 keyframes，无法用属性表达） */
 .st-mc-spin {
@@ -109,11 +178,13 @@
   font-weight: 400;
   line-height: 1.0625rem; /* V5.6：18→1.0625rem——两行 2.125rem 恰好容纳于各卡描述区（不超出卡底） */
   /* V5.4：超出卡片宽度的描述换行展示（悬浮 title 保留全文）；
-     V5.6（用户规格）：卡片高度固定、不随描述动态增减——描述至多两行且不超出卡片区域
-     （-webkit-line-clamp 截断+省略号，全文悬浮 title 可见）；文字水平居中 */
+     V5.6（用户规格）：卡片高度固定、不随描述动态增减——描述不超出卡片区域
+     （-webkit-line-clamp 截断+省略号，全文悬浮 title 可见）；文字水平居中；
+     V5.55（用户规格）：描述区扩容（卡底板增高 10px + 卡内容上移 8px，区域 34→51px）
+     ——截断放宽至三行（长描述如 WAIMO 调度处置/投诉闭环全文可见） */
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   overflow: hidden;
   white-space: normal;
   word-break: break-all;
@@ -125,7 +196,8 @@
 .st-desc-out { opacity: 0; }
 
 /* ---- Negotiation-T 详细交互面板（专线↔粤东协商中，协商线下方悬浮；组件自带 NegotiationDialog.css）---- */
-/* 层级最高：盖过迷你步骤图标（.st-layer z20）/连线/描述等画布覆盖层，图标不透出（仅让倍速菜单 z30） */
+/* V5.53：协商弹窗同为详情面板——随 .st-zoomwrap(z40) 全页最高，盖过迷你步骤图标/连线/描述
+   等画布覆盖层（z25 为 zoomwrap 内相对层级） */
 .st-neglayer { z-index: 25; }
 .st-neglayer .negotiation-dialog { pointer-events: auto; } /* 覆盖层 pointer-events:none 下恢复交互（cvlan 选项/滚动） */
 /* 协商窗口结束：延迟卸载期间淡出（NegotiationPanel OUT_MS） */
@@ -299,12 +371,15 @@
   border: none;
   outline: none;
   background: transparent;
-  font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyOSHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.375rem;
   color: #fff;
   caret-color: #5cacff;
+  /* V5.50（用户规格）：placeholder 展示不全 → 省略号（Chrome 对 input 的
+     text-overflow 同时作用于占位文本） */
+  text-overflow: ellipsis;
 }
 .st-search__input::placeholder {
   color: #939393;

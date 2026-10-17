@@ -18,9 +18,10 @@ export default function SearchAgentPanel({ selected = ['zx'], ...clock }) {
   const stage = useStageClock(clock, 2)
   return (
     <div className="glass-panel" style={{ width: 236, height: 194 }}>
-      {/* 标题区（青色系） */}
+      {/* 标题区（青色系）；V5.57（用户规格）：标题文字规格——Microsoft YaHei bold
+          0.7rem/1.1rem、letter-spacing 0、左对齐（内联覆盖 .p-title-text 通用样式） */}
       <div className="p-title-bar" style={{ left: 16, top: 14, background: '#7DDFE7' }} />
-      <div className="p-title-text p-title-text--gradient" style={{ left: 26, top: 11 }}>检索智能体</div>
+      <div className="p-title-text p-title-text--gradient" style={{ left: 26, top: 11, fontFamily: 'Microsoft YaHei', fontWeight: 'bold', fontSize: '0.7rem', lineHeight: '1.1rem', letterSpacing: '0rem', textAlign: 'left' }}>检索智能体</div>
       <div className="p-subtitle" style={{ left: 16, top: 41 }}>根据名称、描述和技能检索AgentCard</div>
 
       {/* 单选按钮组 */}
