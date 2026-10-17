@@ -167,10 +167,12 @@ export const CARD_MINI_DX = { WAIMO: 16, ZX: 0, YD: 16, YX: 16 };          // �
 // bg 内容分段偏移（k=卡名，y=节点设计 y，bg 本地）；V5.57：WAIMO 卡高改与专线一致（290）
 // ——回退 V5.55 布局（整体 -8：minis 170 距技能标签行底 158 恰 0.75rem），描述区另由
 // CARD_DESC_DY=+21 下移贴新卡底（239..290）；
-// V5.58：ZX 技能标签两行（设计 y180/210）额外上移至 -30（172→150）——距编排中心卡
-//（V5.55 h32 后底 142）恰 0.5rem（用户规格）
+// V5.58/V5.60：ZX 技能标签行（设计 y174 一行三枚）单独上移 -24（150，距编排中心卡底
+// 142 恰 0.5rem）；其余（圆点 206/连线 213/标题 224 等）保持 -8 与覆盖层圆点
+//（CARD_MINI_DY=8）同拍——V5.58 曾按组 bounds y180 误设 [175,215)→-30，把圆点/连线
+// 一并拉高致「子步骤图标间连线错位」（连线 183 vs 覆盖层圆点 198 差 15px）
 const dyOf = (k, y) => {
-  if (k === 'ZX') return y >= 175 && y < 215 ? -30 : -CARD_LIFT;
+  if (k === 'ZX') return y === 174 ? -24 : -CARD_LIFT;
   if (k === 'WAIMO') return -CARD_LIFT;
   return y < 50 ? -8 : y < 109 ? -4 : y < 140 ? -6 : y < 160 ? -16 : -18;
 };
@@ -744,12 +746,16 @@ export function buildPatches(world, ctx) {
   //（原「回放」）按 ctx.mode 改写「暂停/回放」；V5.57 曾叠覆盖层文字与设计文字重合
   //（"2 个重合的"），覆盖层方案废止
   set('23:137028', { text: ctx.mode === 'playing' ? '暂停' : '回放' });
-  // 左侧工单卡描述：真实文案 + 溢出省略 + 悬浮全文；
-  // c1 协商补充 vlan 后（orderInfo，t=226 Accept）工单信息更新为补充后的端口专线信息
-  // V5.23：描述随 ORDER_SLOT 落位
-  const d1 = world && world.orderInfo ? CASES.c1.orderDescUpdated : CASES.c1.desc;
-  set(ORDERS[ORDER_SLOT.c1].descTextId, { text: d1, title: d1, s: ELLIPSIS });
-  set(ORDERS[ORDER_SLOT.c2].descTextId, { text: CASES.c2.desc, title: CASES.c2.desc, s: ELLIPSIS });
+  // 左侧工单卡描述：真实文案 + 溢出省略 + 悬浮全文；V5.23：描述随 ORDER_SLOT 落位；
+  // V5.60（用户规格）：①描述文字 0.875rem/1.375rem（原 0.7rem）；
+  // ②c1 点击/回放后描述不再切换——原 orderInfo（Accept 补充 cvlan 后切换为
+  // orderDescUpdated 长文案）机制废止，恒显示原投诉描述
+  const DESC_FONT = { ...ELLIPSIS, fontSize: '0.875rem', lineHeight: '1.375rem' };
+  set(ORDERS[ORDER_SLOT.c1].descTextId, { text: CASES.c1.desc, title: CASES.c1.desc, s: DESC_FONT });
+  set(ORDERS[ORDER_SLOT.c2].descTextId, { text: CASES.c2.desc, title: CASES.c2.desc, s: DESC_FONT });
+  // V5.60（用户规格）：工单卡时间行（时间｜用时）0.75rem/1.25rem（原 0.7rem）
+  set('23:137152', { s: { fontSize: '0.75rem', lineHeight: '1.25rem' } });
+  set('23:137179', { s: { fontSize: '0.75rem', lineHeight: '1.25rem' } });
 
   if (!world) {
     for (const k of AGENTS) {

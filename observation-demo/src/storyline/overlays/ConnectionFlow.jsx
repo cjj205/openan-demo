@@ -16,13 +16,13 @@ import { CASES } from '../cases';
 import { taskTWindowOf, notifWindowOf } from '../panel-timing';
 
 const FONT = "'HarmonyOS Sans SC','HarmonyOS Sans','HarmonyHeiTi','Microsoft YaHei','PingFang SC',sans-serif";
-// 彗星三层：[长度, 不透明度, 线宽]，亮头朝运动方向（src → dst）
-const COMET = [[28, 0.95, 3], [70, 0.5, 2.5], [150, 0.2, 2]];
-// V5.57→V5.59（用户规格）：检索线流光——单条 5rem（80）渐变光束：头部宽、尾部细
-//（3→1.6）+ 头浓尾淡（0.9→0.18，即 linear-gradient(270deg,rgba(196,196,196,1)→0)/0.8
-// 的路径运动近似）；三层前端对齐叠加（短层=头部段粗且浓、长层延至 80 尾部细且淡）、
-// rgba(196,196,196,1)、圆头 round；V5.57 两层等宽版（尾 80 过长）废止
-const COMET_SEARCH = [[22, 0.9, 3], [48, 0.45, 2.4], [80, 0.18, 1.6]];
+// V5.60（用户规格）：连线光束统一为部门科室光束（.st-glidebar）样式——单条 5rem（80）
+// 渐变光束：头部宽尾部细（3→1.6）+ 头浓尾淡（0.9→0.18，即 linear-gradient
+// (270deg,rgba(196,196,196,1) 0%,rgba(196,196,196,0) 100%)/0.8 的路径运动近似）、
+// 圆头 round；三层前端对齐叠加（短层=头部段粗且浓、长层延至 80 尾部细且淡）；
+// 原三层彗星（28/70/150 灰白 220,220,220）与检索线专属版（V5.57..V5.59 演进）废止
+const COMET = [[22, 0.9, 3], [48, 0.45, 2.4], [80, 0.18, 1.6]];
+const COMET_STROKE = 'rgba(196,196,196,1)';
 // V5.57（用户规格）：检索线胶囊（标签）样式——底 #2CB8C926、圆角 0.2rem(3.2)，
 // 文字 #55CCD9、HarmonyOS Sans SC regular 0.6rem(9.6px)/1rem
 const SEARCH_PILL = { bg: '#2CB8C926', fg: '#55CCD9' };
@@ -159,9 +159,9 @@ export default function ConnectionFlow({ world, pub }) {
         const pillFont = searchLine ? 9.6 : 12;
         return (
           <g key={key} data-key={key} data-dir={rev ? 'rev' : 'fwd'}>
-            {(searchLine ? COMET_SEARCH : COMET).map((cfg, i) => (
-              <path key={i} d={d} fill="none" stroke={searchLine ? 'rgba(196,196,196,1)' : 'rgba(220,220,220,1)'}
-                strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap={searchLine ? 'round' : 'butt'}
+            {COMET.map((cfg, i) => (
+              <path key={i} d={d} fill="none" stroke={COMET_STROKE}
+                strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="round"
                 strokeDasharray={(150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
                 strokeDashoffset="150">
                 <animate attributeName="stroke-dashoffset" from="150" to={-len}
@@ -209,8 +209,8 @@ export default function ConnectionFlow({ world, pub }) {
         return (
           <g key={'held-' + key} style={{ transform: ctr, transition: 'transform 0.25s ease' }}>
             {d ? COMET.map((cfg, i) => (
-              <path key={i} d={d} fill="none" stroke="rgba(220,220,220,1)"
-                strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="butt"
+              <path key={i} d={d} fill="none" stroke={COMET_STROKE}
+                strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="round"
                 strokeDasharray={(150 - cfg[0]) + ' ' + cfg[0] + ' 10000'}
                 strokeDashoffset="150">
                 <animate attributeName="stroke-dashoffset" from="150" to={-len}

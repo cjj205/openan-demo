@@ -60,12 +60,26 @@ for (const k of ['reg-waimo-search', 'reg-zx-search']) {
 }
 const SEARCH_KEYS = { 'reg-waimo-search': true, 'reg-zx-search': true };
 
-// V5.58：连线胶囊随线随移（LINES 为 codegen 勿手改，运行时 mutate pillBox）：
-//   zx-yd-neg 胶囊 y501→530（新水平段 546.5，中心-16.5）
-//   reg-zx-search 胶囊 y276→312（水平段 304.5→340.5，保持上方 28.5 间距）
-//   其余胶囊位置随线不变
-if (LINES['zx-yd-neg']) LINES['zx-yd-neg'] = { ...LINES['zx-yd-neg'], pillBox: { ...LINES['zx-yd-neg'].pillBox, y: 530 } };
-if (LINES['reg-zx-search']) LINES['reg-zx-search'] = { ...LINES['reg-zx-search'], pillBox: { ...LINES['reg-zx-search'].pillBox, y: 312 } };
+// V5.60（用户规格）：消息标签（协议胶囊）统一贴线 0.25rem——横向连线标签在**上方**
+//（胶囊底 = 线 y − 4）、纵向连线（检索竖线）标签在**左侧**（胶囊右缘 = 线 x − 4）；
+// LINES 为 codegen 勿手改，运行时 mutate pillBox（x/y，宽度/居中随 ConnectionFlow 自动）
+const PILL_V60 = {
+  'lc-waimo-fetch': { y: 504.5 },        // 横线 y532.5
+  'lc-waimo-report': { y: 548.5 },       // y576.5
+  'waimo-zx-task': { y: 517.5 },         // y545.5
+  'waimo-zx-notif': { y: 561.5 },        // y589.5
+  'zx-yd-task': { y: 344.5 },            // 末段 y372.5
+  'zx-yd-neg': { y: 518.5 },             // 水平段 y546.5（V5.57 曾置线下方 530）
+  'zx-yx-task': { y: 710.5 },            // 末段 y738.5
+  'zx-yx-neg': { y: 548.5 },             // 水平段 y576.5
+  // 检索竖线（x828.5 / x1297，段 349..415.5）——标签左侧（V5.60 更正：左非右），
+  // 右缘距线 4；y 取竖线段中部（382.25 − 胶囊半高 12 → 370）
+  'reg-waimo-search': { x: 784.5, y: 370 },
+  'reg-zx-search': { x: 1253, y: 370 },
+};
+for (const [k, p] of Object.entries(PILL_V60)) {
+  if (LINES[k]) LINES[k] = { ...LINES[k], pillBox: { ...LINES[k].pillBox, ...p } };
+}
 
 // 快照+收起态伪 world：设计连线 sprite 已隐藏（位图无法随集群端点重适配），
 // 以「全部登场、全部连线可见」由 SVG 连线接管呈现
