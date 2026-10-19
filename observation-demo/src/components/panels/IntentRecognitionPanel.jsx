@@ -49,7 +49,7 @@ export default function IntentRecognitionPanel(props) {
         alt=""
         style={{ left: 186.69, top: 39.25, width: 171.48, height: 171.48 }}
       />
-      <div className="orb-label" style={{ left: 232, top: 136 }}>LLM React</div>
+      <div className="orb-label" style={{ left: 232, top: 136 }}>LLM ReAct</div>
 
       {/* ① 输入：标题+箭头+三行投诉文本整体渐入（左侧输入不分开显示） */}
       <div className={'p-io-title ir-reveal' + on(1)} style={{ left: 28, top: 96 }}>输入：用户投诉文本</div>
@@ -63,10 +63,11 @@ export default function IntentRecognitionPanel(props) {
         ))}
       </ul>
 
-      {/* ② 推理（上）→ ③ 动作（右）→ ④ 观察（下）：绕光轮顺时针依次渐入
-          （V5.32 用户规格：Reasoning/Action/Observation 改中文、标签旁说明文字删除） */}
-      <div className={'p-pill ir-reveal' + on(2)} style={{ left: 168, top: 64, width: 73 }}>推理</div>
-      <div className={'p-pill ir-reveal' + on(3)} style={{ left: 322, top: 100, width: 73 }}>动作</div>
+      {/* ② 思考（上）→ ③ 行动（右）→ ④ 观察（下）：绕光轮顺时针依次渐入
+           （V5.32 用户规格：Reasoning/Action/Observation 改中文、标签旁说明文字删除；
+           V5.69 用户规格：推理→思考、动作→行动、LLM React→LLM ReAct） */}
+      <div className={'p-pill ir-reveal' + on(2)} style={{ left: 168, top: 64, width: 73 }}>思考</div>
+      <div className={'p-pill ir-reveal' + on(3)} style={{ left: 322, top: 100, width: 73 }}>行动</div>
       <div className={'p-pill ir-reveal' + on(4)} style={{ left: 190, top: 172, width: 80 }}>观察</div>
 
       {/* ⑤ 输出（末段） */}
