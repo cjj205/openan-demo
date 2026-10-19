@@ -563,11 +563,11 @@ export function buildUiPatches(ctx) {
     P.set(ch.nameId, { ...prev, s: { ...(prev.s || {}), fontWeight: '700' } });
   });
   // V5.45（用户规格）：步骤条图标全白（icon 为切图 SVG，亮度归零+反色统一为白色剪影）；
-  // V5.55（用户规格）：问题处置图标（23:135806，ic_ict_creating_design_state——蓝色文档+
-  // 蓝圆底、内含黑色横线与加号）除外——全白滤镜使黑色元素不可见（"显示的全是白色"），
-  // 保留原色渲染
+  // V5.55：问题处置图标（23:135806，ic_ict_creating_design_state——蓝色文档+蓝圆底、
+  // 内含黑色横线与加号）曾豁免保留原色（全白滤镜使黑色元素不可见）；
+  // V5.68（用户规格）：豁免废止——问题处置图标与其余步骤图标统一白色剪影
   CHEVRONS.forEach((ch) => {
-    if (ch.iconId !== '23:135806') P.set(ch.iconId, { s: { filter: 'brightness(0) invert(1)' } });
+    P.set(ch.iconId, { s: { filter: 'brightness(0) invert(1)' } });
   });
   // V5.45（用户反馈"执行中标题仍发蓝"定位）：chip 背板在 DOM 序中后于标题/时长渲染并
   // 覆盖之（V2.16 版式，文字穿透背板）——执行中背板为半透明蓝 rgba(0,103,209,0.4) 叠
