@@ -716,13 +716,14 @@ export function buildUiPatches(ctx) {
   }
   putFit(CARDS.YX.glowId, { height: CARD_H + 'px', width: (CARDS.YX.box.w + CARD_WIDE) + 'px' });
   // V5.61（用户规格）：粤东/粤西技能胶囊对**居中**（左右卡片边距一致）——卡 256（内容宽
-  // 254）、胶囊对组宽 168（80+8+80）→ 左右各 43（左胶囊 43、右胶囊 131）；V2.18 的
-  // 27/115 为 224 卡时代居中值，V5.56 加宽后被 CARD_CONTENT left（16/134）覆盖、
-  // 而 V2.10 的 width 80 补丁仍在 → 实测 17/41 不对称；putFit 合并保留 CARD_CONTENT top
-  putFit('23:136672', { left: '43px' });
-  putFit('23:136691', { left: '131px' });
-  putFit('23:136797', { left: '43px' });
-  putFit('23:136816', { left: '131px' });
+  // 254）；V2.18 的 27/115 为 224 卡时代居中值，V5.56 加宽后被 CARD_CONTENT left（16/134）
+  // 覆盖、而 V2.10 的 width 80 补丁仍在 → 实测 17/41 不对称；putFit 合并保留 CARD_CONTENT top；
+  // V5.66（用户规格）：两胶囊间距 0.5rem→**2.5rem（40）**——组宽 168→200（80+40+80）、
+  // 居中左右各 27：左胶囊 27、右胶囊 147（V5.61 的 43/131〔间距 8〕废止）
+  putFit('23:136672', { left: '27px' });
+  putFit('23:136691', { left: '147px' });
+  putFit('23:136797', { left: '27px' });
+  putFit('23:136816', { left: '147px' });
   // V5.64（用户规格）：ZX 技能标签行（三枚）两端分布——区域距左右卡片边沿各 1rem
   //（卡宽 324，区域 16..308），space-between：左 16 / 中 122（恰设计原位）/ 右 308-80=228；
   // 原设计基准 34/122/210（边距 34/33、间隙 8）废止；putFit 合并保留 CARD_CONTENT top
