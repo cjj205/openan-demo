@@ -161,8 +161,13 @@ export const CARD_LIFT = 8;               // ZX 卡内容上移（V5.55 保持�
 export const CARD_GROW = 10;              // ZX 卡底板增高（V5.55 保持：高 280→290）
 export const CARD_WIDE = 32;              // 三卡加宽 2rem
 export const CARD_H = 240;                // 三卡高 15rem
-export const CARD_DESC_DY = { WAIMO: 21, ZX: -CARD_LIFT, YD: -29, YX: -29 };      // 描述区位移（加法；WAIMO 卡高 290→239 贴底、三卡 218→189、ZX 246→238）
-export const CARD_MINI_DY = { WAIMO: CARD_LIFT, ZX: CARD_LIFT, YD: 34, YX: 34 };  // 迷你圆点行上移（V5.62：YD/YX 槽位 178→144，距技能标签行底 132 恰 0.75rem——四卡同规格）
+// V5.64（用户规格）：描述区垂直居中于 [子步骤（迷你标题行）下沿, 卡底下沿]——
+//   区域顶 = (标题底 + 卡底)/2 − 25.5（区域高 51）：WAIMO (207+290)/2−25.5=223（+5）、
+//   ZX (234+290)/2−25.5≈237（-9）、YD/YX (181+240)/2−25.5=185（-33）；
+//   V5.55..V5.62 的「贴卡底」（239/238/189）废止（实测 WAIMO 偏低 16、YD/YX 偏低 4、
+//   ZX 恰居中——高卡贴底区恰落跨度中点，纯属巧合）
+export const CARD_DESC_DY = { WAIMO: 5, ZX: -9, YD: -33, YX: -33 };                 // 描述区位移（加法；见上 V5.64 居中公式）
+export const CARD_MINI_DY = { WAIMO: CARD_LIFT, ZX: CARD_LIFT, YD: 34, YX: 34 };  // 迷你圆点行上移（V5.62：YD/YX 槽位 178→144，距技能标签行底 132 恰 0.75rem——三卡规格；ZX 见 dyOf V5.64）
 export const CARD_MINI_DX = { WAIMO: 16, ZX: 0, YD: 16, YX: 16 };          // 迷你圆点行右移（居中）
 // bg 内容分段偏移（k=卡名，y=节点设计 y，bg 本地）；V5.57：WAIMO 卡高改与专线一致（290）
 // ——回退 V5.55 布局（整体 -8：minis 170 距技能标签行底 158 恰 0.75rem），描述区另由
@@ -176,8 +181,13 @@ export const CARD_MINI_DX = { WAIMO: 16, ZX: 0, YD: 16, YX: 16 };          // �
 //   原「距编排中心卡底 0.5rem」规格废止）；YD/YX 迷你行 -18→-34（连线 186→152/
 //   标题 197→163，与覆盖层圆点 CARD_MINI_DY 18→34 同拍：槽 178→144，距标签行底
 //   118+20-6=132 恰 0.75rem；原 -18 时槽在 160、距 28）——标题底 185 让出描述区顶 189
+// V5.64（用户规格）：ZX 标签行恢复「距编排中心卡底 0.5rem」（V5.62 的 0.75rem 对 ZX
+//   废止，三卡维持）——编排中心卡底 = 118-8+32(V5.55 高 48→32) = 142，标签行顶
+//   142+8=150 → 段 [170,200)（设计 y174 三枚）独取 -24，其余保持 -8；标签行底 170
+//   距圆点槽 198 为 28（不再受 0.75rem 约束）
 const dyOf = (k, y) => {
-  if (k === 'ZX' || k === 'WAIMO') return -CARD_LIFT;
+  if (k === 'ZX') return y >= 170 && y < 200 ? -24 : -CARD_LIFT;
+  if (k === 'WAIMO') return -CARD_LIFT;
   return y < 50 ? -8 : y < 109 ? -4 : y < 140 ? -6 : y < 160 ? -16 : -34;
 };
 // 发光容器内容分段偏移（glow 本地 y；回放态隐藏、随基卡同步——V5.62 迷你行同步上移 16）
@@ -713,6 +723,12 @@ export function buildUiPatches(ctx) {
   putFit('23:136691', { left: '131px' });
   putFit('23:136797', { left: '43px' });
   putFit('23:136816', { left: '131px' });
+  // V5.64（用户规格）：ZX 技能标签行（三枚）两端分布——区域距左右卡片边沿各 1rem
+  //（卡宽 324，区域 16..308），space-between：左 16 / 中 122（恰设计原位）/ 右 308-80=228；
+  // 原设计基准 34/122/210（边距 34/33、间隙 8）废止；putFit 合并保留 CARD_CONTENT top
+  putFit('23:136502', { left: '16px' });
+  putFit('23:136535', { left: '122px' });
+  putFit('23:136547', { left: '228px' });
   // V5.57（用户规格）：缩放工具栏底色 #000000 50%（设计卡 23:135645，原 #F3F3F319）
   P.set(ZOOM.barId, { s: { background: 'rgba(0,0,0,0.5)' } });
   // V5.58：拓扑重排——卡 bg/徽标/粤西发光容器节点 top 随 CARD_SHIFT 平移

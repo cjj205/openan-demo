@@ -47,7 +47,9 @@ export default function StepDesc({ world, pub }) {
         // V5.55：top 随卡内容上移；区域高 51（三行）；
         // V5.56：三卡上移 29（描述区 218→189，贴新卡底 240）；
         // V5.57：WAIMO 卡高与专线一致（290）——描述区 +21 下移（218→239 贴新卡底）；
-        // 偏移为加法（roles CARD_DESC_DY：WAIMO +21 / ZX -8 / YD·YX -29）；
+        // V5.64（用户规格）：描述区垂直居中于 [迷你标题行下沿, 卡底下沿]——
+        //   区域顶 = (标题底+卡底)/2−25.5；偏移为加法（roles CARD_DESC_DY：
+        //   WAIMO +5→223 / ZX -9→237 / YD·YX -33→185），V5.55..V5.62 贴底规格废止；
         // V5.58（用户规格）：区域宽度自适应卡宽（三卡含加宽 32）、距左右卡片边沿 1rem
         //（left box.x+16、width 卡宽−32；原 left+13/旧宽−32 废止）
         const left = c.box.x + 16, top = c.descTop + (CARD_DESC_DY[it.k] || -8);
