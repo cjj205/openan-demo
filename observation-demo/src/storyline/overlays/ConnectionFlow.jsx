@@ -21,8 +21,12 @@ const FONT = "'HarmonyOS Sans SC','HarmonyOS Sans','HarmonyHeiTi','Microsoft YaH
 // 滑块速度；原 ≈150px/s）。六层改为「尾隙 + 等长前端」排布：各层 dash **前端对齐**
 //（亮端=前端=终点方向），cfg=[尾隙G, 透明度, 线宽]，dash 长=70−G——最长层（G=0）
 // 最暗（0.09 尾底）、最短层最亮，前端六层叠加 ≈0.84、尾部 0.09（滑块
-// linear-gradient(-90deg,1→0) 亮前暗后的同款轮廓）；dasharray 前置 '0' 空段实现
-// 「先隙后划」（'0 G D 10000'），六层共用 dashoffset 动画 70→−len（前端=70−offset 恒同）
+// linear-gradient(-90deg,1→0) 亮前暗后的同款轮廓）；
+// V5.65（用户反馈修复）：原以 dasharray 前置 '0' 空段（'0 G D 10000'）实现「先隙
+// 后划」——零长度 dash 在 strokeLinecap:round 下渲染为 Ø=线宽的实心圆点，六层
+// 0 段同相（pattern 位 0 → 路径位 −offset，恰为最长层尾端）全程叠加 ≈0.81 不透明
+// 度的**明显尾光点**；改相位法：dasharray 'D 10000' + 各层 dashoffset 动画
+// 70−G→−len−G（层几何 [G−k,70−k] 与原完全等价、前端对齐不变，零长度段消失→尾点消失）
 const COMET_L = 70;
 const COMET = [[0, 0.09, 3], [12, 0.13, 3], [23, 0.18, 3], [35, 0.25, 3], [47, 0.35, 3], [58, 0.5, 3]];
 const COMET_STROKE = 'rgba(196,196,196,1)';
@@ -167,9 +171,9 @@ export default function ConnectionFlow({ world, pub }) {
             {COMET.map((cfg, i) => (
               <path key={i} d={d} fill="none" stroke={COMET_STROKE}
                 strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="round"
-                strokeDasharray={'0 ' + cfg[0] + ' ' + (COMET_L - cfg[0]) + ' 10000'}
-                strokeDashoffset={COMET_L}>
-                <animate attributeName="stroke-dashoffset" from={COMET_L} to={-len}
+                strokeDasharray={(COMET_L - cfg[0]) + ' 10000'}
+                strokeDashoffset={COMET_L - cfg[0]}>
+                <animate attributeName="stroke-dashoffset" from={COMET_L - cfg[0]} to={-len - cfg[0]}
                   dur={dur} repeatCount="indefinite" />
               </path>
             ))}
@@ -216,9 +220,9 @@ export default function ConnectionFlow({ world, pub }) {
             {d ? COMET.map((cfg, i) => (
               <path key={i} d={d} fill="none" stroke={COMET_STROKE}
                 strokeWidth={cfg[2]} strokeOpacity={cfg[1]} strokeLinecap="round"
-                strokeDasharray={'0 ' + cfg[0] + ' ' + (COMET_L - cfg[0]) + ' 10000'}
-                strokeDashoffset={COMET_L}>
-                <animate attributeName="stroke-dashoffset" from={COMET_L} to={-len}
+                strokeDasharray={(COMET_L - cfg[0]) + ' 10000'}
+                strokeDashoffset={COMET_L - cfg[0]}>
+                <animate attributeName="stroke-dashoffset" from={COMET_L - cfg[0]} to={-len - cfg[0]}
                   dur={dur} repeatCount="indefinite" />
               </path>
             )) : null}
