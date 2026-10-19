@@ -734,8 +734,12 @@ export function buildUiPatches(ctx) {
   putFit('23:136502', { left: '16px' });
   putFit('23:136535', { left: '122px' });
   putFit('23:136547', { left: '228px' });
-  // V5.57（用户规格）：缩放工具栏底色 #000000 50%（设计卡 23:135645，原 #F3F3F319）
-  P.set(ZOOM.barId, { s: { background: 'rgba(0,0,0,0.5)' } });
+  // V5.57（用户规格）：缩放工具栏底色 #000000 50%（设计卡 23:135645，原 #F3F3F319）；
+  // V5.70（用户反馈"点击缩小后有 2 个按钮跟随缩小"定位）：原 P.set 整条覆盖上文
+  // fixedNodes 反向变换（zoom≠1 时 23:135645 的 transform 被丢弃 → 工具栏卡连同适应
+  // 图标/百分比文字随画布缩小；＋/－为覆盖层 CSS 重建不随动 → 恰"2 个按钮"）——
+  // 改 putFit 合并保留（同 648 行描边合并先例）
+  putFit(ZOOM.barId, { background: 'rgba(0,0,0,0.5)' });
   // V5.58：拓扑重排——卡 bg/徽标/粤西发光容器节点 top 随 CARD_SHIFT 平移
   //（bg 子树内容相对 bg 自动跟随；badgeText 相对 badgePill 不动）
   for (const k of ['WAIMO', 'ZX', 'YD', 'YX']) {

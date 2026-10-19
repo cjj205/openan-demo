@@ -36,6 +36,12 @@
   pointer-events: none;
   transform-origin: 69.53125rem 29.40625rem;
 }
+/* V5.70（用户规格）：工具栏层 41 全页最高——V5.53 提升 .st-zoomwrap 至 40 后，画布覆盖层
+   反盖工具栏层（20）内 z30 的倍速下拉：case2 监控室胶囊（x1736 y126..158）与倍速菜单
+   （x1753 起 y106..284）几何重叠，胶囊挡住菜单前两项。工具栏层本身透明
+   （pointer-events:none，仅按钮 auto）且按钮位于右上角与画布内容无几何重叠，
+   提升仅使倍速下拉（及其内 z30）盖过房间胶囊/连线等画布覆盖层 */
+.st-toolbar { z-index: 41; }
 
 /* ---- 透明点击层通用（工具栏/缩放条）---- */
 .st-tbtn, .st-zoombar button {
