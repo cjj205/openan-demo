@@ -22,17 +22,19 @@ export default function DynamicOrchestrationPanel(props) {
       {/* 正文横向流式三栏（垂直居中）；工作流连线为 2D 图形，保持卡内绝对定位 */}
       <div className="fp-body fp-row" style={{ padding: '0.25rem 1rem 1rem', justifyContent: 'space-between', alignItems: 'center' }}>
         {/* ① 左侧：意图 + AgentCard（纵向流式堆叠）；
-            V6.21（用户规格）：意图卡与加号下移 0.5rem（AgentCard 位置不变——下邻 margin 反向抵消）；
-            V6.22（用户规格）：意图区域再下移 0.25rem（加号/AgentCard 位置不变——加号 margin 反向抵消） */}
+            V6.26（用户规格）：加号上边沿贴意图卡下边沿、AgentCard 贴加号下边沿——
+            两向 gap 归零（margin 各 -0.75rem 抵消 flex 0.75rem 间距，三者紧贴堆叠）；
+            V6.27（用户规格）：左组整体上移与右侧卡上边沿对齐——意图卡 marginTop 归零，
+            左列总高 136.01 ≈ 右列 136，行内居中后两者顶部齐平 */}
         <div className={'fp-col--c ir-reveal' + on(1)} style={{ gap: '0.75rem' }}>
-          <div style={{ position: 'relative', width: 256, height: 44, marginTop: '0.75rem' }}>
+          <div style={{ position: 'relative', width: 256, height: 44 }}>
             <div className="p-card" style={{ left: 5, top: 0, width: 256, height: 44 }} />
             <img className="p-abs" src="/assets/intent-title-bg.svg" alt="" style={{ left: 0, top: 5, width: 62, height: 43.04 }} />
             <div className="p-tag-text" style={{ left: 17, top: 13 }}>意图</div>
             <div className="p-body-text" style={{ left: 65, top: 12 }}>跨地市的SPN投诉任务诊断</div>
           </div>
-          <img className="p-abs" src="/assets/plus.svg" alt="" style={{ position: 'static', display: 'block', width: 12, height: 12.01, marginLeft: 108, marginTop: '-0.25rem' }} />
-          <div style={{ position: 'relative', width: 256, height: 80, marginTop: '-0.5rem' }}>
+          <img className="p-abs" src="/assets/plus.svg" alt="" style={{ position: 'static', display: 'block', width: 12, height: 12.01, marginLeft: 108, marginTop: '-0.75rem' }} />
+          <div style={{ position: 'relative', width: 256, height: 80, marginTop: '-0.75rem' }}>
             <div className="p-card" style={{ left: 5, top: 0, width: 256, height: 80 }} />
             <img className="p-abs" src="/assets/agentcard-title-bg.svg" alt="" style={{ left: 0, top: 5, width: 98, height: 43.04 }} />
             <div className="p-tag-text" style={{ left: 17, top: 13 }}>AgentCard</div>
