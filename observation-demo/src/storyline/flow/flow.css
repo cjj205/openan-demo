@@ -295,8 +295,6 @@
 }
 .fl-order__expand { cursor: pointer; }
 .fl-order__expand--open svg { transition: transform 0.2s ease; }
-/* V6.38（用户规格）：静态卡「展开」为纯展示——不可点击 */
-.fl-order--static .fl-order__expand { cursor: default; }
 .fl-order__no {
   color: rgba(147, 147, 147, 1);
   font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;
