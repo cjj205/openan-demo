@@ -510,6 +510,84 @@
   to { stroke-dashoffset: -7; }
 }
 
+/* Authorization-T V4（react-panels .at4-*：动网操作预授权 · 容器 9234 · 流式布局；
+    V6.31 复制——新版组件 AuthorizationTPanelV4；旧版 at-panel 保留） */
+.at4-panel {
+  padding: 0.6875rem 1.0625rem 0 1rem;
+  background:
+    linear-gradient(180deg, rgba(0, 103, 209, 0.1), rgba(245, 245, 245, 0)),
+    #000952;
+}
+.td-bubble--solid .td-bubble__bg { background: #080f78; }
+.at4-row { font-size: 0; }
+.at4-row + .at4-row { margin-top: 0.5rem; }
+.at4-label {
+  display: inline-block;
+  vertical-align: top;
+  width: 7.75rem;
+  font-family: var(--font-yh);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: #c9c9c9;
+  white-space: nowrap;
+}
+.at4-value {
+  display: inline-block;
+  vertical-align: top;
+  font-family: var(--font-yh);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: #fff;
+  white-space: nowrap;
+}
+.at4-reply {
+  display: inline-block;
+  font-family: var(--font-sc);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* 工单展开详情 · 下拉面板（react-panels .wo-*：V4.0 · 容器 1111309 · 流式布局；
+    V6.31 复制——组件 WorkOrderDetailPanel；仅底圆角（挂接工单卡下沿）） */
+.wo-panel {
+  padding: 1rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  background: rgba(0, 103, 209, 0.15);
+}
+.wo-text {
+  font-family: var(--font-yh);
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+  color: #fff;
+}
+.wo-desc { margin-top: 0.5rem; }
+.wo-rows { margin-top: 0.5rem; }
+/* V6.35（用户规格）：行改 flex——label 定宽 3.5rem，value 固定占 label 右侧全部
+    剩余宽（值列宽固定，各行一致；集团名称在该列内换行，V6.34） */
+.wo-row { display: flex; }
+.wo-row + .wo-row { margin-top: 0.5rem; }
+.wo-label {
+  flex: none;
+  width: 3.5rem;
+  font-family: var(--font-yh);
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+  color: #c9c9c9;
+  white-space: nowrap;
+}
+.wo-value {
+  flex: 1;
+  margin-left: 1rem;
+  font-family: var(--font-yh);
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+  color: #fff;
+  /* V6.34（用户规格）：值过长换行（集团名称——原 nowrap 溢出单行） */
+  white-space: normal;
+}
+
 /* Notification-T（react-panels .notif-* 与 .nt-*：对比卡横排 + 负边距箭头） */
 .notif-card {
   display: inline-block;

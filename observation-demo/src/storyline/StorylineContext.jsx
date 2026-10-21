@@ -61,11 +61,11 @@ function makeInteractions(apiRef) {
   return m;
 }
 
-function makePub(mode, caseId, t, speed, zoom, logLive, logHidden, logH, pan, ordersHidden, vscale, api, interactions, search, status) {
+function makePub(mode, caseId, t, speed, zoom, logLive, logHidden, logH, pan, ordersHidden, vscale, api, interactions, search, status, orderDetail) {
   const world = mode === 'snapshot' ? null : foldWorld(CASES[caseId], t);
   const ctx = { mode, caseId, t, speed, zoom, logLive, logHidden, ordersHidden, vscale, orderInfo: world ? !!world.orderInfo : false, search, status };
   return {
-    mode, caseId, t, speed, zoom, logLive, logHidden, logH, pan, ordersHidden, vscale, world, api, interactions, search, status,
+    mode, caseId, t, speed, zoom, logLive, logHidden, logH, pan, ordersHidden, vscale, world, api, interactions, search, status, orderDetail,
     patches: buildPatches(world, ctx),
     uiPatches: buildUiPatches(ctx),
   };
@@ -82,7 +82,7 @@ export function StorylineProvider({ children }) {
   const commit = (over) => {
     const s = Object.assign(st.current, over);
     lastSig.current = s.mode === 'snapshot' ? '' : worldSig(foldWorld(CASES[s.caseId], s.t));
-    setPub(makePub(s.mode, s.caseId, s.t, s.speed, s.zoom, s.logLive, s.logHidden, s.logH, s.pan, s.ordersHidden, s.vscale, apiRef.current, interactions, s.search, s.status));
+    setPub(makePub(s.mode, s.caseId, s.t, s.speed, s.zoom, s.logLive, s.logHidden, s.logH, s.pan, s.ordersHidden, s.vscale, apiRef.current, interactions, s.search, s.status, s.orderDetail));
   };
 
   const stopLoop = () => {
@@ -115,7 +115,7 @@ export function StorylineProvider({ children }) {
         // V5.63 修复：ctx 必须携带 t——缺失则 roles 组间光点窗口 ctx.t 恒 0（tb=0）：
         // g1（监控室→传输室）在播放中永不出现、g0 窗口结束不隐藏（seek/暂停路径不受影响）
         const ctx = { mode: 'playing', caseId: s2.caseId, t, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, logH: s2.logH, pan: s2.pan, ordersHidden: s2.ordersHidden, vscale: s2.vscale, orderInfo: !!w.orderInfo, search: s2.search, status: s2.status };
-        setPub({ mode: 'playing', caseId: s2.caseId, t, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, logH: s2.logH, pan: s2.pan, ordersHidden: s2.ordersHidden, vscale: s2.vscale, world: w, api: apiRef.current, interactions, search: s2.search, status: s2.status, patches: buildPatches(w, ctx), uiPatches: buildUiPatches(ctx) });
+        setPub({ mode: 'playing', caseId: s2.caseId, t, speed: s2.speed, zoom: s2.zoom, logLive: true, logHidden: s2.logHidden, logH: s2.logH, pan: s2.pan, ordersHidden: s2.ordersHidden, vscale: s2.vscale, world: w, api: apiRef.current, interactions, search: s2.search, status: s2.status, orderDetail: s2.orderDetail, patches: buildPatches(w, ctx), uiPatches: buildUiPatches(ctx) });
       }
     };
     raf.current = requestAnimationFrame(tick);
@@ -208,6 +208,9 @@ export function StorylineProvider({ children }) {
       //（buildUiPatches orderVisible = 搜索 orderMatches ∧ 状态 statusMatches）
       setSearch(v) { commit({ search: String(v == null ? '' : v) }); },
       setStatus(v) { commit({ status: v }); },
+      // V6.32（用户规格）：工单卡「展开」详情面板（纯 UI 状态 null | 'c1' | 'c2'——
+      // 面板数据跟随所展开的工单，与选中案例无关；再点展开即收起）
+      setOrderDetail(v) { commit({ orderDetail: v || null }); },
     };
   }, []);
   apiRef.current = api;
@@ -225,8 +228,8 @@ export function StorylineProvider({ children }) {
     // 视口适配（V2.14）：整页非等比铺满（G=scale(vw/1920, vh/1080)），
     // 文字/图标等经 uiPatches 反向缩放保比例（见 roles.js totalFactors）
     const vscale = { x: window.innerWidth / 1920, y: window.innerHeight / 1080 };
-    st.current = { mode, caseId, t, speed: 1, zoom: 1, logLive: true, logHidden: false, logH: LOG_H_DEFAULT, pan: { x: 0, y: 0 }, ordersHidden: false, vscale, search: '', status: '全部状态' };
-    return makePub(mode, caseId, t, 1, 1, true, false, LOG_H_DEFAULT, { x: 0, y: 0 }, false, vscale, api, interactions, '', '全部状态');
+    st.current = { mode, caseId, t, speed: 1, zoom: 1, logLive: true, logHidden: false, logH: LOG_H_DEFAULT, pan: { x: 0, y: 0 }, ordersHidden: false, vscale, search: '', status: '全部状态', orderDetail: null };
+    return makePub(mode, caseId, t, 1, 1, true, false, LOG_H_DEFAULT, { x: 0, y: 0 }, false, vscale, api, interactions, '', '全部状态', null);
   });
 
   useEffect(() => {

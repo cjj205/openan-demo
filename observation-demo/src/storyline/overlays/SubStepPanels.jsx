@@ -11,13 +11,14 @@ import React from 'react';
 import { CARDS, LINES, satCssStyle } from '../roles';
 import { CASES, TIME_SCALE } from '../cases';
 import { cardRect } from '../flow/geometry';
-import { taskTWindowOf, searchWindowOf, orchestrationWindowOf, notifWindowOf, dispatchWindowOf, intentWindowOf } from '../panel-timing';
+import { taskTWindowOf, searchWindowOf, orchestrationWindowOf, notifWindowOf, dispatchWindowOf, intentWindowOf, authorizationWindowOf } from '../panel-timing';
 import IntentRecognitionPanel from '../../components/panels/IntentRecognitionPanel.jsx';
 import SearchAgentPanel from '../../components/panels/SearchAgentPanel.jsx';
 import DispatchPanel from '../../components/panels/DispatchPanel.jsx';
 import DynamicOrchestrationPanel from '../../components/panels/DynamicOrchestrationPanel.jsx';
 import TaskTPanel from '../../components/panels/TaskTPanel.jsx';
 import NotificationTPanel from '../../components/panels/NotificationTPanel.jsx';
+import AuthorizationTPanelV4 from '../../components/panels/AuthorizationTPanelV4.jsx';
 import '../../components/panels/panels.css';
 
 const center = (b) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2 });
@@ -117,6 +118,29 @@ const PANEL_DEFS = [
     props: (pub) => ({ ...notifWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE, caseId: pub.caseId }),
     when: (w, pub) => { const { t0, t1 } = notifWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
     box: belowLine('waimo-zx-notif', 352, 236), anchor: () => WZ_MID,
+  },
+  {
+    // V6.35（用户规格）：Authorization-T 详细交互流程面板（at4 · 仅工单2 问题处置）——
+    // 传输向粤西发送 Authorization-T 授权请求时出现（窗口=请求流 424..448），粤西回复
+    // 传输后消失；两条消息分别呈现（请求气泡随面板出现、响应气泡在响应段开始 436 渐显，
+    // 见 AuthorizationTPanelV4 / AUTHZ_WEIGHTS）；连线标签/彗星保留。
+    // V6.36（用户规格）：位置改 传输—粤西 连线标签左侧、传输卡（子步骤）下方——
+    // 右缘对齐 zx-yx-task Authorization-T 标签左沿（−0.5rem；标签宽按 ConnectionFlow
+    // textW 同口径估算），顶 = 传输卡底 + 0.5rem；锚 传输/粤西 卡中心中点随刚体平移
+    key: 'authz-t', Comp: AuthorizationTPanelV4,
+    props: (pub) => ({ ...authorizationWindowOf(CASES[pub.caseId]), t: pub.t, mode: pub.mode, speed: pub.speed, timeScale: TIME_SCALE }),
+    when: (w, pub) => { const { t0, t1 } = authorizationWindowOf(CASES[pub.caseId]); return pub.t >= t0 && pub.t < t1; },
+    box: (pub) => {
+      const z = cardRect('ZX', pub.caseId);
+      const pb = LINES['zx-yx-task'].pillBox;
+      // 标签渲染宽（ConnectionFlow textW 同口径：ASCII 6.3/字 + 13 padding）
+      const tw = Math.round([...'Authorization-T'].reduce((a, c) => a + (c.charCodeAt(0) > 0x2e7f ? 12 : 6.3), 0)) + 13;
+      return { x: Math.round(pb.x + pb.w / 2 - tw / 2 - 8 - 472), y: Math.round(z.y + z.h + 8), w: 472, h: 248 };
+    },
+    anchor: () => {
+      const a = center(CARDS.ZX.box), b = center(CARDS.YX.box);
+      return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    },
   },
 ];
 

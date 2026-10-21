@@ -160,6 +160,10 @@
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 1.0625rem;
+  /* V6.36：flex:none 不被描述区压缩——定高卡描述区（粤西 48px）小于三行文字
+     （51px）时原被 flex-shrink 压至 48 并裁掉第三行下缘（抢通执行描述展示不全）；
+     改不收缩后以自然高在区内垂直居中，超出部分（≤3px）溢入卡底 padding 完整可见 */
+  flex: none;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -275,6 +279,24 @@
 }
 .fl-order:hover { background: rgba(92, 172, 255, 0.14); }
 .fl-order * { user-select: text; }
+/* V6.37（用户规格）：静态展示卡（列表下方×4）——不可点击：默认指针、无 hover 高亮 */
+.fl-order--static { cursor: default; }
+.fl-order--static:hover { background: none; }
+/* V6.33（用户规格）：工单展开详情面板占位层——卡列流内（下方卡自动下移不遮盖）；
+    margin-top -1rem 抵消列 gap 使面板贴卡下沿（wo-panel 顶角方形=挂接设计）；
+    V6.34/36（用户规格）：展开态边框包住详情——面板补 1px 左右+底边（无顶边），
+    色随选中态（--wo-bc：蓝/灰）与卡侧边框连续；卡/详情分隔线=卡底边（恒灰，
+    见 OrderPanel 内联）；全局 border-box，16rem 外沿与卡两侧边框对齐，
+    底圆角沿用 wo-panel 自带 0 0 0.5rem 0.5rem */
+.fl-order-detail { margin-top: -1rem; }
+.fl-order-detail .wo-panel {
+  border: 1px solid var(--wo-bc, rgba(119, 119, 119, 1));
+  border-top: none;
+}
+.fl-order__expand { cursor: pointer; }
+.fl-order__expand--open svg { transition: transform 0.2s ease; }
+/* V6.38（用户规格）：静态卡「展开」为纯展示——不可点击 */
+.fl-order--static .fl-order__expand { cursor: default; }
 .fl-order__no {
   color: rgba(147, 147, 147, 1);
   font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'HarmonyHeiTi', 'Microsoft YaHei', 'PingFang SC', sans-serif;

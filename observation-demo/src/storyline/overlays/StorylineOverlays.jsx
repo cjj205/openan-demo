@@ -54,7 +54,18 @@ const ROOM_SEGS = [];
 for (let i = 0; i < ROOM_PILLS.length - 1; i++) {
   ROOM_SEGS.push({ left: ROOM_PILLS[i].left + ROOM_PILLS[i].w, right: ROOM_PILLS[i + 1].left, gate: ROOM_PILLS[i + 1].gate });
 }
+// V6.39（用户规格）：两端封口——左端纵线对齐投诉受理 chip 左沿、右端纵线对齐投诉报结
+// chip 右沿（揭示随首/末组：左随客服常驻、右随步骤6）；两端横向虚线自纵线连至
+// 首/末胶囊外沿（独立数组——不并入 ROOM_SEGS，避免派生 ROOM_GLIDES 误生光点）
+const FIRST_STEP = ROOM_GROUPS[0].first, LAST_STEP = ROOM_GROUPS[ROOM_GROUPS.length - 1].last;
+const LAST_PILL = ROOM_PILLS[ROOM_PILLS.length - 1];
+const ROOM_END_SEGS = [
+  { left: CHEVRONS[FIRST_STEP].box.x, right: ROOM_PILLS[0].left, gate: ROOM_GROUPS[0].gate },
+  { left: LAST_PILL.left + LAST_PILL.w, right: chipR(LAST_STEP), gate: ROOM_GROUPS[ROOM_GROUPS.length - 1].gate },
+];
 const ROOM_SEPS = ROOM_GROUPS.slice(1).map((g) => ({ left: chipR(g.first - 1), gate: g.gate }));
+ROOM_SEPS.unshift({ left: CHEVRONS[FIRST_STEP].box.x, gate: ROOM_GROUPS[0].gate });
+ROOM_SEPS.push({ left: chipR(LAST_STEP), gate: ROOM_GROUPS[ROOM_GROUPS.length - 1].gate });
 // 各段登场光点：行程 = (线宽−80)/2；g0（客服—监控室）随 WAIMO t=0（V5.12 收窄
 // ±89.97、2.92s）、g1（监控室—传输室）随步骤3（等速 74.9px/s）、g2（传输室—
 // 监控室·传输室）随步骤4、g3（监控室·传输室—监控室）随步骤6（38.7px/s）——
@@ -189,6 +200,10 @@ export default function StorylineOverlays() {
           ) : null)}
           {ROOM_SEGS.map((s, i) => stepOn(s.gate) ? (
             <div key={'rl' + i} className="st-roomline" style={{ left: s.left, width: s.right - s.left }} />
+          ) : null)}
+          {/* V6.39（用户规格）：两端封口横向虚线（纵线 ↔ 首/末胶囊外沿） */}
+          {ROOM_END_SEGS.map((s, i) => stepOn(s.gate) ? (
+            <div key={'rel' + i} className="st-roomline" style={{ left: s.left, width: s.right - s.left }} />
           ) : null)}
           {ROOM_SEPS.map((s, i) => stepOn(s.gate) ? (
             <div key={'rs' + i} className="st-roomsep" style={{ left: snapSep(s.left) }} />
