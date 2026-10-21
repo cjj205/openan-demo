@@ -159,10 +159,10 @@
 .fl-desc {
   font-size: 0.75rem;
   font-weight: 400;
-  line-height: 1.0625rem;
-  /* V6.36：flex:none 不被描述区压缩——定高卡描述区（粤西 48px）小于三行文字
-     （51px）时原被 flex-shrink 压至 48 并裁掉第三行下缘（抢通执行描述展示不全）；
-     改不收缩后以自然高在区内垂直居中，超出部分（≤3px）溢入卡底 padding 完整可见 */
+  /* V6.44（用户规格反馈「描述超出卡片」）：行距 1.0625rem→1rem——三行文字
+     （唯一三行描述=粤西抢通执行）恰等于定高卡描述区（48px），不再外溢；
+     V6.36 flex:none 保留（区域更小的卡以自然高居中溢入卡底 padding） */
+  line-height: 1rem;
   flex: none;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -176,7 +176,9 @@
   transition: opacity 0.4s;
 }
 .fl-desc-out { opacity: 0; }
-@keyframes flDescIn { from { opacity: 0; transform: translateY(0.375rem); } to { opacity: 1; transform: translateY(0); } }
+/* V6.44：入场位移 0.375rem→0.1875rem——原 6px 下移滑入时第三行越过卡底边
+    （51px 描述+6px>卡内沿余量），改 3px 后全程在卡内 */
+@keyframes flDescIn { from { opacity: 0; transform: translateY(0.1875rem); } to { opacity: 1; transform: translateY(0); } }
 
 /* ---- 步骤条（chevron 箭头造型保持——宽度恒 221.29 与房间条竖线/胶囊坐标锚一致） ---- */
 .fl-steps { position: absolute; display: flex; }
