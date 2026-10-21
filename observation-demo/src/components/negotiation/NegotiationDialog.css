@@ -5,11 +5,10 @@
   width: 21.0rem;
   height: 18.4375rem;
   border-radius: 0.5rem;
-  /* V3.11：与 react-panels 详情面板（panels.css .glass-panel）背景一致——
-     原设计稿规格 rgba(0,0,0,0.3) + 90deg 横向渐变改为 0.4 黑底 + 180deg 顶部渐变 */
+  /* V6.19（用户规格）：与 .glass-panel 弹窗面板统一——90deg 蓝晕渐变 + 实底深蓝 */
   background:
-    linear-gradient(180deg, rgba(103, 103, 103, 0.05) 0%, rgba(245, 245, 245, 0) 55%),
-    rgba(0, 0, 0, 0.4);
+    linear-gradient(90deg, rgba(0, 103, 209, 0.1) 0%, rgba(245, 245, 245, 0) 94%),
+    rgba(0, 9, 82, 1);
   backdrop-filter: blur(1.6875rem);
   -webkit-backdrop-filter: blur(1.6875rem);
   box-shadow: none;

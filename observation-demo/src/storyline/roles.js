@@ -7,9 +7,12 @@ import { root as LOG_ROOT } from '../design/regions/log-panel';
 
 export { CARDS, CHEVRONS, BUTTONS, DECOR, LINES, LOGS, ORDERS, ROOMS, ZOOM };
 
-// V5.23 工单卡位置对调 → V5.25（用户规格）对调回退：case1 工单在第一张卡、case2 在第二张。
-// 槽位映射保留（恒等映射），文案补丁/点击交互/角标/选中态仍统一走 ORDER_SLOT
-export const ORDER_SLOT = { c1: 'c1', c2: 'c2' };
+// V5.23 工单卡位置对调 → V5.25 对调回退 → V6.6（用户规格）再度对调：
+// 第一张卡（槽位 c1，y170）展示 case2、第二张卡（槽位 c2，y328）展示 case1。
+// 槽位映射随案对调，文案补丁/点击交互/角标/选中态仍统一走 ORDER_SLOT
+//（V6.0 起设计工单卡子树隐藏、可见卡由 flow/OrderPanel 重建——渲染序 ['c2','c1']
+// 见 OrderPanel；本映射保持设计侧补丁/角标口径一致）
+export const ORDER_SLOT = { c1: 'c2', c2: 'c1' };
 const ORDER_NO_IDS = { c1: '23:137124', c2: '23:137160' }; // 槽位 → 工单号文字 id
 const CUST_IDS = { c1: '23:137144', c2: '23:137171' };     // 槽位 → 客户名文字 id
 export const AGENTS = ['WAIMO', 'ZX', 'YD', 'YX'];
@@ -280,6 +283,30 @@ for (const k of ['WAIMO', 'ZX', 'YD', 'YX']) {
 ['WAIMO', 'ZX', 'YD', 'YX'].forEach((k, i) => {
   if (CLUSTERS[i]) CLUSTERS[i].center = boxCenter(CARDS[k].box);
 });
+
+// ---- V6.3（用户规格）：拓扑纵移——区域 = 步骤区域容器下边沿(230)..A2A-T 协作日志
+// 上边沿(882)、中心 556：WAIMO/传输垂直居中（top 434/418，高 244/276）；粤东/粤西
+// 上下对称（外隙 24：254..490 / 622..858，高 236）；流程中心垂直居中（513..599 中心
+// 556）——LC 见 StorylineOverlays fl-lc 与 ENDPOINT_CENTERS.LC。连线端点贴卡视觉
+// 边沿（V6.3 卡宽按内容计算：WAIMO 362 / 传输 c1 290·c2 410 / 粤东粤西 234，见
+// flow/geometry.js cardW 与 ConnectionLines applyCaseGeometry）----
+const CARD_Y_V62 = { WAIMO: 434, ZX: 418, YD: 254, YX: 622 };
+const CARD_H_V62 = { WAIMO: 244, ZX: 276, YD: 236, YX: 236 };
+for (const k of ['WAIMO', 'ZX', 'YD', 'YX']) {
+  const dy = CARD_Y_V62[k] - CARDS[k].box.y;
+  CARDS[k].box = { ...CARDS[k].box, y: CARD_Y_V62[k], h: CARD_H_V62[k] };
+  if (CARDS[k].descTop != null) CARDS[k].descTop += dy;
+  if (CARDS[k].mini) CARDS[k].mini.forEach((m) => { m.slotBox = { ...m.slotBox, y: m.slotBox.y + dy }; });
+  ENDPOINT_CENTERS[k] = boxCenter(CARDS[k].box);
+  const ci = ['WAIMO', 'ZX', 'YD', 'YX'].indexOf(k);
+  if (CLUSTERS[ci]) CLUSTERS[ci].center = boxCenter(CARDS[k].box);
+}
+// 流程中心（LC）新位——V6.3：垂直居中（513..599，中心 556）——连线端点/集群锚随移
+ENDPOINT_CENTERS.LC = { x: 441, y: 556 };
+{
+  const lcCl = CLUSTERS.find((c) => c.root === LC_ID);
+  if (lcCl) lcCl.center = { x: 441, y: 556 };
+}
 // 粤西发光容器集群（CLUSTERS[4]）与粤西卡同盒随移
 if (CLUSTERS[4]) CLUSTERS[4].center = boxCenter(CARDS.YX.box);
 
@@ -473,13 +500,13 @@ export function orderVisible(k, ctx) {
 export function buildUiPatches(ctx) {
   const P = new Map();
   // 工单卡：可选中文字 + 整卡点击切换案例（类/交互见 .st-ocard 与 StorylineContext interactions）+ 悬浮提示
-  // （c1 悬浮提示随协商补充后的工单信息同步，见 buildPatches d1）
+  // （悬浮提示随协商补充后的工单信息同步——两案 orderDescUpdated，见 buildPatches）
   // V5.13（用户规格）：搜索框实时过滤 + 状态筛选（orderVisible = 搜索 ∧ 状态）——不匹配的
   // 工单卡整卡隐藏（角标同步隐藏，见 WorkOrderSel；空态提示见 OrderFilter）；设计搜索占位
   // 文字由 LeftSearch 覆盖层输入框原生 placeholder 取代（I23:137118;2:356130 隐藏）；
   // 「筛选」标签文字随所选状态更新（I23:137104;3:27462;2:29596，设计烤入「全部状态」）
   for (const k of ['c1', 'c2']) {
-    const d = k === 'c1' && ctx.orderInfo ? CASES.c1.orderDescUpdated : CASES[k].desc;
+    const d = ctx.orderInfo && CASES[k].orderDescUpdated ? CASES[k].orderDescUpdated : CASES[k].desc;
     const hidden = !orderVisible(k, ctx);
     // V5.23：内容按 ORDER_SLOT 落位（case2 → 第一卡槽）
     P.set(ORDERS[ORDER_SLOT[k]].id, {
@@ -755,6 +782,44 @@ export function buildUiPatches(ctx) {
     }
   }
   if (ctx.speed !== 0.5) P.set(BUTTONS.speed.labelTextId, { text: ctx.speed + 'x' });
+  // ---- V6.0（流式布局改造）：设计子树整组隐藏——四卡内容/徽标、步骤条 chip、工单卡、
+  //      日志标题/计数改由覆盖层流式组件渲染（flow/NodeCard.jsx、StepBar.jsx、
+  //      OrderPanel.jsx、LogHeader.jsx）；外壳几何常量（CARDS/CHEVRONS/ORDERS/LOGS）
+  //      仍为连线端点/集群锚定/房间条/面板避让的坐标锚。置于函数末尾：上文对同一 id 的
+  //      P.set 整条覆盖（工单卡 st-ocard/日志标题 pointerEvents 等）不致丢失 hide ----
+  for (const k of AGENTS) {
+    P.set(CARDS[k].bgId, { hide: true });
+    P.set(CARDS[k].badgePillId, { hide: true });
+  }
+  P.set(CARDS.YX.glowId, { hide: true });
+  CHEVRONS.forEach((ch) => [ch.chipId, ch.iconId, ch.nameId, ch.durId].forEach((id) => P.set(id, { hide: true })));
+  P.set(ORDERS.c1.id, { hide: true });
+  P.set(ORDERS.c2.id, { hide: true });
+  P.set(LOGS.titleTextId, { hide: true });
+  P.set(LOGS.countTextId, { hide: true });
+  // V6.1：日志面板帧整组隐藏（渐变底/顶线/把手/箭头）——面板由 flow/FlowLogPanel 流式重建
+  //（可拖拽调高）；id 见 design/regions/log-panel.js（LG_FRAME 手工登记）
+  for (const id of ['23:137186', '23:137187', '23:137189', 'I23:137190;2:325077']) P.set(id, { hide: true });
+  // V6.2：工单列表收起把手（boder/箭头）隐藏——由 flow/OrderPanel 重建
+  //（SVG 箭头样式，参考日志面板把手）
+  P.set('23:137098', { hide: true });
+  P.set('I23:137099;2:325077', { hide: true });
+  // V6.2：流程中心（LC 23:136979）隐藏——设计节点不随拓扑平移（用户反馈"流程中心没有
+  // 跟随平移"），改由 StorylineOverlays 画布层流式重建（随 pan/缩放）
+  P.set('23:136979', { hide: true });
+  // V6.2：房间条设计节点（客服/监控室 tab、客服—监控室与监控室—传输室连线、光点 g0/g1）
+  // 隐藏——用户反馈"缩放时第一个客服和监控室不要跟随变化"：设计节点随区域 Z 缩放，
+  // 改由悬浮层重建（随 F 自适应、不随 Z/pan，见 StorylineOverlays；V6.3 五胶囊重构，
+  // 客服—监控室连线 23:135683 一并入悬浮层四段重建）
+  for (const id of ['23:135676', '23:135678', '23:135683', '23:135685', '23:135682', '23:135684']) P.set(id, { hide: true });
+  // V6.2（用户规格）：主标题（渐变文字 23:137645 + 底带 deco:title-band + 梯形装饰线
+  // deco:title-trapezoid）随左栏收起居中——标题区独立于画布区域（不随 F 重适配），
+  // 工单列表收起（区域扩至全宽）时标题单元自流程区中心 1112.5 平移至画布中心 960
+  //（Δ−152.5），0.25s 过渡与区域重适配同步；展开复原
+  const titleShift = ctx.ordersHidden ? -152.5 : 0;
+  putFit('23:137645', { left: (923.5 + titleShift) + 'px', transition: 'left 0.25s ease' });
+  putFit('deco:title-band', { left: (930.22 + titleShift) + 'px', transition: 'left 0.25s ease' });
+  putFit('deco:title-trapezoid', { left: (654 + titleShift) + 'px', transition: 'left 0.25s ease' });
   return P;
 }
 

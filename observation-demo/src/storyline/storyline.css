@@ -36,6 +36,45 @@
   pointer-events: none;
   transform-origin: 69.53125rem 29.40625rem;
 }
+/* V6.0（用户规格）：画布内容裁剪框——流程区盒（305,48,1615×845）overflow:hidden，
+   内层 .st-zoomz 缩放内容越区（放大后压左栏/日志区）在此裁除；与设计区域 div
+   （.fc-zoom 的 overflow 裁剪）同构——裁剪框在 F（收起重适配）内、Z（用户缩放）外，
+   边界随 F 同步伸缩。V6.2（用户规格）：兼任拓扑平移拖拽面（cursor grab，
+   空白画布按下拖动平移；卡片/步骤条/平台卡目标除外，见 StorylineOverlays onPanDown）；
+   pointer-events:auto 使其接收穿透覆盖层的空白区按下（子元素 pointer-events:auto
+   仍优先命中） */
+.st-canvasclip {
+  position: absolute;
+  left: 19.0625rem;
+  top: 3rem;
+  width: 100.9375rem;
+  height: 52.8125rem;
+  overflow: hidden;
+  pointer-events: auto;
+  cursor: grab;
+}
+/* 裁剪框内 zoomz 不可 inset:0（原点会变成裁剪框左上角 → 画布坐标子元素整体 +305,+48 偏移）——
+   反向偏移回画布系：定位 (−305,−48)、尺寸整画布，子元素画布坐标直接生效，
+   缩放原点与外层 zoomz 同为画布中心（69.53125rem 29.40625rem，类默认值） */
+.st-canvasclip .st-zoomz {
+  inset: auto;
+  left: -19.0625rem;
+  top: -3rem;
+  width: 120rem;
+  height: 67.5rem;
+}
+/* V6.2（用户规格）：平移包裹层——拓扑画布层/详情面板层/步骤条悬浮层的公共外壳；
+   translate 屏幕语义（外层于 F/Z 之外）、无过渡（拖拽即时）；z-index 按层实例指定
+   （画布层 z-auto、步骤条与面板层 40——日志面板层间插保持 画布<日志<面板 层序） */
+.st-pan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* V6.0（用户反馈"放大后按钮被卡片挡住"）：缩放工具条层 41——流式卡片位于
+   .st-zoomwrap(40) 内且 pointer-events:auto，放大时卡片越至右下角盖住 z20 的
+   缩放按钮致不可点；工具条为页面 chrome，与 .st-toolbar(V5.70) 同升 41 全页最高 */
+.st-zoombar { z-index: 41; }
 /* V5.70（用户规格）：工具栏层 41 全页最高——V5.53 提升 .st-zoomwrap 至 40 后，画布覆盖层
    反盖工具栏层（20）内 z30 的倍速下拉：case2 监控室胶囊（x1736 y126..158）与倍速菜单
    （x1753 起 y106..284）几何重叠，胶囊挡住菜单前两项。工具栏层本身透明
@@ -239,8 +278,15 @@
   overflow: hidden;
 }
 .st-lrow:hover .st-lmain { background: rgba(243, 243, 243, 0.05); }
-.st-lchev { color: rgba(147, 147, 147, 1); font-size: 0.625rem; margin-right: 1.0rem; transition: transform 0.2s; }
-.st-lchev-open { transform: rotate(180deg); }
+/* V6.1（用户规格）：行首图标 → V6.2 改 SVG 箭头（10px，LogTable 内联；颜色随 SVG 描边）；
+   展开 .st-lchev-open 旋转 90°（箭头向下）；flex 行内垂直居中 */
+.st-lchev {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 1.0rem;
+  transition: transform 0.2s;
+}
+.st-lchev-open { transform: rotate(90deg); }
 .st-lbadge { flex: none; height: 1.5rem; line-height: 1.5rem; padding: 0 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; margin-right: 1.375rem; }
 .st-ltime { flex: none; color: rgba(201, 201, 201, 1); font-size: 0.75rem; margin-right: 1.5rem; }
 .st-lroute { flex: none; color: rgba(255, 255, 255, 1); font-size: 0.75rem; font-weight: 500; margin-right: 2.0rem; }

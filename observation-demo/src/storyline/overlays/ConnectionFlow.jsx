@@ -53,6 +53,9 @@ const LABEL_COLORS = {
   'Notification-T·上报': { bg: 'rgba(44,184,201,0.15)', fg: 'rgba(85,204,217,1)' },
   'Notification-T·成功': { bg: 'rgba(44,184,201,0.15)', fg: 'rgba(85,204,217,1)' },
   'Task-T响应': { bg: 'rgba(54,193,141,0.15)', fg: 'rgba(54,193,141,1)' },
+  // V6.4（1020 文档修订）：Authorization-T 动网操作授权（工单2 问题处置——请求/响应
+  // 经 zx-yx-neg 线，紫罗兰色系对齐注册中心/检索配色）
+  'Authorization-T': { bg: 'rgba(168,159,249,0.15)', fg: 'rgba(168,159,249,1)' },
 };
 // 胶囊宽度估算（CJK 12px / 西文 6.3px + 两侧留白，与设计稿 Task-T=52、Negotiation-T=93 对齐）
 const textW = (t) => Math.round([...t].reduce((a, c) => a + (c.charCodeAt(0) > 0x2e7f ? 12 : 6.3), 0)) + 13;
@@ -190,10 +193,12 @@ export default function ConnectionFlow({ world, pub }) {
                     fontSize="12" fontWeight="400" fontFamily={FONT} fill={base.fg}>{fo.result}</text>
                 ) : null}
                 {fo.msg && !msgHidden ? (
-                  // A2A-T 消息：连线下方展示（胶囊/连线之下），与连线保持 1rem 距离（V2.17：胶囊底≈线顶，
-                  // 基线 = 胶囊底 + 1rem + 12px 文本 bbox 顶偏移≈13），宽度不超过连线跨度（按实际字体
-                  // 度量截断，V5.4 再留 8px 安全边——不越出连线两端、不覆盖节点卡片）、超出以 …… 截断
-                  <text className="st-flow-msg" data-key={key} x={cx} y={L.pillBox.y + L.pillBox.h + 16 + 13}
+                  // A2A-T 消息：连线下方展示（胶囊/连线之下）——V6.5（用户规格）：文字距连线
+                  // 0.5rem（胶囊底≈线顶−4 → 文字顶 = 线 + 8：基线 = 胶囊底 + 12 + 12px 文本
+                  // bbox 顶偏移≈13）、文字 0.75rem（12px），宽度不超过连线跨度（按实际字体
+                  // 度量截断，V5.4 再留 8px 安全边——不越出连线两端、不覆盖节点卡片）、
+                  // 超出以 …… 截断
+                  <text className="st-flow-msg" data-key={key} x={cx} y={L.pillBox.y + L.pillBox.h + 12 + 13}
                     textAnchor="middle" fontSize="12" fontWeight="400" fontFamily={FONT}
                     fill="rgba(201,201,201,1)">{fitMsg(fo.msg, Math.max(0, msgMax - 8))}</text>
                 ) : null}

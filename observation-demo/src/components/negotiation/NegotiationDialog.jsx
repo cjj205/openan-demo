@@ -72,7 +72,7 @@ function Bubble({ width, height, tail, gradientId, className, children }) {
   )
 }
 
-export default function NegotiationDialog({ defaultSelected = 'cvlan1208', proposeText = '接入端口名称不唯一，该端口下存在多个业务接入口，请提供具体的子接口ID或VLAN ID以确认唯一的业务。', accepted = false }) {
+export default function NegotiationDialog({ defaultSelected = 'cvlan1208', options = OPTIONS, proposeText = '接入端口名称不唯一，该端口下存在多个业务接入口，请提供具体的子接口ID或VLAN ID以确认唯一的业务。', accepted = false }) {
   const [selected, setSelected] = useState(null)
   const listRef = useRef(null)
   const vlan = (selected || defaultSelected).replace('cvlan', '')
@@ -158,7 +158,7 @@ export default function NegotiationDialog({ defaultSelected = 'cvlan1208', propo
             />
 
             <div className="nd-radio-group" role="radiogroup" aria-label="cvlan 选项" style={{ top: radioTop }}>
-              {OPTIONS.map((opt) => {
+              {options.map((opt) => {
                 const isSelected = opt.id === selected
                 return (
                   <button
