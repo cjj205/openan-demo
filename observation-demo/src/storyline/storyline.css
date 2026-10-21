@@ -134,13 +134,13 @@
    中点，纵向与房间胶囊对齐（y126..158 高 32，不贯穿整条），白色半透明 ---- */
 .st-roomsep {
   position: absolute;
-  /* V6.25（用户规格）：科室分割线 高 2rem→1rem、宽 0.0625rem→0.2rem——
-     高度缩短后垂直居中于胶囊带（7.875rem + (2−1)/2 = 8.375rem）；
-     V6.26（用户规格）：实心白线，无透明度 */
-  top: 8.375rem;
-  width: 0.2rem;
-  height: 1rem;
-  background: #ffffff;
+  /* V6.25（用户规格）：科室分割线垂直居中于胶囊带（7.875rem + (2−h)/2）；
+     V6.28（用户规格）：实心白线，透明度 0.6；
+     V6.29（用户规格）：宽 0.15rem、高 0.8rem（top = 7.875 + (2−0.8)/2 = 8.475rem） */
+  top: 8.475rem;
+  width: 0.15rem;
+  height: 0.8rem;
+  background: rgba(255, 255, 255, 0.6);
   z-index: 12;
   pointer-events: none;
 }

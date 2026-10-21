@@ -107,6 +107,13 @@ export default function StorylineOverlays() {
   const lineWorld = live ? pub.world : ((TF.fx !== 1 || TF.fy !== 1) ? snapshotLinesWorld() : null);
   // V5.59 口径：房间条科室元素随「对齐步骤」揭示——未执行到的步骤不出现对应胶囊/连线/光点
   const stepOn = (i) => !live || pub.world.steps[i] !== 'todo';
+  // V6.30：分割线左沿吸附设备像素栅格——四线左沿为小数设计坐标（.29/.86/.14/.72），
+  // 0.15rem 宽经子像素抗锯齿渲染为 2 或 3 列（用户反馈"中间两条更粗"——像素实测
+  // 1920×1080 下 #1/#3 三列、#2/#4 两列，非两线重合；不同视口 k/DPR 落点组合不同）；
+  // 左沿统一 round 到设备整数像素后四线渲染轮廓一致（等宽→右侧部分列占比相同）
+  const sepG = ((parseFloat(getComputedStyle(document.documentElement).fontSize) || 16) / 16)
+    * (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
+  const snapSep = (x) => Math.round(x * sepG) / sepG;
   // V6.3：各段登场光点状态（窗口 = 行程 1 周业务时长；完成态静态中点；快照态不呈现）
   const glideState = (i) => {
     const g = ROOM_GLIDES[i];
@@ -184,7 +191,7 @@ export default function StorylineOverlays() {
             <div key={'rl' + i} className="st-roomline" style={{ left: s.left, width: s.right - s.left }} />
           ) : null)}
           {ROOM_SEPS.map((s, i) => stepOn(s.gate) ? (
-            <div key={'rs' + i} className="st-roomsep" style={{ left: s.left }} />
+            <div key={'rs' + i} className="st-roomsep" style={{ left: snapSep(s.left) }} />
           ) : null)}
           {ROOM_GLIDES.map((g, i) => {
             const st = glideState(i);
