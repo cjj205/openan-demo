@@ -222,7 +222,27 @@
 }
 
 /* ---- 工单卡（内容纵向流式；外壳 256×142 恒定——列表槽位几何不变） ---- */
-.fl-orders { position: absolute; display: flex; flex-direction: column; gap: 1rem; }
+/* V6.45（用户规格）：工单列表区域滚动——展开详情后列高超出左侧区域
+    （列顶 170..画布底 1080 → max-height 910）时出现滚动条；宽 17rem =
+    卡 16rem + 滚动条槽（条贴容器右缘，不压卡面、不碰收起把手 304）；
+    默认 6 卡（高 760）不触发；子项 flex-shrink:0——限高时列表滚动而非卡片压缩 */
+.fl-orders {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 17rem;
+  max-height: 56.875rem;
+  padding-bottom: 0.5rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(243, 243, 243, 0.28) transparent;
+}
+.fl-orders > * { flex-shrink: 0; }
+.fl-orders::-webkit-scrollbar { width: 0.375rem; }
+.fl-orders::-webkit-scrollbar-track { background: transparent; }
+.fl-orders::-webkit-scrollbar-thumb { background: rgba(243, 243, 243, 0.28); border-radius: 0.1875rem; }
+.fl-orders::-webkit-scrollbar-thumb:hover { background: rgba(243, 243, 243, 0.45); }
 /* 工单列表收起把手（V6.2 用户规格）：设计 boder 同位（304,492 12×48 右圆角竖条，
    贴面板右缘）；图标参考日志面板把手箭头样式（左指 = 收起方向） */
 .fl-ordertab {
