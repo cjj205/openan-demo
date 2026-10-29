@@ -1,0 +1,33 @@
+<svg viewBox="0 0 98 43.0391" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="98.000000" height="43.039062" fill="none" customFrame="#000000">
+	<defs>
+		<g id="pixso_custom_effect_2">
+			<effect x="0.000000" y="2.000000" visibility="hidden" fill="rgb(0,0,0)" fill-opacity="0.0392156877" effectType="dropShadow" stdDeviation="5" radius="0" />
+			<effect x="0.000000" y="4.000000" visibility="visible" fill="rgb(0,0,0)" fill-opacity="0.0549019612" effectType="dropShadow" stdDeviation="5" radius="0" />
+		</g>
+		<filter id="filter_2" width="98.000000" height="43.039062" x="0.000000" y="0.000000" filterUnits="userSpaceOnUse" customEffect="url(#pixso_custom_effect_2)" color-interpolation-filters="sRGB">
+			<feFlood flood-opacity="0" result="BackgroundImageFix" />
+			<feColorMatrix result="hardAlpha" in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6.375 0 " />
+			<feOffset dx="0.000000" dy="4.000000" in="hardAlpha" />
+			<feGaussianBlur stdDeviation="1.66666663" />
+			<feComposite k2="-1" k3="1" in2="hardAlpha" operator="out" />
+			<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.054902 0 " />
+			<feBlend result="effect_dropShadow_1" in2="BackgroundImageFix" mode="normal" />
+			<feBlend result="shape" in="SourceGraphic" in2="effect_dropShadow_1" mode="normal" />
+		</filter>
+		<linearGradient id="paint_linear_3" x1="0" x2="88" y1="16.519165" y2="16.519165" gradientUnits="userSpaceOnUse">
+			<stop stop-color="rgb(0,103,209)" offset="0" stop-opacity="0.200000003" />
+			<stop stop-color="rgb(0,103,209)" offset="0.850428879" stop-opacity="0.184313729" />
+			<stop stop-color="rgb(170,212,255)" offset="0.922576249" stop-opacity="0.372549027" />
+			<stop stop-color="rgb(0,103,209)" offset="1" stop-opacity="0.156862751" />
+		</linearGradient>
+		<linearGradient id="paint_linear_4" x1="88" x2="0" y1="16.5191727" y2="16.5191727" gradientUnits="userSpaceOnUse">
+			<stop stop-color="rgb(200,200,200)" offset="0" stop-opacity="0.0784313753" />
+			<stop stop-color="rgb(255,255,255)" offset="0.146734193" stop-opacity="0.541176498" />
+			<stop stop-color="rgb(255,255,255)" offset="1" stop-opacity="0.0784313753" />
+		</linearGradient>
+	</defs>
+	<g filter="url(#filter_2)">
+		<path id="AgentCard标题背景" d="M13.5 29.9749C6.04416 29.9749 0 23.9307 0 16.4749C0 9.01901 6.04416 2.97485 13.5 2.97485L80.7751 2.97485C83.4815 2.97485 86.0783 1.90563 88 0L88 33.0383C86.0813 31.079 83.4545 29.9749 80.7122 29.9749L13.5 29.9749Z" fill="url(#paint_linear_3)" fill-rule="evenodd" transform="matrix(-1,0,0,1,93,1)" />
+		<path id="AgentCard标题背景" d="M13.5 29.9749C6.04416 29.9749 0 23.9307 0 16.4749C0 9.01901 6.04416 2.97485 13.5 2.97485L80.7751 2.97485C83.4815 2.97485 86.0783 1.90563 88 0L88 33.0383C86.0813 31.079 83.4545 29.9749 80.7122 29.9749L13.5 29.9749ZM13.5 3.97485C6.59644 3.97485 1 9.57129 1 16.4749C1 23.3784 6.59644 28.9749 13.5 28.9749L80.7122 28.9749C82.2178 28.9749 83.6646 29.2666 85.0525 29.85C85.7431 30.1403 86.3922 30.4915 87 30.9037L87 2.10038C86.3939 2.50234 85.7481 2.84445 85.0625 3.12672C83.6893 3.69214 82.2602 3.97485 80.7751 3.97485L13.5 3.97485Z" fill="url(#paint_linear_4)" fill-opacity="0" fill-rule="evenodd" transform="matrix(-1,0,0,1,93,1)" />
+	</g>
+</svg>

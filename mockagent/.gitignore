@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.db
+*.log
+
+# Runtime data
+data/
+instance.pid
+instance.log
+workflows/
+
+# Node
+node_modules/
+dist/
+
+# Secrets
+.env
+*.env.local

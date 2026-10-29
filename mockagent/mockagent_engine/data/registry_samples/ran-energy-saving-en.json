@@ -1,0 +1,23 @@
+{
+  "key": "ran-energy-saving-en",
+  "label": "样例：RAN Energy Saving Agent（EN）",
+  "description": "Canonical sample card from the registry API reference",
+  "card": {
+    "name": "RAN Energy Saving Agent",
+    "description": "RAN Energy Saving Agent for autonomous closed-loop energy efficiency optimization, including intent exploration, fulfillment, effect evaluation and reporting.",
+    "version": "1.0.0",
+    "provider": { "organization": "Org", "url": "https://example.com" },
+    "skills": [
+      { "id": "ran-es-intent-exploration", "name": "RAN ES Intent Exploration", "description": "Evaluate and determine best possible values for RAN ES intent targets, considering current resource conditions and system capabilities.", "tags": ["wireless", "energy-saving", "intent"] },
+      { "id": "ran-es-intent-lifecycle-management", "name": "RAN ES Intent Lifecycle Management", "description": "Manage RAN ES intent lifecycle including creation, modification, deletion, activation, deactivation, and perform data collection, analysis, solution formulation and configuration.", "tags": ["wireless", "energy-saving", "intent"] },
+      { "id": "ran-es-intent-reporting", "name": "RAN ES Intent Reporting", "description": "Provide intent report query, subscription and notification capabilities, reporting intent fulfillment status, achieved values, recommended values and configuration changes.", "tags": ["wireless", "energy-saving", "reporting"] }
+    ],
+    "capabilities": { "streaming": true, "pushNotifications": false, "extensions": [] },
+    "defaultInputModes": ["text", "json"],
+    "defaultOutputModes": ["text", "json"],
+    "supportedInterfaces": [
+      { "protocolBinding": "GRPC", "protocolVersion": "1.0.0", "url": "http://127.0.0.1:5000/" },
+      { "protocolBinding": "HTTP+JSON", "protocolVersion": "1.0.0", "url": "http://127.0.0.1:5000/" }
+    ]
+  }
+}

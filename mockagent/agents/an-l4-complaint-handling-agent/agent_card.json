@@ -1,0 +1,80 @@
+{
+  "name": "mockagent_an-l4-complaint-handling-agent",
+  "description": "面向个人/家庭宽带投诉的端到端处理：投诉受理、智能定界、根因分析、处理闭环与回访。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "complaint-intake",
+      "name": "Complaint Intake and Classification",
+      "description": "受理用户投诉，进行投诉分类、工单化与优先级评估。",
+      "tags": [
+        "complaint-handling",
+        "intake"
+      ]
+    },
+    {
+      "id": "complaint-root-cause-analysis",
+      "name": "Complaint Root Cause Analysis",
+      "description": "结合用户画像与网络数据执行投诉根因分析与智能定界。",
+      "tags": [
+        "complaint-handling",
+        "analysis"
+      ]
+    },
+    {
+      "id": "complaint-resolution",
+      "name": "Complaint Resolution and Closure",
+      "description": "执行投诉处理方案并验证恢复效果，完成投诉闭环与回复。",
+      "tags": [
+        "complaint-handling",
+        "resolution"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-complaint-handling-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9103"
+    }
+  ]
+}

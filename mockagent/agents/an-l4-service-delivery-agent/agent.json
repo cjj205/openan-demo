@@ -1,0 +1,46 @@
+{
+  "id": "an-l4-service-delivery-agent",
+  "agentName": "Service Delivery Agent",
+  "name": "Service Delivery Agent",
+  "cardName": "mockagent_an-l4-service-delivery-agent",
+  "organization": "OpenAN-Stub",
+  "description": "面向个人移动业务的自动开通与交付：业务订单受理、开通编排、交付验证与激活。",
+  "layer": "service",
+  "port": 9118,
+  "workDir": "data/mock_agents/an-l4-service-delivery-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "service-order-intake",
+      "name": "Service Order Intake",
+      "description": "受理个人移动业务开通订单，进行订单解析与合法性校验。",
+      "tags": [
+        "service-delivery",
+        "order"
+      ]
+    },
+    {
+      "id": "service-provisioning-orchestration",
+      "name": "Service Provisioning Orchestration",
+      "description": "编排各网域执行业务开通配置与参数下发。",
+      "tags": [
+        "service-delivery",
+        "provisioning"
+      ]
+    },
+    {
+      "id": "service-delivery-verification",
+      "name": "Service Delivery Verification and Activation",
+      "description": "执行业务交付验证（拨测/签约核查）并完成业务激活。",
+      "tags": [
+        "service-delivery",
+        "verification"
+      ]
+    }
+  ]
+}

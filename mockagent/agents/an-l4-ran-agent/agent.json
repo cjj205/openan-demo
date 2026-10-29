@@ -1,0 +1,47 @@
+{
+  "id": "an-l4-ran-agent",
+  "agentName": "RAN Agent",
+  "name": "RAN Agent",
+  "cardName": "mockagent_an-l4-ran-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责无线网络的分析、规划与策略执行。",
+  "layer": "network",
+  "port": 9115,
+  "workDir": "data/mock_agents/an-l4-ran-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "analysis-eval",
+      "name": "Analysis and Evaluation",
+      "description": "分析网络负载现状",
+      "tags": [
+        "ran",
+        "analysis"
+      ]
+    },
+    {
+      "id": "plan-design",
+      "name": "Plan Design",
+      "description": "根据网络负载现状及网络保障需求规划网络策略方案",
+      "tags": [
+        "ran",
+        "plan"
+      ]
+    },
+    {
+      "id": "net-exec",
+      "name": "Network Policy Execution",
+      "description": "执行或恢复网络策略",
+      "tags": [
+        "ran",
+        "exec"
+      ]
+    }
+  ],
+  "networkDomain": "wireless"
+}

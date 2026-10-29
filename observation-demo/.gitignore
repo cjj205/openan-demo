@@ -1,0 +1,7 @@
+node_modules
+dist
+release
+release-html
+browser-dist
+electron
+dev-server.log

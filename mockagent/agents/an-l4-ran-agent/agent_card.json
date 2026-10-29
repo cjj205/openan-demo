@@ -1,0 +1,80 @@
+{
+  "name": "mockagent_an-l4-ran-agent",
+  "description": "负责无线网络的分析、规划与策略执行。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "analysis-eval",
+      "name": "Analysis and Evaluation",
+      "description": "分析网络负载现状",
+      "tags": [
+        "ran",
+        "analysis"
+      ]
+    },
+    {
+      "id": "plan-design",
+      "name": "Plan Design",
+      "description": "根据网络负载现状及网络保障需求规划网络策略方案",
+      "tags": [
+        "ran",
+        "plan"
+      ]
+    },
+    {
+      "id": "net-exec",
+      "name": "Network Policy Execution",
+      "description": "执行或恢复网络策略",
+      "tags": [
+        "ran",
+        "exec"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-ran-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9115"
+    }
+  ]
+}

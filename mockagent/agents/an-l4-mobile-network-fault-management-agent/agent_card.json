@@ -1,0 +1,92 @@
+{
+  "name": "mockagent_an-l4-mobile-network-fault-management-agent",
+  "description": "负责移动网络（无线接入网）域内故障的自动识别、诊断与处理，支持与跨域故障管理Agent协同。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "mobile-network-fault-identification",
+      "name": "Mobile Network Fault Identification",
+      "description": "基于告警与性能数据自动识别移动网络（无线网络）域内故障。",
+      "tags": [
+        "fault-management",
+        "mobile-network",
+        "wireless"
+      ]
+    },
+    {
+      "id": "mobile-network-fault-diagnosis",
+      "name": "Mobile Network Fault Diagnosis",
+      "description": "对移动网络故障执行根因分析与自动诊断，输出诊断信息与处理建议。",
+      "tags": [
+        "fault-management",
+        "mobile-network",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "mobile-network-fault-handling",
+      "name": "Mobile Network Fault Handling",
+      "description": "执行移动网络故障的自动处理与修复，无法自动修复时上报跨域Agent或派发工单。",
+      "tags": [
+        "fault-management",
+        "mobile-network",
+        "repair"
+      ]
+    },
+    {
+      "id": "wireless-network-fault-management",
+      "name": "Wireless Network Fault Management",
+      "description": "无线网络专项故障管理，覆盖基站、小区与无线链路类故障。",
+      "tags": [
+        "fault-management",
+        "wireless"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-mobile-network-fault-management-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9111"
+    }
+  ]
+}

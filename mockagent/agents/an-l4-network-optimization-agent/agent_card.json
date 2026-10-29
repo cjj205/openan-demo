@@ -1,0 +1,83 @@
+{
+  "name": "mockagent_an-l4-network-optimization-agent",
+  "description": "负责网络质量优化与节能优化：IP网络质量优化、无线网络节能与效能评估。",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "provider": {
+    "organization": "OpenAN-Stub",
+    "url": "https://github.com/project-openan"
+  },
+  "skills": [
+    {
+      "id": "ip-network-quality-optimization",
+      "name": "IP Network Quality Optimization",
+      "description": "执行IP网络质量分析、优化策略生成与下发及效果验证。",
+      "tags": [
+        "optimization",
+        "ip-network",
+        "quality"
+      ]
+    },
+    {
+      "id": "wireless-energy-efficiency-optimization",
+      "name": "Wireless Energy Efficiency Optimization",
+      "description": "执行无线网络节能策略生成与下发，平衡能耗与KPI。",
+      "tags": [
+        "optimization",
+        "wireless",
+        "energy-saving"
+      ]
+    },
+    {
+      "id": "energy-efficiency-evaluation",
+      "name": "Energy Efficiency Evaluation and Reporting",
+      "description": "评估节能效果，输出能耗报告与优化建议。",
+      "tags": [
+        "optimization",
+        "energy-saving",
+        "reporting"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Task-T/v1",
+        "description": "Task-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Notification-T/v1",
+        "description": "Notification-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Authorization-T/v1",
+        "description": "Authorization-T structured prompt requests"
+      },
+      {
+        "uri": "https://projects.tmforum.org/a2aproject/telecommunication/extensions/Negotiation-T/v1",
+        "description": "Negotiation-T structured prompt messages"
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9300/agents/an-l4-network-optimization-agent"
+    },
+    {
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0.0",
+      "url": "http://127.0.0.1:9113"
+    }
+  ]
+}

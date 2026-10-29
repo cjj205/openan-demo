@@ -1,0 +1,49 @@
+{
+  "id": "an-l4-ip-network-fault-management-agent",
+  "agentName": "IP Network Fault Management Agent",
+  "name": "IP Network Fault Management Agent",
+  "cardName": "mockagent_an-l4-ip-network-fault-management-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责IP网络（数据通信网）域内故障的自动识别、诊断与处理。",
+  "layer": "network",
+  "port": 9109,
+  "workDir": "data/mock_agents/an-l4-ip-network-fault-management-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "ip-network-fault-identification",
+      "name": "IP Network Fault Identification",
+      "description": "基于链路状态与告警数据自动识别IP网络域内故障。",
+      "tags": [
+        "fault-management",
+        "ip-network"
+      ]
+    },
+    {
+      "id": "ip-network-fault-diagnosis",
+      "name": "IP Network Fault Diagnosis",
+      "description": "对IP网络故障执行路径分析与根因诊断，输出诊断信息。",
+      "tags": [
+        "fault-management",
+        "ip-network",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "ip-network-fault-handling",
+      "name": "IP Network Fault Handling",
+      "description": "执行IP网络故障的自动处理与流量倒换验证。",
+      "tags": [
+        "fault-management",
+        "ip-network",
+        "repair"
+      ]
+    }
+  ],
+  "networkDomain": "datacom"
+}

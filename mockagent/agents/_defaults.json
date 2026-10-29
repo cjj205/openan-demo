@@ -1,0 +1,147 @@
+{
+  "host": "0.0.0.0",
+  "workDirRoot": "data/mock_agents",
+  "publicUrlBase": "http://127.0.0.1",
+  "llm": {
+    "enabled": false,
+    "provider": "openai",
+    "baseUrl": "http://127.0.0.1:8000/v1",
+    "model": "qwen2.5-7b-instruct",
+    "apiKeyEnv": "MOCK_AGENT_LLM_API_KEY",
+    "maxAttempts": 1,
+    "language": "zh-CN"
+  },
+  "stubVariants": [
+    {
+      "templateUri": "Task-T/network-layer/private-line-complaint/v1",
+      "variantJson": {
+        "faultManagement.TroubleTicket": {
+          "ticketId": "TT-STUB-{{caseId}}",
+          "status": "processing",
+          "诊断结果": "成功",
+          "诊断结果详细信息": "已完成网络侧根因定位：接入光缆中断导致专线业务中断，正在执行保护倒换恢复业务",
+          "修复建议": "保护倒换完成后确认业务恢复；如未恢复联系传输机房熔接修复",
+          "故障根因列表": [
+            {
+              "故障根因名称": "光缆中断",
+              "详细描述": "接入段光缆被施工挖断，专线业务信号丢失",
+              "修复建议": "熔接修复或倒换至保护路由",
+              "故障根因点位置": "P180-SZ-PTN7900-23-TPA1EG24-17"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "templateUri": "Task-T/network-layer/ran-energy-saving/v1",
+      "variantJson": {
+        "energyManagement.EnergySaving": {
+          "cellId": "CELL-STUB-{{caseId}}",
+          "action": "deep_sleep",
+          "expectedSaving": "12%",
+          "duration": "02:00-04:00"
+        }
+      }
+    },
+    {
+      "templateUri": "Notification-T/network-layer/subscribe-incident/v1",
+      "variantJson": {
+        "faultManagement.Incident": {
+          "csn": "INC-{{timestamp}}",
+          "name": "ETH-LOS",
+          "priority": "critical",
+          "status": "open",
+          "topic": "{{slots.通知主题}}"
+        }
+      }
+    },
+    {
+      "templateUri": "Notification-T/network-layer/service-recovery/v1",
+      "variantJson": {
+        "faultManagement.ServiceRecovery": {
+          "recoveryId": "STUB-REC-{{caseId}}",
+          "status": "recovered"
+        }
+      }
+    },
+    {
+      "templateUri": "Authorization-T/authorization-policy-management/v1",
+      "variantJson": {
+        "Authorization-T.policy": {
+          "policyId": "POL-STUB-{{caseId}}",
+          "action": "created",
+          "status": "active"
+        }
+      }
+    },
+    {
+      "templateUri": "Negotiation-T/information-negotiation/propose/v1",
+      "variantJson": {
+        "Negotiation-T.informationProposal": {
+          "sessionId": "NEG-STUB-{{caseId}}",
+          "status": "proposed",
+          "informationItems": [
+            "告警详情",
+            "根因分析"
+          ]
+        }
+      }
+    },
+    {
+      "templateUri": "Negotiation-T/information-negotiation/accept-reject/v1",
+      "variantJson": {
+        "Negotiation-T.informationDecision": {
+          "sessionId": "NEG-STUB-{{caseId}}",
+          "decision": "accept"
+        }
+      }
+    },
+    {
+      "templateUri": "Negotiation-T/target-negotiation/propose/v1",
+      "variantJson": {
+        "Negotiation-T.targetProposal": {
+          "sessionId": "NEG-STUB-{{caseId}}",
+          "target": "受影响业务",
+          "status": "proposed"
+        }
+      }
+    },
+    {
+      "templateUri": "Negotiation-T/target-negotiation/accept-reject/v1",
+      "variantJson": {
+        "Negotiation-T.targetDecision": {
+          "sessionId": "NEG-STUB-{{caseId}}",
+          "decision": "accept"
+        }
+      }
+    },
+    {
+      "templateUri": "Negotiation-T/feasibility-negotiation/propose/v1",
+      "variantJson": {
+        "Negotiation-T.feasibilityProposal": {
+          "sessionId": "NEG-STUB-{{caseId}}",
+          "feasible": true
+        }
+      }
+    },
+    {
+      "templateUri": "Negotiation-T/feasibility-negotiation/accept-reject/v1",
+      "variantJson": {
+        "Negotiation-T.feasibilityDecision": {
+          "sessionId": "NEG-STUB-{{caseId}}",
+          "decision": "accept"
+        }
+      }
+    },
+    {
+      "templateUri": "Negotiation-T/common/abort/v1",
+      "variantJson": {
+        "Negotiation-T.abort": {
+          "sessionId": "NEG-STUB-{{caseId}}",
+          "aborted": true,
+          "reason": "stub abort"
+        }
+      }
+    }
+  ]
+}

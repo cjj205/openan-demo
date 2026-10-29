@@ -1,0 +1,50 @@
+{
+  "id": "an-l4-transport-network-fault-management-agent",
+  "agentName": "Transport Network Fault Management Agent",
+  "name": "Transport Network Fault Management Agent",
+  "cardName": "mockagent_an-l4-transport-network-fault-management-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责承载网（SPN/OTN/传输网）域内故障的自动识别、诊断与处理。",
+  "layer": "network",
+  "port": 9119,
+  "workDir": "data/mock_agents/an-l4-transport-network-fault-management-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "transport-network-fault-identification",
+      "name": "Transport Network Fault Identification",
+      "description": "基于波长/隧道/链路告警自动识别承载网域内故障。",
+      "tags": [
+        "fault-management",
+        "transport-network",
+        "spn"
+      ]
+    },
+    {
+      "id": "transport-network-fault-diagnosis",
+      "name": "Transport Network Fault Diagnosis",
+      "description": "对承载网故障执行端到端路径分析与根因定位。",
+      "tags": [
+        "fault-management",
+        "transport-network",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "transport-network-fault-handling",
+      "name": "Transport Network Fault Handling",
+      "description": "执行承载网故障的自动倒换与修复处理。",
+      "tags": [
+        "fault-management",
+        "transport-network",
+        "repair"
+      ]
+    }
+  ],
+  "networkDomain": "optical"
+}

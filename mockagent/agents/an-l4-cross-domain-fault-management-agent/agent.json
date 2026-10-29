@@ -1,0 +1,78 @@
+{
+  "id": "an-l4-cross-domain-fault-management-agent",
+  "agentName": "AN L4 Cross-Domain Fault Management Agent",
+  "name": "AN L4 Cross-Domain Fault Management Agent",
+  "cardName": "mockagent_an-l4-cross-domain-fault-management-agent",
+  "organization": "OpenAN-Stub",
+  "description": "负责跨域故障管理的自治闭环：接收单域Agent上报的事件，执行跨域关联分析、故障定界定位、协同修复与结果汇总。",
+  "layer": "service",
+  "port": 9101,
+  "workDir": "data/mock_agents/an-l4-cross-domain-fault-management-agent",
+  "autoStart": false,
+  "llm": {
+    "enabled": false
+  },
+  "stubVariants": [],
+  "datasetTemplates": [],
+  "skills": [
+    {
+      "id": "an-l4-fault-incident-receiving",
+      "name": "Fault Incident Receiving and Distribution",
+      "description": "接收单域Agent主动上报的故障事件或用户投诉，进行事件登记、去重与分发。",
+      "tags": [
+        "fault-management",
+        "cross-domain",
+        "incident"
+      ]
+    },
+    {
+      "id": "an-l4-cross-domain-correlation",
+      "name": "Cross-Domain Fault Correlation Analysis",
+      "description": "对来自多个单域Agent的事件与告警执行跨域关联分析，识别跨域故障并确定故障场景。",
+      "tags": [
+        "fault-management",
+        "cross-domain",
+        "correlation"
+      ]
+    },
+    {
+      "id": "an-l4-cross-domain-demarcation",
+      "name": "Cross-Domain Fault Demarcation and Location",
+      "description": "跨域故障定界定位，确定故障发生的站点、网元与链路，并返回定位结果。",
+      "tags": [
+        "fault-management",
+        "cross-domain",
+        "diagnosis"
+      ]
+    },
+    {
+      "id": "an-l4-cross-domain-repair",
+      "name": "Cross-Domain Fault Coordination and Repair",
+      "description": "协同资源层单域Agent执行故障自动修复，跟踪修复进展并汇总修复结果。",
+      "tags": [
+        "fault-management",
+        "cross-domain",
+        "repair"
+      ]
+    },
+    {
+      "id": "an-l4-fault-summary-report",
+      "name": "Fault Management Summary Report",
+      "description": "输出故障处理报告与效果评估，反馈故障管理闭环结果。",
+      "tags": [
+        "fault-management",
+        "reporting"
+      ]
+    },
+    {
+      "id": "general-orchestration-support",
+      "name": "General Orchestration Support",
+      "description": "通用编排支撑：承接流程中难以归入具体专业能力的辅助性任务，如事件驱动触发、跨Agent消息中转、辅助执行与结果传递。",
+      "tags": [
+        "orchestration",
+        "support",
+        "generic"
+      ]
+    }
+  ]
+}
